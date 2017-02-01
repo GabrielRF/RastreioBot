@@ -24,6 +24,10 @@ def check_user(code, user):
 
 def add_package(code, user):
     stat = get_update(code, 1)
+    if stat == 'Offline':
+        stat = 'Sistema dos Correios fora do ar.'
+    elif stat == 'NotFound':
+        stat = None
     print('Stat:' + str(stat))
     cursor = db.rastreiobot.insert_one (
     {
@@ -50,12 +54,12 @@ def get_update(code, rounds):
         response = request.get(URL + code)
     except:
         print('Correios fora do ar')
-        return False
+        return 'Offline' 
     html = BeautifulSoup(response.content, 'html.parser')
     tabela = html.findAll('tr')
     if len(tabela) < 1:
         print('Codigo não encontrado')
-        return 0
+        return 'NotFound'
     mensagem = str(u'\U0001F4EE') + ' <b>' + code + '</b>\n\n'
     for index in reversed(range(len(tabela))):
         if index > 0:
