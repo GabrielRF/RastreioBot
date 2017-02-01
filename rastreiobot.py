@@ -1,4 +1,6 @@
+from bs4 import BeautifulSoup
 from pymongo import MongoClient
+import requests
 import sys
 
 client = MongoClient()
@@ -6,7 +8,6 @@ db = client.rastreiobot
 
 def check_package(code):
     cursor = db.rastreiobot.find_one({"code": code.upper()})
-    # print(cursor)
     if cursor:
         return True
     return False
@@ -22,13 +23,14 @@ def check_user(code, user):
     return False
 
 def add_package(code, user):
+    stat = get_update(code, 1)
+    print('Stat:' + str(stat))
     cursor = db.rastreiobot.insert_one (
     {
         "code" : code.upper(),
         "user" : [user],
-        "stat" : None
+        "stat" : stat
     })
-    # print(cursor.inserted_id)
 
 def add_user(code, user):
     cursor = db.rastreiobot.update_one (
@@ -43,7 +45,9 @@ def get_update(code, rounds):
     request = requests.Session()
     request.headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.131 Safari/537.36'
     try:
-        response = request.get(URL + codigo)
+        URL = ('http://websro.correios.com.br/sro_bin/txect01$.QueryList'
+            +'?P_ITEMCODE=&P_LINGUA=001&P_TESTE=&P_TIPO=001&P_COD_UNI=')
+        response = request.get(URL + code)
     except:
         print('Correios fora do ar')
         return False
@@ -52,7 +56,7 @@ def get_update(code, rounds):
     if len(tabela) < 1:
         print('Codigo não encontrado')
         return 0
-    mensagem = str(u'\U0001F4EE') + ' <b>' + codigo + '</b>\n\n'
+    mensagem = str(u'\U0001F4EE') + ' <b>' + code + '</b>\n\n'
     for index in reversed(range(len(tabela))):
         if index > 0:
             # print(index)
@@ -76,13 +80,15 @@ def get_update(code, rounds):
                 observacao = False
             if data:
                 if int(rounds) > 0:
-                    mensagem = str(u'\U0001F4EE') + ' <b>' + codigo + '</b>\nData: ' + data.text
+                    mensagem = (str(u'\U0001F4EE') + ' <b>' + code + 
+                        '</b>\nData: ' + data.text)
                 else:
                     mensagem = mensagem + 'Data: ' + data.text
                 if local:
                     mensagem = mensagem + '\nLocal: ' + local.text
                 if situacao:
-                    mensagem = mensagem + '\nSituação: <b>' + situacao.text + '</b>'
+                    mensagem = (mensagem + '\nSituação: <b>' +
+                        situacao.text + '</b>')
                     if situacao.text == 'Entrega Efetuada':
                         mensagem = mensagem + ' ' + str(u'\U0001F381')
                     elif situacao.text == 'Postado':
@@ -90,16 +96,19 @@ def get_update(code, rounds):
                 if observacao:
                     mensagem = mensagem + '\nObservação: ' + observacao.text
                 mensagem = mensagem + '\n\n'
-    print(mensagem)
+    # print(mensagem)
+    return mensagem
 
 if __name__ == '__main__':
     code = sys.argv[1]
     user = '9083328'
-    # cursor = db.rastreiobot.delete_many({"code": "DV530695574BR"})
-    # print(cursor.deleted_count)
+    #cursor = db.rastreiobot.delete_many({"code": "DV530695574BR"})
+    #print(cursor.deleted_count)
     cursor = db.rastreiobot.find()
+    print('--')
     for elem in cursor:
         print(elem)
+    print('--')
     exists = check_package(code)
     print(exists)
     if exists:
