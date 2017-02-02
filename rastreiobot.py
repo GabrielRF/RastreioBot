@@ -2,17 +2,69 @@ from bs4 import BeautifulSoup
 from check_update import check_update
 from time import time
 from pymongo import MongoClient
+from telebot import types
+import configparser
 import requests
 import sys
+import telebot
+
+config = configparser.ConfigParser()
+config.sections()
+config.read('bot.conf')
+
+TOKEN = config['RASTREIOBOT']['TOKEN']
+int_check = int(config['RASTREIOBOT']['int_check'])
+bot = telebot.TeleBot(TOKEN)
 
 client = MongoClient()
 db = client.rastreiobot
+
+user_dict = []
+class User:
+    def __init__(self, chatid):
+        self.chatid = chatid
+        self.code = None
+        self.desc = None
 
 def check_package(code):
     cursor = db.rastreiobot.find_one({"code": code.upper()})
     if cursor:
         return True
     return False
+
+def list_packages(chatid, done):
+    cursor = db.rastreiobot.find()
+    aux = ''
+    for elem in cursor:
+        if str(chatid) in elem['users']:
+            # print(elem['code'])
+            # print(elem['stat'][len(elem['stat'])-1])
+            if not done:
+                if 'Entrega Efetuada' not in elem['stat'][len(elem['stat'])-1]:
+                    aux = aux + '/' + elem['code']
+                    try:
+                        if elem[str(chatid)] != elem['code']:
+                            aux = aux + ' ' +  elem[str(chatid)]
+                    except:
+                        pass
+                    aux = aux + '\n'
+            else:
+                if 'Entrega Efetuada' in elem['stat'][len(elem['stat'])-1]:
+                    aux = aux + elem['code']
+                    try:
+                        if elem[str(chatid)] != elem['code']:
+                            aux = aux + ' ' +  elem[str(chatid)]
+                    except:
+                        pass
+                    aux = aux + '\n'
+    return aux
+
+def status_package(code):
+    cursor = db.rastreiobot.find_one(
+    {
+        "code": code
+    })
+    return cursor['stat']
 
 def check_user(code, user):
     cursor = db.rastreiobot.find_one(
@@ -25,6 +77,7 @@ def check_user(code, user):
     return False
 
 def add_package(code, user):
+    # import ipdb; ipdb.set_trace()
     stat = get_update(code)
     if stat == 0:
         stat = 'Sistema dos Correios fora do ar.'
@@ -50,7 +103,8 @@ def add_user(code, user):
         }
     })
 
-def set_desc(code, user, desc = None):
+def set_desc(code, user, desc):
+    # print('Descrição: ' + str(desc))
     if not desc:
         desc = code
     cursor = db.rastreiobot.update_one (
@@ -64,43 +118,90 @@ def set_desc(code, user, desc = None):
 def get_update(code):
     return check_update(code)
 
-if __name__ == '__main__':
-    code = sys.argv[1].upper()
-    user = '9083329'
-    try:
-        desc = sys.argv[2]
-    except:
-        desc = None
-    # cursor = db.rastreiobot.delete_many({"code": sys.argv[1]})
-    # print('Deletados: ' + str(cursor.deleted_count))
-    cursor = db.rastreiobot.find()
-    exists = check_package(code)
-    if exists:
-        exists = check_user(code, user)
-        if exists:
-            pass
-        else:
-            print('Novo user')
-            add_user(code, user)
+@bot.message_handler(commands=['start'])
+def echo_all(message):
+    chatid = message.from_user.id
+    mensagem = message.text
+    bot.send_message(chatid,
+        str(u'\U0001F4EE') + '<b>@RastreioBot!</b>\n\n'
+        'Por favor, envie um código de objeto.\n\n' +
+        'Para adicionar uma descrição, envie um código ' +
+        'seguido da descrição.\n\n' +
+        '<i>PN123456789BR Minha encomenda</i>'
+        , parse_mode='HTML'
+    )
+
+@bot.message_handler(commands=['pacotes'])
+def echo_all(message):
+    chatid = message.from_user.id
+    message = list_packages(chatid, False)
+    if len(message) < 1:
+        message = "Nenhum pacote encontrado."
     else:
-        # print('Novo')
-        stat = add_package(code, user)
-        if stat == 0:
-            print('Correios fora do ar')
-        elif stat == 1:
-            print('Pacote não encontrado')
-        elif stat == 10:
-            print('Pacote adicionado/atualizado')
+        message = 'Clique para ver o histórico de cada um.\n' + message
+    bot.send_message(chatid, message)
 
+@bot.message_handler(commands=['concluidos'])
+def echo_all(message):
+    chatid = message.from_user.id
+    message = list_packages(chatid, True)
+    if len(message) < 1:
+        message = "Nenhum pacote encontrado."
+    else:
+        message = 'Pacotes concluídos.\n' + message
+    bot.send_message(chatid, message)
 
-    set_desc(code, user, desc)
-    for elem in cursor:
-        time_dif = int(time() - float(elem['time']))
-        # print(time_dif)
-        # print(elem)
-        print('Codigo: \t' + elem['code'])
-        for user in elem['users']:
-            print('Usuário:\t' + user + ' Descrição: ' + elem[user])
-        print('Verificado:\t' + elem['time'])
-        print('Último estado: \t' + elem['stat'][len(elem['stat'])-1])
-        print('\n')
+@bot.message_handler(func=lambda m: True)
+def echo_all(message):
+    user = str(message.from_user.id)
+    code = str(message.text.split(' ')[0]).replace('/','')
+    try:
+        desc = str(message.text.split(' ', 1)[1])
+    except:
+        desc = code
+    # print(code)
+    # print(message.from_user.id)
+    bot.send_chat_action(message.from_user.id, 'typing')
+    if len(code) == 13:
+        cursor = db.rastreiobot.find()
+        exists = check_package(code)
+        if exists:
+            exists = check_user(code, user)
+            if exists:
+                status = status_package(code)
+                # if '/' in message.text:
+                message = ''
+                for status in status_package(code):
+                    message = message + '\n\n' + status
+                bot.send_message(user, message, parse_mode='HTML')
+                # else:
+                #     last = len(status)-1
+                #     bot.send_message(user,
+                #         str(u'\U0001F4EE') + ' /' + code + '\n' +
+                #         status_package(code)[last], parse_mode='HTML'
+                #     )
+                if desc != code:
+                    set_desc(str(code), str(user), desc)
+            else:
+                # print('Novo user')
+                add_user(code, user)
+        else:
+            stat = add_package(str(code), str(user))
+            if stat == 0:
+                bot.reply_to(message, 'Correios fora do ar')
+            elif stat == 1:
+                bot.reply_to(message,
+                    'Código não foi encontrado no sistema dos Correios.\n'
+                    + 'Talvez seja necessário aguardar algumas horas para'
+                    + ' que esteja disponível para consultas.'
+                )
+            elif stat == 10:
+                set_desc(str(code), str(user), desc)
+                msg = bot.reply_to(message, 'Pacote cadastrado.')
+                status = status_package(code)
+                last = len(status)-1
+                bot.send_message(user,
+                    status_package(code)[last], parse_mode='HTML'
+                )
+
+bot.polling()
