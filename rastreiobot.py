@@ -47,8 +47,9 @@ def add_user(code, user):
         }
     })
 
-def set_desc(code, user, desc):
-    # print('Setdesc: ' + user)
+def set_desc(code, user, desc = None):
+    if not desc:
+        desc = code
     cursor = db.rastreiobot.update_one (
     { "code" : code.upper() },
     {
@@ -110,9 +111,7 @@ def get_update(code):
                     mensagem = mensagem + ' ' + str(u'\U0001F4E6')
             if observacao:
                 mensagem = mensagem + '\nObservação: ' + observacao.text
-            # mensagem = mensagem + '\n\n'
         stats.append(mensagem)
-            # print(mensagem)
     for elem in stats:
         print(elem)
         print('-')
@@ -120,21 +119,19 @@ def get_update(code):
 
 if __name__ == '__main__':
     code = sys.argv[1]
-    user = '9083399'
-    desc = 'Teste'
+    user = '9083398'
+    try:
+        desc = sys.argv[2]
+    except:
+        pass
     # cursor = db.rastreiobot.delete_many({"code": "DV530695574BR"})
     # print('Deletados: ' + str(cursor.deleted_count))
     cursor = db.rastreiobot.find()
-
-    # print('--')
     exists = check_package(code)
-    # print(exists)
     if exists:
-        # print('Existe')
         exists = check_user(code, user)
         if exists:
             pass
-            # print('Existe')
         else:
             print('Novo user')
             add_user(code, user)
@@ -146,11 +143,14 @@ if __name__ == '__main__':
         elif stat == 1:
             print('Pacote não encontrado')
         elif stat == 10:
-            print('Pacote adicionado')
-    set_desc(code, user, 'aPacote')
+            print('Pacote adicionado/atualizado')
+
+
+    set_desc(code, user, desc)
     for elem in cursor:
         # print(elem)
         print('Codigo: ' + elem['code'])
         for user in elem['users']:
             print('Usuário: ' + user + ' Descrição: ' + elem[user])
         print('Último: ' + elem['stat'][len(elem['stat'])-1])
+        print('\n')
