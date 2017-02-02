@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
-from datetime import datetime
+from check_update import check_update
+from time import time
 from pymongo import MongoClient
 import requests
 import sys
@@ -35,7 +36,7 @@ def add_package(code, user):
             "code" : code.upper(),
             "users" : [user],
             "stat" : stat,
-            "time" : str(datetime.now())
+            "time" : str(time())
         })
         stat = 10
     return stat
@@ -61,63 +62,7 @@ def set_desc(code, user, desc = None):
     })
 
 def get_update(code):
-    stats = []
-    request = requests.Session()
-    request.headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.131 Safari/537.36'
-    try:
-        URL = ('http://websro.correios.com.br/sro_bin/txect01$.QueryList'
-            +'?P_ITEMCODE=&P_LINGUA=001&P_TESTE=&P_TIPO=001&P_COD_UNI=')
-        response = request.get(URL + code)
-    except:
-        print('Correios fora do ar')
-        return 0
-    html = BeautifulSoup(response.content, 'html.parser')
-    tabela = html.findAll('tr')
-    if len(tabela) < 1:
-        print('Codigo não encontrado')
-        return 1
-    stats.append(str(u'\U0001F4EE') + ' <b>' + code + '</b>')
-    for index in reversed(range(len(tabela))):
-        # print(index)
-        linhas = tabela[index].findAll('td')
-        data = linhas[0]
-        # print(data)
-        if ':' not in data.text:
-            continue
-        try:
-            local = linhas[1]
-            situacao = linhas[2]
-        except:
-            observacao = data
-            data = False
-            situacao = False
-        try:
-            rowspan = int(linhas[0].get('rowspan'))
-        except:
-            rowspan = 1
-        if int(rowspan) > 1:
-            observacao = tabela[index+1].findAll('td')[0]
-            index = index + 1
-        else:
-            observacao = False
-        if data:
-            mensagem = 'Data: ' + data.text
-            if local:
-                mensagem = mensagem + '\nLocal: ' + local.text
-            if situacao:
-                mensagem = (mensagem + '\nSituação: <b>' +
-                    situacao.text + '</b>')
-                if situacao.text == 'Entrega Efetuada':
-                    mensagem = mensagem + ' ' + str(u'\U0001F381')
-                elif situacao.text == 'Postado':
-                    mensagem = mensagem + ' ' + str(u'\U0001F4E6')
-            if observacao:
-                mensagem = mensagem + '\nObservação: ' + observacao.text
-        stats.append(mensagem)
-    for elem in stats:
-        print(elem)
-        print('-')
-    return stats
+    return check_update(code)
 
 if __name__ == '__main__':
     code = sys.argv[1].upper()
@@ -150,11 +95,12 @@ if __name__ == '__main__':
 
     set_desc(code, user, desc)
     for elem in cursor:
-        print(elem)
-        print('Codigo: ' + elem['code'])
+        time_dif = int(time() - float(elem['time']))
+        # print(time_dif)
+        # print(elem)
+        print('Codigo: \t' + elem['code'])
         for user in elem['users']:
-            print('Usuário: ' + user + ' Descrição: ' + elem[user])
-        print(datetime.now())
-        print('Verificação: ' + elem['time'])
-        print('Último: ' + elem['stat'][len(elem['stat'])-1])
+            print('Usuário:\t' + user + ' Descrição: ' + elem[user])
+        print('Verificado:\t' + elem['time'])
+        print('Último estado: \t' + elem['stat'][len(elem['stat'])-1])
         print('\n')
