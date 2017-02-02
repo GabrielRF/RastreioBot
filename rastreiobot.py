@@ -16,36 +16,49 @@ def check_user(code, user):
     cursor = db.rastreiobot.find_one(
     {
             "code": code.upper(),
-            "user": user
+            "users": user
     })
     if cursor:
         return True
     return False
 
 def add_package(code, user):
-    stat = get_update(code, 1)
-    if stat == 'Offline':
+    stat = get_update(code)
+    if stat == 0:
         stat = 'Sistema dos Correios fora do ar.'
-    elif stat == 'NotFound':
+    elif stat == 1:
         stat = None
-    print('Stat:' + str(stat))
-    cursor = db.rastreiobot.insert_one (
-    {
-        "code" : code.upper(),
-        "user" : [user],
-        "stat" : stat
-    })
+    else:
+        cursor = db.rastreiobot.insert_one (
+        {
+            "code" : code.upper(),
+            "users" : [user],
+            "stat" : stat
+        })
+        stat = 10
+    return stat
 
 def add_user(code, user):
     cursor = db.rastreiobot.update_one (
-    { "code" : code.upper() }, 
+    { "code" : code.upper() },
     {
-        "$push": { 
-            "user" : user 
+        "$push": {
+            "users" : user
         }
     })
 
-def get_update(code, rounds):
+def set_desc(code, user, desc):
+    # print('Setdesc: ' + user)
+    cursor = db.rastreiobot.update_one (
+    { "code" : code.upper() },
+    {
+        "$set": {
+            user : desc
+        }
+    })
+
+def get_update(code):
+    stats = []
     request = requests.Session()
     request.headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.131 Safari/537.36'
     try:
@@ -54,75 +67,90 @@ def get_update(code, rounds):
         response = request.get(URL + code)
     except:
         print('Correios fora do ar')
-        return 'Offline' 
+        return 0
     html = BeautifulSoup(response.content, 'html.parser')
     tabela = html.findAll('tr')
     if len(tabela) < 1:
         print('Codigo não encontrado')
-        return 'NotFound'
-    mensagem = str(u'\U0001F4EE') + ' <b>' + code + '</b>\n\n'
+        return 1
+    stats.append(str(u'\U0001F4EE') + ' <b>' + code + '</b>')
     for index in reversed(range(len(tabela))):
-        if index > 0:
-            # print(index)
-            linhas = tabela[index].findAll('td')
-            data = linhas[0]
-            try:
-                local = linhas[1]
-                situacao = linhas[2]
-            except:
-                observacao = data
-                data = False
-                situacao = False
-            try:
-                rowspan = int(linhas[0].get('rowspan'))
-            except:
-                rowspan = 1
-            if int(rowspan) > 1:
-                observacao = tabela[index+1].findAll('td')[0]
-                index = index + 1
-            else:
-                observacao = False
-            if data:
-                if int(rounds) > 0:
-                    mensagem = (str(u'\U0001F4EE') + ' <b>' + code + 
-                        '</b>\nData: ' + data.text)
-                else:
-                    mensagem = mensagem + 'Data: ' + data.text
-                if local:
-                    mensagem = mensagem + '\nLocal: ' + local.text
-                if situacao:
-                    mensagem = (mensagem + '\nSituação: <b>' +
-                        situacao.text + '</b>')
-                    if situacao.text == 'Entrega Efetuada':
-                        mensagem = mensagem + ' ' + str(u'\U0001F381')
-                    elif situacao.text == 'Postado':
-                        mensagem = mensagem + ' ' + str(u'\U0001F4E6')
-                if observacao:
-                    mensagem = mensagem + '\nObservação: ' + observacao.text
-                mensagem = mensagem + '\n\n'
-    # print(mensagem)
-    return mensagem
+        # print(index)
+        linhas = tabela[index].findAll('td')
+        data = linhas[0]
+        # print(data)
+        if ':' not in data.text:
+            continue
+        try:
+            local = linhas[1]
+            situacao = linhas[2]
+        except:
+            observacao = data
+            data = False
+            situacao = False
+        try:
+            rowspan = int(linhas[0].get('rowspan'))
+        except:
+            rowspan = 1
+        if int(rowspan) > 1:
+            observacao = tabela[index+1].findAll('td')[0]
+            index = index + 1
+        else:
+            observacao = False
+        if data:
+            mensagem = 'Data: ' + data.text
+            if local:
+                mensagem = mensagem + '\nLocal: ' + local.text
+            if situacao:
+                mensagem = (mensagem + '\nSituação: <b>' +
+                    situacao.text + '</b>')
+                if situacao.text == 'Entrega Efetuada':
+                    mensagem = mensagem + ' ' + str(u'\U0001F381')
+                elif situacao.text == 'Postado':
+                    mensagem = mensagem + ' ' + str(u'\U0001F4E6')
+            if observacao:
+                mensagem = mensagem + '\nObservação: ' + observacao.text
+            # mensagem = mensagem + '\n\n'
+        stats.append(mensagem)
+            # print(mensagem)
+    for elem in stats:
+        print(elem)
+        print('-')
+    return stats
 
 if __name__ == '__main__':
     code = sys.argv[1]
-    user = '9083328'
-    #cursor = db.rastreiobot.delete_many({"code": "DV530695574BR"})
-    #print(cursor.deleted_count)
+    user = '9083399'
+    desc = 'Teste'
+    # cursor = db.rastreiobot.delete_many({"code": "DV530695574BR"})
+    # print('Deletados: ' + str(cursor.deleted_count))
     cursor = db.rastreiobot.find()
-    print('--')
-    for elem in cursor:
-        print(elem)
-    print('--')
+
+    # print('--')
     exists = check_package(code)
-    print(exists)
+    # print(exists)
     if exists:
-        print('Existe')
+        # print('Existe')
         exists = check_user(code, user)
         if exists:
-            print('Existe')
+            pass
+            # print('Existe')
         else:
             print('Novo user')
             add_user(code, user)
     else:
-        print('Novo')
-        add_package(code, user)
+        # print('Novo')
+        stat = add_package(code, user)
+        if stat == 0:
+            print('Correios fora do ar')
+        elif stat == 1:
+            print('Pacote não encontrado')
+        elif stat == 10:
+            print('Pacote adicionado')
+    set_desc(code, user, 'aPacote')
+    for elem in cursor:
+        # print(elem)
+        print('Codigo: ' + elem['code'])
+        for user in elem['users']:
+            print('Usuário: ' + user + ' Descrição: ' + elem[user])
+        print('Último: ' + elem['stat'][len(elem['stat'])-1])
