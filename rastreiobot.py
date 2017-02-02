@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+from datetime import datetime
 from pymongo import MongoClient
 import requests
 import sys
@@ -33,7 +34,8 @@ def add_package(code, user):
         {
             "code" : code.upper(),
             "users" : [user],
-            "stat" : stat
+            "stat" : stat,
+            "time" : str(datetime.now())
         })
         stat = 10
     return stat
@@ -118,13 +120,13 @@ def get_update(code):
     return stats
 
 if __name__ == '__main__':
-    code = sys.argv[1]
+    code = sys.argv[1].upper()
     user = '9083398'
     try:
         desc = sys.argv[2]
     except:
-        pass
-    # cursor = db.rastreiobot.delete_many({"code": "DV530695574BR"})
+        desc = None
+    # cursor = db.rastreiobot.delete_many({"code": sys.argv[1]})
     # print('Deletados: ' + str(cursor.deleted_count))
     cursor = db.rastreiobot.find()
     exists = check_package(code)
@@ -148,9 +150,11 @@ if __name__ == '__main__':
 
     set_desc(code, user, desc)
     for elem in cursor:
-        # print(elem)
+        print(elem)
         print('Codigo: ' + elem['code'])
         for user in elem['users']:
             print('Usuário: ' + user + ' Descrição: ' + elem[user])
+        print(datetime.now())
+        print('Verificação: ' + elem['time'])
         print('Último: ' + elem['stat'][len(elem['stat'])-1])
         print('\n')
