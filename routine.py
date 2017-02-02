@@ -25,18 +25,23 @@ def get_package(code, user):
     return stat
 
 if __name__ == '__main__':
-    code = sys.argv[1]
     user = '9083329'
-    cursor = db.rastreiobot.find()
-    for elem in cursor:
-        time_dif = int(time() - float(elem['time']))
-        print(time_dif)
-        if time_dif > 10:
-            get_package(elem['code'], user)
-        # print(elem)
-        print('Codigo: \t' + elem['code'])
-        for user in elem['users']:
-            print('Usuário:\t' + user + ' Descrição: ' + elem[user])
-        print('Verificado:\t' + elem['time'])
-        print('Último estado: \t' + elem['stat'][len(elem['stat'])-1])
-        print('\n')
+    cursor1 = db.rastreiobot.find()
+    for elem in cursor1:
+        code = elem['code']
+        print(code)
+        old_state = elem['stat'][len(elem['stat'])-1]
+        # print('Old: ' + old_state)
+        cursor2 = db.rastreiobot.find_one(
+        {
+            "code": code
+        })
+        new_state = cursor2['stat'][len(elem['stat'])-1]
+        # print('New: ' + new_state)
+        users = elem['users']
+        if old_state != new_state:
+            print('Novidade')
+            for user in users:
+                print(user)
+        else:
+            print('Igual')
