@@ -55,7 +55,7 @@ def check_update(code):
             if observacao:
                 mensagem = mensagem + '\nObservação: ' + observacao.text
         stats.append(mensagem)
-    for elem in stats:
-        print(elem)
-        print('-')
+    # for elem in stats:
+        # print(elem)
+        # print('-')
     return stats
