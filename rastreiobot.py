@@ -66,7 +66,7 @@ def get_update(code):
 
 if __name__ == '__main__':
     code = sys.argv[1].upper()
-    user = '9083398'
+    user = '9083329'
     try:
         desc = sys.argv[2]
     except:
