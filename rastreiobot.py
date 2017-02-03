@@ -115,7 +115,6 @@ def add_user(code, user):
 
 ## Set a description to a package
 def set_desc(code, user, desc):
-    # print('Descrição: ' + str(desc))
     if not desc:
         desc = code
     cursor = db.rastreiobot.update_one (
@@ -176,7 +175,8 @@ def echo_all(message):
     log_text(message.from_user.id, message.text)
     chatid = message.from_user.id
     bot.send_message(chatid, 'Bot por @GabrielRF.\n\nAvalie o bot:' 
-        + '\nhttps://telegram.me/storebot?start=rastreiobot', 
+        + '\nhttps://telegram.me/storebot?start=rastreiobot\n\n'
+        + 'Bot open source:\nhttps://github.com/GabrielRF/RastreioBot', 
         disable_web_page_preview=True)
 
 @bot.message_handler(func=lambda m: True)
