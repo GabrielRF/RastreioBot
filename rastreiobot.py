@@ -118,8 +118,9 @@ def set_desc(code, user, desc):
 def get_update(code):
     return check_update(code)
 
-@bot.message_handler(commands=['start'])
+@bot.message_handler(commands=['start', 'Repetir', 'Historico'])
 def echo_all(message):
+    markup = types.ReplyKeyboardRemove(selective=False)
     chatid = message.from_user.id
     mensagem = message.text
     bot.send_message(chatid,
@@ -128,7 +129,7 @@ def echo_all(message):
         'Para adicionar uma descrição, envie um código ' +
         'seguido da descrição.\n\n' +
         '<i>PN123456789BR Minha encomenda</i>'
-        , parse_mode='HTML'
+        , parse_mode='HTML', reply_markup=markup
     )
 
 @bot.message_handler(commands=['pacotes'])
@@ -150,6 +151,13 @@ def echo_all(message):
     else:
         message = 'Pacotes concluídos.\n' + message
     bot.send_message(chatid, message)
+
+@bot.message_handler(commands=['info', 'Info'])
+def echo_all(message):
+    chatid = message.from_user.id
+    bot.send_message(chatid, 'Bot por @GabrielRF.\n\nAvalie o bot:' 
+        + '\nhttps://telegram.me/storebot?start=rastreiobot', 
+        disable_web_page_preview=True)
 
 @bot.message_handler(func=lambda m: True)
 def echo_all(message):
@@ -195,5 +203,7 @@ def echo_all(message):
                 bot.send_message(user,
                     status_package(code)[last], parse_mode='HTML'
                 )
+    else:
+        bot.reply_to(message, "Erro.\nVerifique se o código foi digitado corretamente.")
 
 bot.polling()
