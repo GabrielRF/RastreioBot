@@ -80,9 +80,9 @@ def add_package(code, user):
     # import ipdb; ipdb.set_trace()
     stat = get_update(code)
     if stat == 0:
-        stat = 'Sistema dos Correios fora do ar.'
+        return stat
     elif stat == 1:
-        stat = None
+        return stat
     else:
         cursor = db.rastreiobot.insert_one (
         {
@@ -155,6 +155,7 @@ def echo_all(message):
 def echo_all(message):
     user = str(message.from_user.id)
     code = str(message.text.split(' ')[0]).replace('/','')
+    code = code.upper()
     try:
         desc = str(message.text.split(' ', 1)[1])
     except:
@@ -167,24 +168,15 @@ def echo_all(message):
         exists = check_package(code)
         if exists:
             exists = check_user(code, user)
-            if exists:
-                status = status_package(code)
-                # if '/' in message.text:
-                message = ''
-                for status in status_package(code):
-                    message = message + '\n\n' + status
-                bot.send_message(user, message, parse_mode='HTML')
-                # else:
-                #     last = len(status)-1
-                #     bot.send_message(user,
-                #         str(u'\U0001F4EE') + ' /' + code + '\n' +
-                #         status_package(code)[last], parse_mode='HTML'
-                #     )
-                if desc != code:
-                    set_desc(str(code), str(user), desc)
-            else:
-                # print('Novo user')
+            if not exists:
                 add_user(code, user)
+            status = status_package(code)
+            message = ''
+            for status in status_package(code):
+                message = message + '\n\n' + status
+            bot.send_message(user, message, parse_mode='HTML')
+            if desc != code:
+                set_desc(str(code), str(user), desc)
         else:
             stat = add_package(str(code), str(user))
             if stat == 0:
