@@ -1,9 +1,13 @@
 from bs4 import BeautifulSoup
 from check_update import check_update
+from datetime import datetime
 from time import time
 from pymongo import MongoClient
 from telebot import types
+
 import configparser
+import logging
+import logging.handlers
 import requests
 import sys
 import telebot
@@ -14,24 +18,26 @@ config.read('bot.conf')
 
 TOKEN = config['RASTREIOBOT']['TOKEN']
 int_check = int(config['RASTREIOBOT']['int_check'])
-bot = telebot.TeleBot(TOKEN)
+LOG_INFO_FILE = config['RASTREIOBOT']['log_file']
 
+logger_info = logging.getLogger('InfoLogger')
+logger_info.setLevel(logging.DEBUG)
+handler_info = logging.handlers.RotatingFileHandler(LOG_INFO_FILE,
+    maxBytes=10240, backupCount=5, encoding='utf-8')
+logger_info.addHandler(handler_info)
+
+bot = telebot.TeleBot(TOKEN)
 client = MongoClient()
 db = client.rastreiobot
 
-user_dict = []
-class User:
-    def __init__(self, chatid):
-        self.chatid = chatid
-        self.code = None
-        self.desc = None
-
+## Check if package exists in DB
 def check_package(code):
     cursor = db.rastreiobot.find_one({"code": code.upper()})
     if cursor:
         return True
     return False
 
+## List packages of a user
 def list_packages(chatid, done):
     cursor = db.rastreiobot.find()
     aux = ''
@@ -59,6 +65,7 @@ def list_packages(chatid, done):
                     aux = aux + '\n'
     return aux
 
+## Get last state of a package from DB 
 def status_package(code):
     cursor = db.rastreiobot.find_one(
     {
@@ -66,6 +73,7 @@ def status_package(code):
     })
     return cursor['stat']
 
+## Check if user exists on a specific tracking code
 def check_user(code, user):
     cursor = db.rastreiobot.find_one(
     {
@@ -76,6 +84,7 @@ def check_user(code, user):
         return True
     return False
 
+## Insert package on DB
 def add_package(code, user):
     # import ipdb; ipdb.set_trace()
     stat = get_update(code)
@@ -94,6 +103,7 @@ def add_package(code, user):
         stat = 10
     return stat
 
+## Add a user to a package that exists on DB
 def add_user(code, user):
     cursor = db.rastreiobot.update_one (
     { "code" : code.upper() },
@@ -103,6 +113,7 @@ def add_user(code, user):
         }
     })
 
+## Set a description to a package
 def set_desc(code, user, desc):
     # print('Descrição: ' + str(desc))
     if not desc:
@@ -115,11 +126,17 @@ def set_desc(code, user, desc):
         }
     })
 
+## Update package tracking state
 def get_update(code):
     return check_update(code)
 
+## Add to log
+def log_text(chatid, text):
+    logger_info.info(str(datetime.now()) + '\t' + str(chatid) + ' \t' + str(text))
+
 @bot.message_handler(commands=['start', 'Repetir', 'Historico'])
 def echo_all(message):
+    log_text(message.from_user.id, message.text)
     markup = types.ReplyKeyboardRemove(selective=False)
     chatid = message.from_user.id
     mensagem = message.text
@@ -134,6 +151,7 @@ def echo_all(message):
 
 @bot.message_handler(commands=['pacotes'])
 def echo_all(message):
+    log_text(message.from_user.id, message.text)
     chatid = message.from_user.id
     message = list_packages(chatid, False)
     if len(message) < 1:
@@ -144,6 +162,7 @@ def echo_all(message):
 
 @bot.message_handler(commands=['concluidos'])
 def echo_all(message):
+    log_text(message.from_user.id, message.text)
     chatid = message.from_user.id
     message = list_packages(chatid, True)
     if len(message) < 1:
@@ -154,6 +173,7 @@ def echo_all(message):
 
 @bot.message_handler(commands=['info', 'Info'])
 def echo_all(message):
+    log_text(message.from_user.id, message.text)
     chatid = message.from_user.id
     bot.send_message(chatid, 'Bot por @GabrielRF.\n\nAvalie o bot:' 
         + '\nhttps://telegram.me/storebot?start=rastreiobot', 
@@ -161,6 +181,7 @@ def echo_all(message):
 
 @bot.message_handler(func=lambda m: True)
 def echo_all(message):
+    log_text(message.from_user.id, message.text)
     user = str(message.from_user.id)
     code = str(message.text.split(' ')[0]).replace('/','')
     code = code.upper()
