@@ -219,6 +219,7 @@ def echo_all(message):
             elif stat == 10:
                 set_desc(str(code), str(user), desc)
                 msg = bot.reply_to(message, 'Pacote cadastrado.')
+                log_text(user, 'Pacote novo: ' + code)
                 status = status_package(code)
                 last = len(status)-1
                 bot.send_message(user,
