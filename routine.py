@@ -76,8 +76,12 @@ if __name__ == '__main__':
                 message = (
                     message + '\n'
                     +  cursor2['stat'][len(cursor2['stat'])-1])
+                if 'Entrega Efetuada' in message:
+                    message = (message + '\n\n'
+                    + '<a href="https://telegram.me/storebot?start=rastreiobot">'
+                    + 'Avalie o bot</a>')
                 try:
-                    bot.send_message(user, message, parse_mode='HTML')
+                    bot.send_message(user, message, parse_mode='HTML', disable_web_page_preview=True)
                 except:
                     pass
         sleep(1)
