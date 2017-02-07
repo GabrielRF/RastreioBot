@@ -135,23 +135,29 @@ def log_text(chatid, text):
 
 @bot.message_handler(commands=['start', 'Repetir', 'Historico'])
 def echo_all(message):
-    log_text(message.from_user.id, message.text)
+    log_text(message.chat.id, message.text)
     markup = types.ReplyKeyboardRemove(selective=False)
-    chatid = message.from_user.id
+    chatid = message.chat.id
     mensagem = message.text
-    bot.send_message(chatid,
-        str(u'\U0001F4EE') + '<b>@RastreioBot!</b>\n\n'
+    user = (str(u'\U0001F4EE') + '<b>@RastreioBot!</b>\n\n'
         'Por favor, envie um código de objeto.\n\n' +
         'Para adicionar uma descrição, envie um código ' +
         'seguido da descrição.\n\n' +
-        '<i>PN123456789BR Minha encomenda</i>'
-        , parse_mode='HTML', reply_markup=markup
-    )
+        '<i>PN123456789BR Minha encomenda</i>')
+    group = (str(u'\U0001F4EE') + '<b>@RastreioBot!</b>\n\n'
+        'Por favor, envie um código de objeto.\n\n' +
+        'Para adicionar uma descrição, envie um código ' +
+        'seguido da descrição.\n\n' +
+        '<i>/PN123456789BR Minha encomenda</i>')
+    if message.chat.id > 0:
+        bot.send_message(message.chat.id, user, parse_mode='HTML')
+    else:
+        bot.send_message(message.chat.id, group, parse_mode='HTML')
 
 @bot.message_handler(commands=['pacotes'])
 def echo_all(message):
-    log_text(message.from_user.id, message.text)
-    chatid = message.from_user.id
+    log_text(message.chat.id, message.text)
+    chatid = message.chat.id
     message = list_packages(chatid, False)
     if len(message) < 1:
         message = "Nenhum pacote encontrado."
@@ -161,8 +167,8 @@ def echo_all(message):
 
 @bot.message_handler(commands=['concluidos'])
 def echo_all(message):
-    log_text(message.from_user.id, message.text)
-    chatid = message.from_user.id
+    log_text(message.chat.id, message.text)
+    chatid = message.chat.id
     message = list_packages(chatid, True)
     if len(message) < 1:
         message = "Nenhum pacote encontrado."
@@ -172,26 +178,29 @@ def echo_all(message):
 
 @bot.message_handler(commands=['info', 'Info'])
 def echo_all(message):
-    log_text(message.from_user.id, message.text)
-    chatid = message.from_user.id
+    log_text(message.chat.id, message.text)
+    chatid = message.chat.id
     bot.send_message(chatid, 'Bot por @GabrielRF.\n\nAvalie o bot:' 
         + '\nhttps://telegram.me/storebot?start=rastreiobot\n\n'
-        + 'Bot open source:\nhttps://github.com/GabrielRF/RastreioBot', 
+        + 'Bot open source:\nhttps://github.com/GabrielRF/RastreioBot'
+        + '\n\nConheça meus outros projetos:'
+        + '\nhttp://grf.xyz/telegrambr', 
         disable_web_page_preview=True)
 
 @bot.message_handler(func=lambda m: True)
 def echo_all(message):
-    log_text(message.from_user.id, message.text)
-    user = str(message.from_user.id)
+    log_text(message.chat.id, message.text)
+    user = str(message.chat.id)
     code = str(message.text.split(' ')[0]).replace('/','')
     code = code.upper()
+    code = code.replace('@RASTREIOBOT', '')
     try:
         desc = str(message.text.split(' ', 1)[1])
     except:
         desc = code
     # print(code)
-    # print(message.from_user.id)
-    bot.send_chat_action(message.from_user.id, 'typing')
+    # print(message.chat.id)
+    bot.send_chat_action(message.chat.id, 'typing')
     if len(code) == 13:
         cursor = db.rastreiobot.find()
         exists = check_package(code)
@@ -219,13 +228,14 @@ def echo_all(message):
             elif stat == 10:
                 set_desc(str(code), str(user), desc)
                 msg = bot.reply_to(message, 'Pacote cadastrado.')
-                log_text(user, 'Pacote novo: ' + code)
+                # log_text(user, 'Pacote novo: ' + code)
                 status = status_package(code)
                 last = len(status)-1
                 bot.send_message(user,
                     status_package(code)[last], parse_mode='HTML'
                 )
     else:
-        bot.reply_to(message, "Erro.\nVerifique se o código foi digitado corretamente.")
+        if int(user) > 0:
+            bot.reply_to(message, "Erro.\nVerifique se o código foi digitado corretamente.")
 
 bot.polling()
