@@ -16,7 +16,7 @@ if __name__ == '__main__':
     config.sections()
     config.read('bot.conf')
 
-    db1 = 'RastreioBot'
+    db1 = 'RastreioBot.db'
     table1 = 'RastreioBot'
 
     x_label = 'Tempo'

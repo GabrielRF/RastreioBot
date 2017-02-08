@@ -34,7 +34,7 @@ if __name__ == '__main__':
     config.sections()
     config.read('bot.conf')
 
-    db = 'RastreioBot'
+    db = 'RastreioBot.db'
     table = 'RastreioBot'
 
     conn = sqlite3.connect(db)
