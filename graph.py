@@ -19,8 +19,8 @@ if __name__ == '__main__':
     db1 = 'RastreioBot'
     table1 = 'RastreioBot'
 
-    x_label = 'X'
-    y_label = 'Y'
+    x_label = 'Tempo'
+    y_label = 'Quantidade'
 
     conn1 = sqlite3.connect(db1)
     df1 = pd.read_sql_query('SELECT * FROM ' + table1 + ' ORDER BY data ASC', 
@@ -29,9 +29,10 @@ if __name__ == '__main__':
     conn1.close()
 
     output_file('/var/www/RastreioBot.html')
-    
 
-    p = figure(x_axis_type="datetime", title='RastreioBot')
+    p = figure(x_axis_type="datetime", title='RastreioBot',
+        toolbar_location="above",
+        tools='resize,pan,box_zoom,crosshair,wheel_zoom,reset')
     p.xaxis.axis_label = x_label
     p.yaxis.axis_label = y_label
 
