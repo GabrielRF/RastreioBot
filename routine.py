@@ -66,9 +66,9 @@ if __name__ == '__main__':
         len_new_state = len(cursor2['stat'])
         if len_old_state != len_new_state:
             for user in elem['users']:
-                print(user)
-                print(elem[user])
-                print(cursor2['stat'][len(cursor2['stat'])-1])
+                # print(user)
+                # print(elem[user])
+                # print(cursor2['stat'][len(cursor2['stat'])-1])
                 logger_info.info(str(datetime.now()) + '\tUPDATE: ' + str(code) + ' \t' + str(user))
                 message = (str(u'\U0001F4EE') + '<b>' + code + '</b>\n')
                 if elem[user] != code:
