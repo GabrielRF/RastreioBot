@@ -43,7 +43,7 @@ def list_packages(chatid, done):
     aux = ''
     for elem in cursor:
         if str(chatid) in elem['users']:
-            # print(elem['code'])
+            # print(elem['code'] + str(elem['users']))
             # print(elem['stat'][len(elem['stat'])-1])
             if not done:
                 if 'Entrega Efetuada' not in elem['stat'][len(elem['stat'])-1]:
@@ -113,6 +113,16 @@ def add_user(code, user):
         }
     })
 
+def del_user(code, user):
+    cursor = db.rastreiobot.update (
+    { "code" : code.upper() },
+    {
+        "$pull": {
+            "users" : str(user)
+        }
+    })
+    print(str(cursor))
+
 ## Set a description to a package
 def set_desc(code, user, desc):
     if not desc:
@@ -135,6 +145,7 @@ def log_text(chatid, text):
 
 @bot.message_handler(commands=['start', 'Repetir', 'Historico'])
 def echo_all(message):
+    bot.send_chat_action(message.chat.id, 'typing')
     log_text(message.chat.id, message.text)
     markup = types.ReplyKeyboardRemove(selective=False)
     chatid = message.chat.id
@@ -156,28 +167,31 @@ def echo_all(message):
 
 @bot.message_handler(commands=['pacotes'])
 def echo_all(message):
+    bot.send_chat_action(message.chat.id, 'typing')
     log_text(message.chat.id, message.text)
     chatid = message.chat.id
     message = list_packages(chatid, False)
     if len(message) < 1:
         message = "Nenhum pacote encontrado."
     else:
-        message = 'Clique para ver o histórico de cada um.\n' + message
-    bot.send_message(chatid, message)
+        message = '<b>Clique para ver o histórico:</b>\n' + message
+    bot.send_message(chatid, message, parse_mode='HTML')
 
 @bot.message_handler(commands=['concluidos'])
 def echo_all(message):
+    bot.send_chat_action(message.chat.id, 'typing')
     log_text(message.chat.id, message.text)
     chatid = message.chat.id
     message = list_packages(chatid, True)
     if len(message) < 1:
         message = "Nenhum pacote encontrado."
     else:
-        message = 'Pacotes concluídos.\n' + message
-    bot.send_message(chatid, message)
+        message = '<b>Pacotes concluídos nos últimos 7 dias:</b>\n' + message
+    bot.send_message(chatid, message, parse_mode='HTML')
 
 @bot.message_handler(commands=['info', 'Info'])
 def echo_all(message):
+    bot.send_chat_action(message.chat.id, 'typing')
     log_text(message.chat.id, message.text)
     chatid = message.chat.id
     bot.send_message(chatid, 'Bot por @GabrielRF.\n\nAvalie o bot:' 
@@ -189,6 +203,7 @@ def echo_all(message):
 
 @bot.message_handler(func=lambda m: True)
 def echo_all(message):
+    bot.send_chat_action(message.chat.id, 'typing')
     log_text(message.chat.id, message.text)
     user = str(message.chat.id)
     code = str(message.text.split(' ')[0]).replace('/','')
@@ -200,7 +215,6 @@ def echo_all(message):
         desc = code
     # print(code)
     # print(message.chat.id)
-    bot.send_chat_action(message.chat.id, 'typing')
     if len(code) == 13:
         cursor = db.rastreiobot.find()
         exists = check_package(code)
