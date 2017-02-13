@@ -17,7 +17,9 @@ def get_data():
         if 'Entrega Efetuada' not in elem['stat'][len(elem['stat'])-1]:
             not_finished = not_finished + 1
         else:
-            finished = finished + 1
+            time_dif = int(time() - float(elem['time']))
+            if time_dif < 86400:
+                finished = finished + 1
         for user in elem['users']:
             if user not in users:
                 users.append(user)
