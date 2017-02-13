@@ -186,7 +186,7 @@ def echo_all(message):
     if len(message) < 1:
         message = "Nenhum pacote encontrado."
     else:
-        message = '<b>Pacotes concluídos nos últimos 7 dias:</b>\n' + message
+        message = '<b>Pacotes concluídos nos últimos 30 dias:</b>\n' + message
     bot.send_message(chatid, message, parse_mode='HTML')
 
 @bot.message_handler(commands=['info', 'Info'])
@@ -198,7 +198,9 @@ def echo_all(message):
         + '\nhttps://telegram.me/storebot?start=rastreiobot\n\n'
         + 'Bot open source:\nhttps://github.com/GabrielRF/RastreioBot'
         + '\n\nConheça meus outros projetos:'
-        + '\nhttp://grf.xyz/telegrambr', 
+        + '\nhttp://grf.xyz/telegrambr'
+        + '\n\nColabore!'
+        + '\nhttp://grf.xyz/paypal', 
         disable_web_page_preview=True)
 
 @bot.message_handler(func=lambda m: True)

@@ -14,7 +14,7 @@ config.sections()
 config.read('bot.conf')
 
 TOKEN = config['RASTREIOBOT']['TOKEN']
-int_del = int(config['RASTREIOBOT']['int_check'])
+int_del = int(config['RASTREIOBOT']['int_del'])
 LOG_INFO_FILE = config['RASTREIOBOT']['log_file']
 
 logger_info = logging.getLogger('InfoLogger')
@@ -39,6 +39,7 @@ if __name__ == '__main__':
         code = elem['code']
         time_dif = int(time() - float(elem['time']))
         old_state = elem['stat'][len(elem['stat'])-1]
+        print(str(elem['code']) + ' ' + str(time_dif))
         if 'Entrega Efetuada' in old_state:
             if time_dif > int_del:
                 # print(elem['code'])
