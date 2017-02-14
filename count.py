@@ -1,8 +1,9 @@
 import configparser
-import datetime
+from datetime import datetime
 import sqlite3
 import sys
 import telebot
+from time import time
 import sqlite3
 from pymongo import MongoClient
 
@@ -27,7 +28,7 @@ def get_data():
     print('Em andamento: ' + str(not_finished))
     print('Finalizados: ' + str(finished))
     print('Usuários: ' + str(len(users)))
-    data = str(datetime.datetime.now())
+    data = str(datetime.now())
     return data, not_finished, finished, len(users)
 
 if __name__ == '__main__':
@@ -62,7 +63,7 @@ if __name__ == '__main__':
             print(line)
         conn.close()
         data, andamento, finalizados, usuarios = get_data()
-        data = str(datetime.datetime.now())
+        data = str(datetime.now())
         aux3 = ('''INSERT INTO 'RastreioBot' (data, andamento, finalizados, usuarios)
             VALUES ('{}', '{}', '{}', '{}')''').format(data, andamento, finalizados, usuarios)
         conn = sqlite3.connect(db) 
