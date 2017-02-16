@@ -48,10 +48,13 @@ def get_package(code):
 
 if __name__ == '__main__':
     cursor1 = db.rastreiobot.find()
-    start = datetime.now()
-#     logger_info.info(str(start) + '\t' + '--- UPDATE running! ---' )
+    start = time()
     sent = 0
     for elem in cursor1:
+        now = time()
+        if int(now) - int(start) > 599:
+            logger_info.info(str(datetime.now()) + '\tRoutine too long')
+            break
         code = elem['code']
         time_dif = int(time() - float(elem['time']))
         if time_dif < int_check:
@@ -68,7 +71,9 @@ if __name__ == '__main__':
         len_new_state = len(cursor2['stat'])
         if len_old_state != len_new_state:
             for user in elem['users']:
-                logger_info.info(str(datetime.now()) + '\tUPDATE: ' + str(code) + ' \t' + str(user) + ' \t' + str(start))
+                logger_info.info(str(datetime.now()) + '\tUPDATE: '
+                    + str(code) + ' \t' + str(user) + ' \t'
+                    + str(start))
                 message = (str(u'\U0001F4EE') + '<b>' + code + '</b>\n')
                 if elem[user] != code:
                     message = message + elem[user] + '\n'
@@ -81,11 +86,12 @@ if __name__ == '__main__':
                     + str(u'\U00002B50') + 'Avalie o bot</a> - '
                     + str(u'\U0001F4B5') + '<a href="http://grf.xyz/paypal">Colabore</a>')
                 try:
-                    bot.send_message(user, message, parse_mode='HTML', disable_web_page_preview=True)
+                    bot.send_message(user, message, parse_mode='HTML', 
+                        disable_web_page_preview=True)
                     sent = sent + 1
                 except:
                     e = sys.exc_info()[0]
                     logger_info.info(str(datetime.now()) + '\tEXCECAO: ' + str(e))
                     pass
         sleep(1)
-    logger_info.info(str(datetime.now()) + '\t' + '--- UPDATE finished! --- ' + str(start) + '\tAlertas: ' + str(sent))
+    logger_info.info(str(datetime.now()) + '\t' + '--- UPDATE finished! --- ' + '\tAlertas: ' + str(sent))
