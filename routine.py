@@ -72,8 +72,7 @@ if __name__ == '__main__':
         if len_old_state != len_new_state:
             for user in elem['users']:
                 logger_info.info(str(datetime.now()) + '\tUPDATE: '
-                    + str(code) + ' \t' + str(user) + ' \t'
-                    + str(start))
+                    + str(code) + ' \t' + str(user))
                 message = (str(u'\U0001F4EE') + '<b>' + code + '</b>\n')
                 if elem[user] != code:
                     message = message + elem[user] + '\n'
