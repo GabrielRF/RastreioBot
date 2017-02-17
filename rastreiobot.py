@@ -22,8 +22,10 @@ LOG_INFO_FILE = config['RASTREIOBOT']['log_file']
 
 logger_info = logging.getLogger('InfoLogger')
 logger_info.setLevel(logging.DEBUG)
-handler_info = logging.handlers.RotatingFileHandler(LOG_INFO_FILE,
-    maxBytes=10240, backupCount=5, encoding='utf-8')
+# handler_info = logging.handlers.RotatingFileHandler(LOG_INFO_FILE,
+#     maxBytes=10240, backupCount=5, encoding='utf-8')
+handler_info = logging.handlers.TimedRotatingFileHandler(LOG_INFO_FILE,
+    when='D', interval=1, backupCount=5, encoding='utf-8')
 logger_info.addHandler(handler_info)
 
 bot = telebot.TeleBot(TOKEN)
@@ -144,14 +146,14 @@ def log_text(chatid, message_id, text):
     logger_info.info(
         str(datetime.now())
         + '\t' + str(chatid)
-        + '\t' + str(message_id)
+        + ' \t' + str(message_id)
         + ' \t' + str(text)
     )
 
 @bot.message_handler(commands=['start', 'Repetir', 'Historico'])
 def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')
-    log_text(message.chat.id, message.message_id, message.text)
+    # log_text(message.chat.id, message.message_id, message.text)
     markup = types.ReplyKeyboardRemove(selective=False)
     chatid = message.chat.id
     mensagem = message.text
@@ -173,7 +175,7 @@ def echo_all(message):
 @bot.message_handler(commands=['pacotes'])
 def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')
-    log_text(message.chat.id, message.message_id, message.text)
+    # log_text(message.chat.id, message.message_id, message.text)
     chatid = message.chat.id
     message = list_packages(chatid, False)
     if len(message) < 1:
