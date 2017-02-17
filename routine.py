@@ -19,8 +19,10 @@ LOG_INFO_FILE = config['RASTREIOBOT']['log_file']
 
 logger_info = logging.getLogger('InfoLogger')
 logger_info.setLevel(logging.DEBUG)
-handler_info = logging.handlers.RotatingFileHandler(LOG_INFO_FILE,
-    maxBytes=10240, backupCount=5, encoding='utf-8')
+# handler_info = logging.handlers.RotatingFileHandler(LOG_INFO_FILE,
+#     maxBytes=10240, backupCount=5, encoding='utf-8')
+handler_info = logging.handlers.TimedRotatingFileHandler(LOG_INFO_FILE,
+    when='D', interval=1, backupCount=5, encoding='utf-8')
 logger_info.addHandler(handler_info)
 
 bot = telebot.TeleBot(TOKEN)
@@ -72,26 +74,29 @@ if __name__ == '__main__':
         if len_old_state != len_new_state:
             for user in elem['users']:
                 logger_info.info(str(datetime.now()) + '\tUPDATE: '
-                    + str(code) + ' \t' + str(user))
-                message = (str(u'\U0001F4EE') + '<b>' + code + '</b>\n')
-                if elem[user] != code:
-                    message = message + elem[user] + '\n'
-                message = (
-                    message + '\n'
-                    +  cursor2['stat'][len(cursor2['stat'])-1])
-                if 'Entrega Efetuada' in message:
-                    message = (message + '\n\n'
-                    + '<a href="https://telegram.me/storebot?start=rastreiobot">'
-                    + str(u'\U00002B50') + 'Avalie o bot</a> - '
-                    + str(u'\U0001F4B5') + '<a href="http://grf.xyz/paypal">Colabore</a>')
+                    + str(code) + ' \t' + str(user) + '\t' + str(sent))
                 try:
+                    message = (str(u'\U0001F4EE') + '<b>' + code + '</b>\n')
+                    if elem[user] != code:
+                        message = message + elem[user] + '\n'
+                    message = (
+                        message + '\n'
+                        +  cursor2['stat'][len(cursor2['stat'])-1])
+                    if 'Entrega Efetuada' in message:
+                        message = (message + '\n\n'
+                        + str(u'\U00002B50')
+                        + '<a href="https://telegram.me/storebot?start=rastreiobot">'
+                        + 'Avalie o bot</a> - '
+                        + str(u'\U0001F4B5')
+                        + '<a href="http://grf.xyz/paypal">Colabore</a>')
                     bot.send_message(user, message, parse_mode='HTML', 
                         disable_web_page_preview=True)
                     sent = sent + 1
+                    sleep(0.5)
                 except Exception as e:
                     logger_info.info(str(datetime.now())
-                         + ' ' + str(user) + ' '
-                         + code + '\n' + str(e))
+                         + '\tEXCEPT: ' + str(user) + ' '
+                         + code + '\t' + str(e))
                     pass
         sleep(1)
     logger_info.info(str(datetime.now()) + '\t' + '--- UPDATE finished! --- ' + '\tAlertas: ' + str(sent))
