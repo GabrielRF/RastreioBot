@@ -88,9 +88,10 @@ if __name__ == '__main__':
                     bot.send_message(user, message, parse_mode='HTML', 
                         disable_web_page_preview=True)
                     sent = sent + 1
-                except:
-                    e = sys.exc_info()[0]
-                    logger_info.info(str(datetime.now()) + '\tEXCECAO: ' + str(e))
+                except Exception as e:
+                    logger_info.info(str(datetime.now())
+                         + ' ' + str(user) + ' '
+                         + code + '\n' + str(e))
                     pass
         sleep(1)
     logger_info.info(str(datetime.now()) + '\t' + '--- UPDATE finished! --- ' + '\tAlertas: ' + str(sent))
