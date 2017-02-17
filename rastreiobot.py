@@ -140,13 +140,18 @@ def get_update(code):
     return check_update(code)
 
 ## Add to log
-def log_text(chatid, text):
-    logger_info.info(str(datetime.now()) + '\t' + str(chatid) + ' \t' + str(text))
+def log_text(chatid, message_id, text):
+    logger_info.info(
+        str(datetime.now())
+        + '\t' + str(chatid)
+        + '\t' + str(message_id)
+        + ' \t' + str(text)
+    )
 
 @bot.message_handler(commands=['start', 'Repetir', 'Historico'])
 def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')
-    log_text(message.chat.id, message.text)
+    log_text(message.chat.id, message.message_id, message.text)
     markup = types.ReplyKeyboardRemove(selective=False)
     chatid = message.chat.id
     mensagem = message.text
@@ -168,7 +173,7 @@ def echo_all(message):
 @bot.message_handler(commands=['pacotes'])
 def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')
-    log_text(message.chat.id, message.text)
+    log_text(message.chat.id, message.message_id, message.text)
     chatid = message.chat.id
     message = list_packages(chatid, False)
     if len(message) < 1:
@@ -180,7 +185,7 @@ def echo_all(message):
 @bot.message_handler(commands=['concluidos'])
 def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')
-    log_text(message.chat.id, message.text)
+    log_text(message.chat.id, message.message_id, message.text)
     chatid = message.chat.id
     message = list_packages(chatid, True)
     if len(message) < 1:
@@ -192,7 +197,7 @@ def echo_all(message):
 @bot.message_handler(commands=['info', 'Info'])
 def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')
-    log_text(message.chat.id, message.text)
+    log_text(message.chat.id, message.message_id, message.text)
     chatid = message.chat.id
     bot.send_message(chatid, 'Bot por @GabrielRF.\n\nAvalie o bot:' 
         + '\nhttps://telegram.me/storebot?start=rastreiobot\n\n'
@@ -203,10 +208,15 @@ def echo_all(message):
         + '\nhttp://grf.xyz/paypal', 
         disable_web_page_preview=True)
 
+@bot.message_handler(content_types=['document', 'audio', 'photo'])
+def echo_all(message):
+    bot.reply_to(message, 'Formato inválido')
+    log_text(message.chat.id, message.message_id, 'Formato inválido')
+
 @bot.message_handler(func=lambda m: True)
 def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')
-    log_text(message.chat.id, message.text)
+    log_text(message.chat.id, message.message_id, message.text)
     user = str(message.chat.id)
     code = str(message.text.split(' ')[0]).replace('/','')
     code = code.upper()
@@ -215,8 +225,6 @@ def echo_all(message):
         desc = str(message.text.split(' ', 1)[1])
     except:
         desc = code
-    # print(code)
-    # print(message.chat.id)
     if len(code) == 13:
         cursor = db.rastreiobot.find()
         exists = check_package(code)
@@ -244,7 +252,6 @@ def echo_all(message):
             elif stat == 10:
                 set_desc(str(code), str(user), desc)
                 msg = bot.reply_to(message, 'Pacote cadastrado.')
-                # log_text(user, 'Pacote novo: ' + code)
                 status = status_package(code)
                 last = len(status)-1
                 bot.send_message(user,
