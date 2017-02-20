@@ -22,8 +22,6 @@ LOG_INFO_FILE = config['RASTREIOBOT']['log_file']
 
 logger_info = logging.getLogger('InfoLogger')
 logger_info.setLevel(logging.DEBUG)
-# handler_info = logging.handlers.RotatingFileHandler(LOG_INFO_FILE,
-#     maxBytes=10240, backupCount=5, encoding='utf-8')
 handler_info = logging.handlers.TimedRotatingFileHandler(LOG_INFO_FILE,
     when='D', interval=1, backupCount=5, encoding='utf-8')
 logger_info.addHandler(handler_info)
@@ -45,8 +43,6 @@ def list_packages(chatid, done):
     aux = ''
     for elem in cursor:
         if str(chatid) in elem['users']:
-            # print(elem['code'] + str(elem['users']))
-            # print(elem['stat'][len(elem['stat'])-1])
             if not done:
                 if 'Entrega Efetuada' not in elem['stat'][len(elem['stat'])-1]:
                     aux = aux + '/' + elem['code']
@@ -153,7 +149,6 @@ def log_text(chatid, message_id, text):
 @bot.message_handler(commands=['start', 'Repetir', 'Historico'])
 def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')
-    # log_text(message.chat.id, message.message_id, message.text)
     markup = types.ReplyKeyboardRemove(selective=False)
     chatid = message.chat.id
     mensagem = message.text
@@ -175,7 +170,6 @@ def echo_all(message):
 @bot.message_handler(commands=['pacotes'])
 def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')
-    # log_text(message.chat.id, message.message_id, message.text)
     chatid = message.chat.id
     message = list_packages(chatid, False)
     if len(message) < 1:
@@ -187,7 +181,6 @@ def echo_all(message):
 @bot.message_handler(commands=['concluidos'])
 def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')
-    log_text(message.chat.id, message.message_id, message.text)
     chatid = message.chat.id
     message = list_packages(chatid, True)
     if len(message) < 1:
@@ -201,14 +194,18 @@ def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')
     log_text(message.chat.id, message.message_id, message.text)
     chatid = message.chat.id
-    bot.send_message(chatid, 'Bot por @GabrielRF.\n\nAvalie o bot:' 
+    bot.send_message(chatid, str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n'
+        + str(u'\U00002B50') + '<b>Avalie o bot:</b>'
         + '\nhttps://telegram.me/storebot?start=rastreiobot\n\n'
-        + 'Bot open source:\nhttps://github.com/GabrielRF/RastreioBot'
-        + '\n\nConheça meus outros projetos:'
-        + '\nhttp://grf.xyz/telegrambr'
-        + '\n\nColabore!'
-        + '\nhttp://grf.xyz/paypal', 
-        disable_web_page_preview=True)
+        + '<b>Bot open source:</b>\nhttps://github.com/GabrielRF/RastreioBot'
+        + '\n\n<b>Conheça meus outros projetos:</b>'
+        + '\nhttp://grf.xyz/telegrambr\n\n'
+        + str(u'\U0001F4B5') + '<b>Colabore!</b>'
+        + '\nhttp://patreon.com/gabrielrf'
+        + '\nhttp://grf.xyz/paypal'
+        + '\n<b>Colaboradores recorrentes recebem os alertas mais rápido!</b>'
+        + '\n\n@GabrielRF',
+        disable_web_page_preview=True, parse_mode='HTML')
 
 @bot.message_handler(content_types=['document', 'audio', 'photo'])
 def echo_all(message):

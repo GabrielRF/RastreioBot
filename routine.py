@@ -16,6 +16,7 @@ config.read('bot.conf')
 TOKEN = config['RASTREIOBOT']['TOKEN']
 int_check = int(config['RASTREIOBOT']['int_check'])
 LOG_INFO_FILE = config['RASTREIOBOT']['log_file']
+PATREON = config['RASTREIOBOT']['patreon']
 
 logger_info = logging.getLogger('InfoLogger')
 logger_info.setLevel(logging.DEBUG)
@@ -59,8 +60,12 @@ if __name__ == '__main__':
             break
         code = elem['code']
         time_dif = int(time() - float(elem['time']))
-        if time_dif < int_check:
-            continue
+        for user in elem['users']:
+            if user not in PATREON:
+                if time_dif < int_check:
+                    continue
+            else:
+                print(user)
         old_state = elem['stat'][len(elem['stat'])-1]
         len_old_state = len(elem['stat'])
         if 'Entrega Efetuada' in old_state:
@@ -92,11 +97,10 @@ if __name__ == '__main__':
                     bot.send_message(user, message, parse_mode='HTML', 
                         disable_web_page_preview=True)
                     sent = sent + 1
-                    sleep(0.5)
                 except Exception as e:
                     logger_info.info(str(datetime.now())
                          + '\tEXCEPT: ' + str(user) + ' '
-                         + code + '\t' + str(e))
+                         + code + '\t -> ' + str(e))
                     pass
-        sleep(1)
+        sleep(0.1)
     logger_info.info(str(datetime.now()) + '\t' + '--- UPDATE finished! --- ' + '\tAlertas: ' + str(sent))
