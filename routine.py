@@ -20,10 +20,8 @@ PATREON = config['RASTREIOBOT']['patreon']
 
 logger_info = logging.getLogger('InfoLogger')
 logger_info.setLevel(logging.DEBUG)
-# handler_info = logging.handlers.RotatingFileHandler(LOG_INFO_FILE,
-#     maxBytes=10240, backupCount=5, encoding='utf-8')
 handler_info = logging.handlers.TimedRotatingFileHandler(LOG_INFO_FILE,
-    when='D', interval=1, backupCount=5, encoding='utf-8')
+    when='midnight', interval=1, backupCount=5, encoding='utf-8')
 logger_info.addHandler(handler_info)
 
 bot = telebot.TeleBot(TOKEN)
