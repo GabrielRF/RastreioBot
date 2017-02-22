@@ -30,6 +30,10 @@ bot = telebot.TeleBot(TOKEN)
 client = MongoClient()
 db = client.rastreiobot
 
+markup_btn = types.ReplyKeyboardMarkup(resize_keyboard=True)
+markup_btn.row('/Pacotes','/Info','/Concluidos')
+markup_clean = types.ReplyKeyboardRemove(selective=False)
+
 ## Check if package exists in DB
 def check_package(code):
     cursor = db.rastreiobot.find_one({"code": code.upper()})
@@ -149,7 +153,6 @@ def log_text(chatid, message_id, text):
 @bot.message_handler(commands=['start', 'Repetir', 'Historico'])
 def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')
-    markup = types.ReplyKeyboardRemove(selective=False)
     chatid = message.chat.id
     mensagem = message.text
     user = (str(u'\U0001F4EE') + '<b>@RastreioBot!</b>\n\n'
@@ -162,12 +165,12 @@ def echo_all(message):
         'Para adicionar uma descrição, envie um código ' +
         'seguido da descrição.\n\n' +
         '<i>/PN123456789BR Minha encomenda</i>')
-    if message.chat.id > 0:
-        bot.send_message(message.chat.id, user, parse_mode='HTML')
+    if int(message.chat.id) > 0:
+        bot.send_message(message.chat.id, user, parse_mode='HTML', reply_markup=markup_clean)
     else:
-        bot.send_message(message.chat.id, group, parse_mode='HTML')
+        bot.send_message(message.chat.id, group, parse_mode='HTML', reply_markup=markup_clean)
 
-@bot.message_handler(commands=['pacotes'])
+@bot.message_handler(commands=['pacotes', 'Pacotes'])
 def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')
     chatid = message.chat.id
@@ -176,9 +179,9 @@ def echo_all(message):
         message = "Nenhum pacote encontrado."
     else:
         message = '<b>Clique para ver o histórico:</b>\n' + message
-    bot.send_message(chatid, message, parse_mode='HTML')
+    bot.send_message(chatid, message, parse_mode='HTML', reply_markup=markup_clean)
 
-@bot.message_handler(commands=['concluidos'])
+@bot.message_handler(commands=['concluidos','Concluidos'])
 def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')
     chatid = message.chat.id
@@ -203,7 +206,7 @@ def echo_all(message):
         + str(u'\U0001F4B5') + '<b>Colabore!</b>'
         + '\nhttp://patreon.com/gabrielrf'
         + '\nhttp://grf.xyz/paypal'
-        + '\n<b>Colaboradores recorrentes recebem os alertas mais rápido!</b>'
+        + '\n<b>Colaboradores recorrentes recebem os alertas mais rapidamente!</b>'
         + '\n\n@GabrielRF',
         disable_web_page_preview=True, parse_mode='HTML')
 
@@ -235,7 +238,10 @@ def echo_all(message):
             message = ''
             for status in status_package(code):
                 message = message + '\n\n' + status
-            bot.send_message(user, message, parse_mode='HTML')
+            if int(user) > 0:
+                bot.send_message(user, message, parse_mode='HTML', reply_markup=markup_btn)
+            else:
+                bot.send_message(user, message, parse_mode='HTML', reply_markup=markup_clean)
             if desc != code:
                 set_desc(str(code), str(user), desc)
         else:
@@ -250,12 +256,22 @@ def echo_all(message):
                 )
             elif stat == 10:
                 set_desc(str(code), str(user), desc)
-                msg = bot.reply_to(message, 'Pacote cadastrado.')
+                if int(message.chat.id) > 0:
+                    msg = bot.reply_to(message, 'Pacote cadastrado.', reply_markup=markup_btn)
+                else:
+                    msg = bot.reply_to(message, 'Pacote cadastrado.', reply_markup=markup_clean)
                 status = status_package(code)
                 last = len(status)-1
-                bot.send_message(user,
-                    status_package(code)[last], parse_mode='HTML'
-                )
+                if int(user) > 0:
+                    bot.send_message(user,
+                        status_package(code)[last], parse_mode='HTML',
+                        reply_markup=markup_btn
+                    )
+                else:
+                    bot.send_message(user,
+                        status_package(code)[last], parse_mode='HTML',
+                        reply_markup=markup_clean
+                    )
     else:
         if int(user) > 0:
             bot.reply_to(message, "Erro.\nVerifique se o código foi digitado corretamente.")
