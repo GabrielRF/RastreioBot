@@ -15,7 +15,7 @@ config.read('bot.conf')
 
 TOKEN = config['RASTREIOBOT']['TOKEN']
 int_check = int(config['RASTREIOBOT']['int_check'])
-LOG_INFO_FILE = config['RASTREIOBOT']['log_file']
+LOG_INFO_FILE = config['RASTREIOBOT']['routine_log']
 PATREON = config['RASTREIOBOT']['patreon']
 
 logger_info = logging.getLogger('InfoLogger')
