@@ -92,7 +92,7 @@ if __name__ == '__main__':
                         + 'Avalie o bot</a> - '
                         + str(u'\U0001F4B5')
                         + '<a href="http://grf.xyz/paypal">Colabore</a>')
-                    bot.send_message(user, message, parse_mode='HTML', 
+                    bot.send_message(user, message, parse_mode='HTML',
                         disable_web_page_preview=True)
                     sent = sent + 1
                 except Exception as e:
