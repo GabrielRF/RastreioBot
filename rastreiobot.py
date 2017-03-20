@@ -19,6 +19,7 @@ config.read('bot.conf')
 TOKEN = config['RASTREIOBOT']['TOKEN']
 int_check = int(config['RASTREIOBOT']['int_check'])
 LOG_INFO_FILE = config['RASTREIOBOT']['text_log']
+PATREON = config['RASTREIOBOT']['patreon']
 
 logger_info = logging.getLogger('InfoLogger')
 logger_info.setLevel(logging.DEBUG)
@@ -45,6 +46,7 @@ def check_package(code):
 def list_packages(chatid, done):
     cursor = db.rastreiobot.find()
     aux = ''
+    qtd = 0
     for elem in cursor:
         if str(chatid) in elem['users']:
             if not done:
@@ -56,6 +58,7 @@ def list_packages(chatid, done):
                     except:
                         pass
                     aux = aux + '\n'
+                    qtd = qtd + 1
             else:
                 if 'Entrega Efetuada' in elem['stat'][len(elem['stat'])-1]:
                     aux = aux + elem['code']
@@ -65,7 +68,8 @@ def list_packages(chatid, done):
                     except:
                         pass
                     aux = aux + '\n'
-    return aux
+                    qtd = qtd + 1
+    return aux, qtd
 
 ## Get last state of a package from DB 
 def status_package(code):
@@ -174,22 +178,34 @@ def echo_all(message):
 def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')
     chatid = message.chat.id
-    message = list_packages(chatid, False)
+    message, qtd = list_packages(chatid, False)
     if len(message) < 1:
         message = "Nenhum pacote encontrado."
     else:
         message = '<b>Clique para ver o histórico:</b>\n' + message
+    if qtd > 7 and str(chatid) not in PATREON:
+        message = (
+            message + '\n'
+            + str(u'\U0001F4B5') + '<b>Colabore!</b>'
+            + '\nhttp://grf.xyz/paypal'
+        )
     bot.send_message(chatid, message, parse_mode='HTML', reply_markup=markup_clean)
 
 @bot.message_handler(commands=['concluidos','Concluidos'])
 def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')
     chatid = message.chat.id
-    message = list_packages(chatid, True)
+    message, qtd = list_packages(chatid, True)
     if len(message) < 1:
         message = "Nenhum pacote encontrado."
     else:
         message = '<b>Pacotes concluídos nos últimos 30 dias:</b>\n' + message
+    if qtd > 12 and str(chatid) not in PATREON:
+        message = (
+            message + '\n'
+            + str(u'\U0001F4B5') + '<b>Colabore!</b>'
+            + '\nhttp://grf.xyz/paypal'
+        )
     bot.send_message(chatid, message, parse_mode='HTML')
 
 @bot.message_handler(commands=['info', 'Info'])
