@@ -28,6 +28,8 @@ bot = telebot.TeleBot(TOKEN)
 client = MongoClient()
 db = client.rastreiobot
 
+multiple = sys.argv[1]
+
 def get_package(code):
     stat = check_update(code)
     # print(stat)
@@ -52,6 +54,9 @@ if __name__ == '__main__':
     start = time()
     sent = 0
     for elem in cursor1:
+        # print(elem['code'] + ' ' + elem['code'][10])
+        if elem['code'][10] != multiple:
+            continue
         now = time()
         if int(now) - int(start) > 599:
             logger_info.info(str(datetime.now()) + '\tRoutine too long')
@@ -100,5 +105,5 @@ if __name__ == '__main__':
                          + '\tEXCEPT: ' + str(user) + ' '
                          + code + '\t -> ' + str(e))
                     pass
-        sleep(0.1)
-    logger_info.info(str(datetime.now()) + '\t' + '--- UPDATE finished! --- ' + '\tAlertas: ' + str(sent))
+        sleep(0.03)
+    logger_info.info(str(datetime.now()) + '\t' + '--- UPDATE ' + multiple + ' finished! --- ' + '\tAlertas: ' + str(sent))
