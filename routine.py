@@ -50,6 +50,7 @@ def get_package(code):
     return stat
 
 if __name__ == '__main__':
+    sleep(60*int(multiple))
     cursor1 = db.rastreiobot.find()
     start = time()
     sent = 0
@@ -106,4 +107,4 @@ if __name__ == '__main__':
                          + code + '\t -> ' + str(e))
                     pass
         sleep(0.03)
-    logger_info.info(str(datetime.now()) + '\t' + '--- UPDATE ' + multiple + ' finished! --- ' + '\tAlertas: ' + str(sent))
+    # logger_info.info(str(datetime.now()) + '\t' + '--- UPDATE ' + multiple + ' finished! --- ' + '\tAlertas: ' + str(sent))
