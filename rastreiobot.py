@@ -211,7 +211,7 @@ def echo_all(message):
 @bot.message_handler(commands=['info', 'Info'])
 def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')
-    log_text(message.chat.id, message.message_id, message.text)
+    log_text(message.chat.id, message.message_id, message.text + '\t' + str(message.from_user.first_name))
     chatid = message.chat.id
     bot.send_message(chatid, str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n'
         + str(u'\U00002B50') + '<b>Avalie o bot:</b>'
