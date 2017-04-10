@@ -60,7 +60,7 @@ if __name__ == '__main__':
             continue
         now = time()
         if int(now) - int(start) > 599:
-            logger_info.info(str(datetime.now()) + '\tRoutine too long')
+            logger_info.info(str(datetime.now()) + '\tRoutine too long. ' + str(multiple))
             break
         code = elem['code']
         time_dif = int(time() - float(elem['time']))
