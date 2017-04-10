@@ -12,6 +12,8 @@ def check_update(code):
     except:
         print('Correios fora do ar')
         return 0
+    if '200' not in str(response):
+        return 0
     html = BeautifulSoup(response.content, 'html.parser')
     tabela = html.findAll('tr')
     if len(tabela) < 1:
@@ -52,6 +54,8 @@ def check_update(code):
                     mensagem = mensagem + ' ' + str(u'\U0001F381')
                 elif situacao.text == 'Postado':
                     mensagem = mensagem + ' ' + str(u'\U0001F4E6')
+                elif situacao.text == 'Liberado sem':
+                    mensagem = mensagem + ' ' + str(u'\U0001F389')
             if observacao:
                 mensagem = mensagem + '\nObservação: ' + observacao.text
         stats.append(mensagem)
