@@ -141,6 +141,21 @@ def set_desc(code, user, desc):
         }
     })
 
+def check_system():
+    request = requests.Session()
+    request.headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.131 Safari/537.36'
+    try:
+        URL = ('http://websro.correios.com.br/sro_bin/txect01$.startup?P_LINGUA=001&P_TIPO=001')
+        response = request.get(URL)
+    except:
+        return False
+    # print(str(response))
+    if '200' in str(response):
+        return True
+    else:
+        return False
+
+
 ## Update package tracking state
 def get_update(code):
     return check_update(code)
@@ -252,8 +267,13 @@ def echo_all(message):
                 add_user(code, user)
             status = status_package(code)
             message = ''
+            system = check_system()
             for status in status_package(code):
                 message = message + '\n\n' + status
+            if not system:
+                message = (message + '\n\n' + str(u'\U000026A0') + ' <b>Atenção</b>\n' +
+                    'Sistema dos Correios indisponível.\n'+
+                    'Os alertas poderão atrasar.')
             if int(user) > 0:
                 bot.send_message(user, message, parse_mode='HTML', reply_markup=markup_btn)
             else:
