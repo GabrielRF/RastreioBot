@@ -106,5 +106,5 @@ if __name__ == '__main__':
                          + '\tEXCEPT: ' + str(user) + ' '
                          + code + '\t -> ' + str(e))
                     pass
-        sleep(0.03)
+        sleep(1)
     # logger_info.info(str(datetime.now()) + '\t' + '--- UPDATE ' + multiple + ' finished! --- ' + '\tAlertas: ' + str(sent))
