@@ -50,7 +50,7 @@ def list_packages(chatid, done):
     for elem in cursor:
         if str(chatid) in elem['users']:
             if not done:
-                if 'Entrega Efetuada' not in elem['stat'][len(elem['stat'])-1]:
+                if 'entreg' not in elem['stat'][len(elem['stat'])-1].lower():
                     aux = aux + '/' + elem['code']
                     try:
                         if elem[str(chatid)] != elem['code']:
@@ -60,7 +60,7 @@ def list_packages(chatid, done):
                     aux = aux + '\n'
                     qtd = qtd + 1
             else:
-                if 'Entrega Efetuada' in elem['stat'][len(elem['stat'])-1]:
+                if 'entreg' in elem['stat'][len(elem['stat'])-1].lower():
                     aux = aux + elem['code']
                     try:
                         if elem[str(chatid)] != elem['code']:
@@ -314,3 +314,4 @@ def echo_all(message):
             bot.reply_to(message, "Erro.\nVerifique se o código foi digitado corretamente.")
 
 bot.polling()
+
