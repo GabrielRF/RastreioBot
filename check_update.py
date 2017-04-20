@@ -62,13 +62,13 @@ def check_update(code):
         if situacao:
             mensagem = (mensagem + '\nSituação: <b>' +
                 situacao.strip() + '</b>')
-            if situacao == 'Entrega Efetuada':
+            if 'entreg' in situacao.lower():
                 mensagem = mensagem + ' ' + str(u'\U0001F381')
-            elif situacao == 'Postado':
+            elif 'postado' in situacao.lower():
                 mensagem = mensagem + ' ' + str(u'\U0001F4E6')
         if observacao:
             mensagem = mensagem + '\nObservação: ' + observacao.strip()
-            if 'Liberado sem' in observacao:
+            if 'liberado sem' in observacao.lower():
                 mensagem = mensagem + ' ' + str(u'\U0001F389')
         stats.append(mensagem)
     # for elem in stats:
