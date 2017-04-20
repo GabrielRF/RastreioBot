@@ -142,15 +142,12 @@ def set_desc(code, user, desc):
     })
 
 def check_system():
-    return True
-    request = requests.Session()
-    request.headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.131 Safari/537.36'
-    try:
-        URL = ('http://websro.correios.com.br/sro_bin/txect01$.startup?P_LINGUA=001&P_TIPO=001')
-        response = request.get(URL)
-    except:
-        return False
-    # print(str(response))
+    if True:
+        URL = ('http://webservice.correios.com.br/')
+        response = requests.get(URL)
+    #except:
+    #    return False
+    print(str(response))
     if '200' in str(response):
         return True
     else:
