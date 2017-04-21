@@ -72,7 +72,7 @@ if __name__ == '__main__':
                 print(user)
         old_state = elem['stat'][len(elem['stat'])-1]
         len_old_state = len(elem['stat'])
-        if 'Entrega Efetuada' in old_state:
+        if 'entreg' in old_state.lower():
             continue
         get_package(code)
         cursor2 = db.rastreiobot.find_one(
@@ -91,7 +91,7 @@ if __name__ == '__main__':
                     message = (
                         message + '\n'
                         +  cursor2['stat'][len(cursor2['stat'])-1])
-                    if 'Entrega Efetuada' in message:
+                    if 'entreg' in message.lower():
                         message = (message + '\n\n'
                         + str(u'\U00002B50')
                         + '<a href="https://telegram.me/storebot?start=rastreiobot">'
@@ -106,5 +106,5 @@ if __name__ == '__main__':
                          + '\tEXCEPT: ' + str(user) + ' '
                          + code + '\t -> ' + str(e))
                     pass
-        sleep(1)
+        sleep(0.03)
     # logger_info.info(str(datetime.now()) + '\t' + '--- UPDATE ' + multiple + ' finished! --- ' + '\tAlertas: ' + str(sent))
