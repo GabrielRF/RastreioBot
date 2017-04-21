@@ -227,10 +227,13 @@ def echo_all(message):
     log_text(message.chat.id, message.message_id, message.text + '\t' + str(message.from_user.first_name))
     chatid = message.chat.id
     bot.send_message(chatid, str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n'
-        + str(u'\U00002B50') + '<b>Avalie o bot:</b>'
+        + str(u'\U0001F579') + '<b>Instruções</b>'
+        + '\nEnvie para o bot o código de rastreio seguido da descrição do pacote.'
+        + '\n<code>PN123456789BR Minha encomenda</code>'
+        + '\n\n' + str(u'\U00002B50') + '<b>Avalie o bot:</b>'
         + '\nhttps://telegram.me/storebot?start=rastreiobot\n\n'
-        + '<b>Bot open source:</b>\nhttps://github.com/GabrielRF/RastreioBot'
-        + '\n\n<b>Conheça meus outros projetos:</b>'
+        + str(u'\U0001F4D6') + '<b>Bot open source:</b>\nhttps://github.com/GabrielRF/RastreioBot'
+        + '\n\n' + str(u'\U0001F680') + '<b>Conheça meus outros projetos:</b>'
         + '\nhttp://grf.xyz/telegrambr\n\n'
         + str(u'\U0001F4B5') + '<b>Colabore!</b>'
         + '\nhttp://patreon.com/gabrielrf'
