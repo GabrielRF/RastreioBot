@@ -44,3 +44,7 @@ if __name__ == '__main__':
             if time_dif > int_del:
                 # print(elem['code'])
                 del_user(elem['code'])
+        if 'Objeto entregue ao destinatário' in old_state:
+            if time_dif > int_del:
+                # print(elem['code'])
+                del_user(elem['code'])

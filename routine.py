@@ -58,6 +58,7 @@ if __name__ == '__main__':
         # print(elem['code'] + ' ' + elem['code'][10])
         if elem['code'][10] != multiple:
             continue
+        print(elem['code'] + '\t' + elem['time'])
         now = time()
         if int(now) - int(start) > 599:
             logger_info.info(str(datetime.now()) + '\tRoutine too long. ' + str(multiple))
@@ -72,7 +73,7 @@ if __name__ == '__main__':
                 print(user)
         old_state = elem['stat'][len(elem['stat'])-1]
         len_old_state = len(elem['stat'])
-        if 'entreg' in old_state.lower():
+        if 'objeto entregue ao' in old_state.lower():
             continue
         get_package(code)
         cursor2 = db.rastreiobot.find_one(
@@ -91,7 +92,7 @@ if __name__ == '__main__':
                     message = (
                         message + '\n'
                         +  cursor2['stat'][len(cursor2['stat'])-1])
-                    if 'entreg' in message.lower():
+                    if 'Objeto entregue ao de' in message.lower():
                         message = (message + '\n\n'
                         + str(u'\U00002B50')
                         + '<a href="https://telegram.me/storebot?start=rastreiobot">'

@@ -62,7 +62,7 @@ def check_update(code):
         if situacao:
             mensagem = (mensagem + '\nSituação: <b>' +
                 situacao.strip() + '</b>')
-            if 'entreg' in situacao.lower():
+            if 'objeto entregue ao' in situacao.lower():
                 mensagem = mensagem + ' ' + str(u'\U0001F381')
             elif 'encaminhado' in situacao.lower():
                 mensagem = mensagem + ' ' + str(u'\U00002197')
