@@ -92,7 +92,7 @@ if __name__ == '__main__':
                     message = (
                         message + '\n'
                         +  cursor2['stat'][len(cursor2['stat'])-1])
-                    if 'Objeto entregue ao de' in message.lower():
+                    if 'objeto entregue' in message.lower():
                         message = (message + '\n\n'
                         + str(u'\U00002B50')
                         + '<a href="https://telegram.me/storebot?start=rastreiobot">'
