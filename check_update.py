@@ -16,22 +16,22 @@ def check_update(code):
     try:
         request_xml = '''
             <rastroObjeto>
-            <usuario>{}</usuario>
-            <senha>{}</senha>
-            <tipo>L</tipo>
-            <resultado>T</resultado>
-            <objetos>{}</objetos>
-            <lingua>101</lingua>
-            <token>{}</token>
-    </rastroObjeto>
-'''.format(usuario, senha, code, token)
+                <usuario>{}</usuario>
+                <senha>{}</senha>
+                <tipo>L</tipo>
+                <resultado>T</resultado>
+                <objetos>{}</objetos>
+                <lingua>101</lingua>
+                <token>{}</token>
+            </rastroObjeto>
+        '''.format(usuario, senha, code, token)
         headers = {
             'Content-Type': 'application/xml',
             'Accept': 'application/json',
             'User-Agent': 'Dalvik/1.6.0 (Linux; U; Android 4.2.1; LG-P875h Build/JZO34L)'
         }
         URL = ('http://webservice.correios.com.br/service/rest/rastro/rastroMobile')
-        response = requests.post(URL, data=request_xml, headers=headers).text
+        response = requests.post(URL, data=request_xml, headers=headers, timeout=3).text
     except:
         return 0
     if len(str(response)) < 10:

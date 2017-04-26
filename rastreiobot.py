@@ -142,11 +142,11 @@ def set_desc(code, user, desc):
     })
 
 def check_system():
-    if True:
+    try:
         URL = ('http://webservice.correios.com.br/')
-        response = requests.get(URL)
-    #except:
-    #    return False
+        response = requests.get(URL, timeout=3)
+    except:
+        return False
     print(str(response))
     if '200' in str(response):
         return True
