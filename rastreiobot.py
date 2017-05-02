@@ -8,6 +8,7 @@ from telebot import types
 import configparser
 import logging
 import logging.handlers
+import random
 import requests
 import sys
 import telebot
@@ -226,6 +227,9 @@ def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')
     log_text(message.chat.id, message.message_id, message.text + '\t' + str(message.from_user.first_name))
     chatid = message.chat.id
+    ads = open('ad.txt').read().splitlines()
+    ad = random.choice(ads)
+    ad = ad.replace(';','\n')
     bot.send_message(chatid, str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n'
         + str(u'\U0001F579') + '<b>Instruções</b>'
         + '\nEnvie para o bot o código de rastreio seguido da descrição do pacote.'
@@ -239,6 +243,7 @@ def echo_all(message):
         + '\nhttp://patreon.com/gabrielrf'
         + '\nhttp://grf.xyz/paypal'
         + '\n<b>Colaboradores recorrentes recebem os alertas mais rapidamente!</b>'
+        + '\n\n' + str(u'\U0001F517')  + ad
         + '\n\n@GabrielRF',
         disable_web_page_preview=True, parse_mode='HTML')
 
