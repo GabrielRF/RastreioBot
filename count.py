@@ -15,7 +15,7 @@ def get_data():
     finished = 0
     users = []
     for elem in cursor:
-        if 'Entrega Efetuada' not in elem['stat'][len(elem['stat'])-1]:
+        if 'Objeto entregue ao destinatário' not in elem['stat'][len(elem['stat'])-1]:
             not_finished = not_finished + 1
         else:
             time_dif = int(time() - float(elem['time']))
