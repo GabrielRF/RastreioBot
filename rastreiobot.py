@@ -20,6 +20,7 @@ config.read('bot.conf')
 TOKEN = config['RASTREIOBOT']['TOKEN']
 int_check = int(config['RASTREIOBOT']['int_check'])
 LOG_INFO_FILE = config['RASTREIOBOT']['text_log']
+LOG_ROUTINE_FILE = config['RASTREIOBOT']['routine_log']
 PATREON = config['RASTREIOBOT']['patreon']
 
 logger_info = logging.getLogger('InfoLogger')
@@ -42,6 +43,15 @@ def check_package(code):
     if cursor:
         return True
     return False
+
+## Count packages
+def count_packages():
+    cursor = db.rastreiobot.find()
+    print(str(cursor))
+    qtd = 0
+    for elem in cursor:
+        qtd = qtd + 1
+    return qtd
 
 ## List packages of a user
 def list_packages(chatid, done):
@@ -221,6 +231,20 @@ def echo_all(message):
             + '\nhttp://grf.xyz/paypal'
         )
     bot.send_message(chatid, message, parse_mode='HTML')
+
+@bot.message_handler(commands=['status', 'Status'])
+def echo_all(message):
+    with open(LOG_ROUTINE_FILE) as f:
+        today = (sum(1 for _ in f))
+    with open(LOG_ROUTINE_FILE + '.1') as f:
+        yesterday = (sum(1 for _ in f))
+    qtd = count_packages()
+    chatid = message.chat.id
+    bot.send_message(chatid, str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n'
+        + 'Pacotes monitorados: ' + str(qtd) + '\n'
+        + 'Alertas enviados hoje: ' + str(today) + '\n'
+        + 'Alertas enviados ontem: ' + str(yesterday)
+    , parse_mode='HTML')
 
 @bot.message_handler(commands=['info', 'Info'])
 def echo_all(message):
