@@ -61,7 +61,8 @@ def list_packages(chatid, done):
     for elem in cursor:
         if str(chatid) in elem['users']:
             if not done:
-                if 'objeto entregue ao' not in elem['stat'][len(elem['stat'])-1].lower():
+                if ('objeto entregue ao' not in elem['stat'][len(elem['stat'])-1].lower() and
+                    'objeto apreendido' not in elem['stat'][len(elem['stat'])-1].lower()):
                     aux = aux + '/' + elem['code']
                     try:
                         if elem[str(chatid)] != elem['code']:
@@ -71,7 +72,8 @@ def list_packages(chatid, done):
                     aux = aux + '\n'
                     qtd = qtd + 1
             else:
-                if 'objeto entregue ao' in elem['stat'][len(elem['stat'])-1].lower():
+                if ('objeto entregue ao' in elem['stat'][len(elem['stat'])-1].lower() or
+                    'objeto apreendido' in elem['stat'][len(elem['stat'])-1].lower()):
                     aux = aux + elem['code']
                     try:
                         if elem[str(chatid)] != elem['code']:
