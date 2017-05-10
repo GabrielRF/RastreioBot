@@ -51,3 +51,6 @@ if __name__ == '__main__':
         if 'Objeto apreendido por órgão de fiscalização' in old_state:
             if time_dif > int_del:
                 del_user(elem['code'])
+        if 'Objetvo devolvido' in old_state:
+            if time_dif > int_del:
+                del_user(elem['code'])
