@@ -76,7 +76,9 @@ if __name__ == '__main__':
         len_old_state = len(elem['stat'])
         if 'objeto entregue ao' in old_state.lower():
             continue
-        get_package(code)
+        stat = get_package(code)
+        if stat == 0:
+            break
         cursor2 = db.rastreiobot.find_one(
         {
             "code": code
