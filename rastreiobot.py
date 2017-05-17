@@ -63,6 +63,7 @@ def list_packages(chatid, done):
             if not done:
                 if ('objeto entregue ao' not in elem['stat'][len(elem['stat'])-1].lower() and
                     'objeto apreendido' not in elem['stat'][len(elem['stat'])-1].lower() and
+                    'objeto roubado' not in elem['stat'][len(elem['stat'])-1].lower() and
                     'objeto devolvido' not in elem['stat'][len(elem['stat'])-1].lower()):
                     aux = aux + '/' + elem['code']
                     try:
@@ -75,6 +76,7 @@ def list_packages(chatid, done):
             else:
                 if ('objeto entregue ao' in elem['stat'][len(elem['stat'])-1].lower() or
                     'objeto apreendido' in elem['stat'][len(elem['stat'])-1].lower() or
+                    'objeto roubado' in elem['stat'][len(elem['stat'])-1].lower() or
                     'objeto devolvido' in elem['stat'][len(elem['stat'])-1].lower()):
                     aux = aux + elem['code']
                     try:
