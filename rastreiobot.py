@@ -272,7 +272,8 @@ def echo_all(message):
         + str(u'\U0001F4B5') + '<b>Colabore!</b>'
         + '\nhttp://patreon.com/gabrielrf'
         + '\nhttp://grf.xyz/paypal'
-        + '\n<b>Colaboradores recorrentes recebem os alertas mais rapidamente!</b>'
+        + '\nPicPay: GabrielRF'
+        + '\n\n<b>Colaboradores recorrentes recebem os alertas mais rapidamente!</b>'
         + '\n\n' + str(u'\U0001F517')  + ad
         + '\n\n@GabrielRF',
         disable_web_page_preview=True, parse_mode='HTML')
