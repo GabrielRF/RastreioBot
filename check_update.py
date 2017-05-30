@@ -11,7 +11,7 @@ usuario = config['CORREIOS']['usuario']
 senha = config['CORREIOS']['senha']
 token = config['CORREIOS']['token']
 
-def check_update(code):
+def check_update(code, max_retries=3):
     stats = []
     try:
         request_xml = '''
@@ -33,6 +33,8 @@ def check_update(code):
         URL = ('http://webservice.correios.com.br/service/rest/rastro/rastroMobile')
         response = requests.post(URL, data=request_xml, headers=headers, timeout=3).text
     except:
+        if max_retries > 0:
+            return check_update(code, max_retries-1)
         return 0
     if len(str(response)) < 10:
         return 0
