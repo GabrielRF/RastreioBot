@@ -88,7 +88,7 @@ def list_packages(chatid, done):
                     qtd = qtd + 1
     return aux, qtd
 
-## Get last state of a package from DB 
+## Get last state of a package from DB
 def status_package(code):
     cursor = db.rastreiobot.find_one(
     {
@@ -113,9 +113,11 @@ def add_package(code, user):
     stat = get_update(code)
     if stat == 0:
         return stat
-    elif stat == 1:
-        return stat
+    # elif stat == 1:
+    #     return stat
     else:
+        # if stat == 1:
+        #     stat = 'Aguardando recebimento pelo ECT.'
         cursor = db.rastreiobot.insert_one (
         {
             "code" : code.upper(),
@@ -350,4 +352,3 @@ def echo_all(message):
             bot.reply_to(message, "Erro.\nVerifique se o código foi digitado corretamente.")
 
 bot.polling()
-
