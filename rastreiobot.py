@@ -116,8 +116,11 @@ def add_package(code, user):
     # elif stat == 1:
     #     return stat
     else:
-        # if stat == 1:
-        #     stat = 'Aguardando recebimento pelo ECT.'
+        stats = []
+        stats.append(str(u'\U0001F4EE') + ' <b>' + code + '</b>')
+        if stat == 1:
+            stats.append('Aguardando recebimento pelo ECT.')
+            stat = stats
         cursor = db.rastreiobot.insert_one (
         {
             "code" : code.upper(),

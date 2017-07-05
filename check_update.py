@@ -79,4 +79,3 @@ def check_update(code, max_retries=3):
         # print(elem)
         # print('-')
     return stats
-
