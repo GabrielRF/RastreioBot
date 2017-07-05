@@ -57,3 +57,6 @@ if __name__ == '__main__':
         if 'Objetvo roubado' in old_state:
             if time_dif > int_del:
                 del_user(elem['code'])
+        if 'Aguardando recebimento pelo ECT.' in old_state:
+            if time_dif > int_del:
+                del_user(elem['code'])
