@@ -74,60 +74,64 @@ if __name__ == '__main__':
         sys.exit()
     for elem in cursor1:
         # print(elem['code'] + ' ' + elem['code'][10])
-        if elem['code'][10] != multiple:
-            continue
-        print(elem['code'] + '\t' + elem['time'])
-        now = time()
-        if int(now) - int(start) > 500:
-            logger_info.info(str(datetime.now()) + '\tRoutine too long. ' + str(multiple))
-            break
-        code = elem['code']
-        time_dif = int(time() - float(elem['time']))
-        for user in elem['users']:
-            if user not in PATREON:
-                if time_dif < int_check:
-                    continue
-            else:
-                print(user)
-        old_state = elem['stat'][len(elem['stat'])-1]
-        len_old_state = len(elem['stat'])
-        if 'objeto entregue ao' in old_state.lower():
-            continue
-        stat = get_package(code)
-        if stat == 0:
-            break
-        cursor2 = db.rastreiobot.find_one(
-        {
-            "code": code
-        })
-        len_new_state = len(cursor2['stat'])
-        # print(str(len_old_state) + ' ' + str(len_new_state))
-        if len_old_state != len_new_state:
+        try:
+            if elem['code'][10] != multiple:
+                continue
+            print(elem['code'] + '\t' + elem['time'])
+            now = time()
+            if int(now) - int(start) > 500:
+                logger_info.info(str(datetime.now()) + '\tRoutine too long. ' + str(multiple))
+                break
+            code = elem['code']
+            time_dif = int(time() - float(elem['time']))
             for user in elem['users']:
-                logger_info.info(str(datetime.now()) + '\tUPDATE: '
-                    + str(code) + ' \t' + str(user) + '\t' + str(sent))
-                try:
-                    message = (str(u'\U0001F4EE') + '<b>' + code + '</b>\n')
-                    if elem[user] != code:
-                        message = message + elem[user] + '\n'
-                    message = (
-                        message + '\n'
-                        +  cursor2['stat'][len(cursor2['stat'])-1])
-                    if 'objeto entregue' in message.lower():
-                        message = (message + '\n\n'
-                        + str(u'\U00002B50')
-                        + '<a href="https://telegram.me/storebot?start=rastreiobot">'
-                        + 'Avalie o bot</a> - '
-                        + str(u'\U0001F4B5')
-                        + '<a href="http://grf.xyz/paypal">Colabore</a>')
-                    bot.send_message(str(user), message, parse_mode='HTML',
-                        disable_web_page_preview=True)
-                    sent = sent + 1
-                    sleep(INTERVAL)
-                except Exception as e:
-                    logger_info.info(str(datetime.now())
-                         + '\tEXCEPT: ' + str(user) + ' '
-                         + code + '\t -> ' + str(e))
-                    pass
+                if user not in PATREON:
+                    if time_dif < int_check:
+                        continue
+                else:
+                    print(user)
+            old_state = elem['stat'][len(elem['stat'])-1]
+            len_old_state = len(elem['stat'])
+            if 'objeto entregue ao' in old_state.lower():
+                continue
+            stat = get_package(code)
+            if stat == 0:
+                break
+            cursor2 = db.rastreiobot.find_one(
+            {
+                "code": code
+            })
+            len_new_state = len(cursor2['stat'])
+            # print(str(len_old_state) + ' ' + str(len_new_state))
+            if len_old_state != len_new_state:
+                for user in elem['users']:
+                    logger_info.info(str(datetime.now()) + '\tUPDATE: '
+                        + str(code) + ' \t' + str(user) + '\t' + str(sent))
+                    try:
+                        message = (str(u'\U0001F4EE') + '<b>' + code + '</b>\n')
+                        if elem[user] != code:
+                            message = message + elem[user] + '\n'
+                        message = (
+                            message + '\n'
+                            +  cursor2['stat'][len(cursor2['stat'])-1])
+                        if 'objeto entregue' in message.lower():
+                            message = (message + '\n\n'
+                            + str(u'\U00002B50')
+                            + '<a href="https://telegram.me/storebot?start=rastreiobot">'
+                            + 'Avalie o bot</a> - '
+                            + str(u'\U0001F4B5')
+                            + '<a href="http://grf.xyz/paypal">Colabore</a>')
+                        bot.send_message(str(user), message, parse_mode='HTML',
+                            disable_web_page_preview=True)
+                        sent = sent + 1
+                        sleep(INTERVAL)
+                    except Exception as e:
+                        logger_info.info(str(datetime.now())
+                             + '\tEXCEPT: ' + str(user) + ' '
+                             + code + '\t -> ' + str(e))
+                        pass
+        except:
+            logger_info.info(str(datetime.now()) + '\tEXCEPT: '
+                + str(code) + ' \t' + str(user))
         sleep(INTERVAL)
     # logger_info.info(str(datetime.now()) + '\t' + '--- UPDATE ' + multiple + ' finished! --- ' + '\tAlertas: ' + str(sent))
