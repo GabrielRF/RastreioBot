@@ -6,6 +6,7 @@ from time import time, sleep
 import configparser
 import logging
 import logging.handlers
+import requests
 import telebot
 import sys
 
@@ -50,11 +51,27 @@ def get_package(code):
         stat = 10
     return stat
 
+def check_system():
+    try:
+        URL = ('http://webservice.correios.com.br/')
+        response = requests.get(URL, timeout=3)
+    except:
+        return False
+    print(str(response))
+    if '200' in str(response):
+        return True
+    else:
+        return False
+
 if __name__ == '__main__':
     sleep(60*int(multiple))
     cursor1 = db.rastreiobot.find()
     start = time()
     sent = 0
+    if check_system():
+        pass
+    else:
+        sys.exit()
     for elem in cursor1:
         # print(elem['code'] + ' ' + elem['code'][10])
         if elem['code'][10] != multiple:
