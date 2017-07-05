@@ -44,14 +44,10 @@ def check_update(code, max_retries=3):
     result = json.loads(response)
     tabela = result['objeto'][0]['evento']
 
-    stats.append(str(u'\U0001F4EE') + ' <b>' + code + '</b>')
-
     if len(tabela) < 1:
         print('Codigo não encontrado')
-        mensagem = 'Aguardando recebimento pelo ECT.'
-        stats.append(mensagem)
         return 1
-
+    stats.append(str(u'\U0001F4EE') + ' <b>' + code + '</b>')
     for evento in reversed(tabela):
         # print(index)
         data = evento['data'] + ' ' + evento['hora']
@@ -83,3 +79,4 @@ def check_update(code, max_retries=3):
         # print(elem)
         # print('-')
     return stats
+
