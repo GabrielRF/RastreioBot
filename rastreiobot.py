@@ -49,9 +49,13 @@ def count_packages():
     cursor = db.rastreiobot.find()
     print(str(cursor))
     qtd = 0
+    wait = 0
     for elem in cursor:
-        qtd = qtd + 1
-    return qtd
+        if 'Aguardando recebimento pelo ECT' in str(elem):
+            wait = wait + 1
+        else:
+            qtd = qtd + 1
+    return qtd, wait
 
 ## List packages of a user
 def list_packages(chatid, done):
@@ -249,10 +253,11 @@ def echo_all(message):
         today = (sum(1 for _ in f))
     with open(LOG_ROUTINE_FILE + '.1') as f:
         yesterday = (sum(1 for _ in f))
-    qtd = count_packages()
+    qtd, wait = count_packages()
     chatid = message.chat.id
     bot.send_message(chatid, str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n'
-        + 'Pacotes monitorados: ' + str(qtd) + '\n'
+        + 'Pacotes em andamento: ' + str(qtd) + '\n'
+        + 'Pacotes em espera: ' + str(wait) + '\n\n'
         + 'Alertas enviados hoje: ' + str(today) + '\n'
         + 'Alertas enviados ontem: ' + str(yesterday)
     , parse_mode='HTML')
