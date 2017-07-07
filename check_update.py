@@ -1,6 +1,7 @@
 import configparser
 import json
 import requests
+import re
 from bs4 import BeautifulSoup
 
 config = configparser.ConfigParser()
@@ -12,6 +13,9 @@ senha = config['CORREIOS']['senha']
 token = config['CORREIOS']['token']
 
 def check_update(code, max_retries=3):
+    regexp = r"^[A-Za-z]{2}\d{9}[A-Za-z]{2}$"
+    if not (re.search(regexp, code)):
+        return 2
     stats = []
     try:
         request_xml = '''

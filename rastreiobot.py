@@ -117,6 +117,8 @@ def add_package(code, user):
     stat = get_update(code)
     if stat == 0:
         return stat
+    elif stat == 2:
+        return stat
     # elif stat == 1:
     #     return stat
     else:
@@ -331,6 +333,8 @@ def echo_all(message):
             stat = add_package(str(code), str(user))
             if stat == 0:
                 bot.reply_to(message, 'Correios fora do ar')
+            if stat == 2:
+                bot.reply_to(message, '"Erro.\nVerifique se o código foi digitado corretamente."')
             elif stat == 1:
                 bot.reply_to(message,
                     'Código não foi encontrado no sistema dos Correios.\n'
