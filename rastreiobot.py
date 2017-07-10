@@ -51,7 +51,7 @@ def count_packages():
     qtd = 0
     wait = 0
     for elem in cursor:
-        if 'Aguardando recebimento pelo ECT' in str(elem):
+        if 'Aguardando recebimento pel' in str(elem):
             wait = wait + 1
         else:
             qtd = qtd + 1
@@ -125,7 +125,7 @@ def add_package(code, user):
         stats = []
         stats.append(str(u'\U0001F4EE') + ' <b>' + code + '</b>')
         if stat == 1:
-            stats.append('Aguardando recebimento pelo ECT.')
+            stats.append('Aguardando recebimento pela ECT.')
             stat = stats
         cursor = db.rastreiobot.insert_one (
         {
