@@ -56,11 +56,13 @@ def check_system():
         URL = ('http://webservice.correios.com.br/')
         response = requests.get(URL, timeout=3)
     except:
+        logger_info.info(str(datetime.now()) + '\tCorreios indisponível')
         return False
     print(str(response))
     if '200' in str(response):
         return True
     else:
+        logger_info.info(str(datetime.now()) + '\tCorreios indisponível')
         return False
 
 if __name__ == '__main__':
