@@ -129,11 +129,10 @@ if __name__ == '__main__':
                         logger_info.info(str(datetime.now())
                              + '\tEXCEPT: ' + str(user) + ' '
                              + code + '\t -> ' + str(e))
-                        if '502 Bad Gateway' in str(e):
-                            sys.exit()
+                        sys.exit()
                         pass
-        except:
-            logger_info.info(str(datetime.now()) + '\tEXCEPT: '
+        except Exception as e:
+            logger_info.info(str(datetime.now()) + '\tEXCEPT: ' + str(e)
                 + str(code) + ' \t' + str(user))
             if '502 Bad Gateway' in str(e):
                 sys.exit()
