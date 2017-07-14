@@ -44,9 +44,11 @@ def check_update(code, max_retries=3):
         return 0
     elif 'ERRO' in str(response):
         return 1
-
-    result = json.loads(response)
-    tabela = result['objeto'][0]['evento']
+    try:
+        result = json.loads(response)
+        tabela = result['objeto'][0]['evento']
+    except:
+        return 3
 
     if len(tabela) < 1:
         print('Codigo não encontrado')
@@ -56,7 +58,10 @@ def check_update(code, max_retries=3):
         # print(index)
         data = evento['data'] + ' ' + evento['hora']
         # print(data)
-        local = evento['unidade']['local']
+        try:
+            local = evento['unidade']['local']
+        except:
+            local = False
         situacao = evento['descricao']
         try:
             observacao =str(evento['destino'][0]['local'])
