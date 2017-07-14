@@ -127,6 +127,9 @@ def add_package(code, user):
         if stat == 1:
             stats.append('Aguardando recebimento pela ECT.')
             stat = stats
+        elif stat == 3:
+            stats.append('Sistema indisponível. Seu pacote foi salvo e você receberá as atualizações assim que o sistema retornar.')
+            stat = stats
         cursor = db.rastreiobot.insert_one (
         {
             "code" : code.upper(),
