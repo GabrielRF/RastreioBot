@@ -254,6 +254,7 @@ def echo_all(message):
 
 @bot.message_handler(commands=['status', 'Status'])
 def echo_all(message):
+    log_text(message.chat.id, message.message_id, message.text + '\t' + str(message.from_user.first_name))
     with open(LOG_ROUTINE_FILE) as f:
         today = (sum(1 for _ in f))
     with open(LOG_ROUTINE_FILE + '.1') as f:
