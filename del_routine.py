@@ -63,4 +63,6 @@ if __name__ == '__main__':
         if 'Aguardando recebimento pela ECT.' in old_state:
             if time_dif > int_del:
                 del_user(elem['code'])
-
+        if 'Objeto não localizado no fluxo postal.' in old_state:
+            if time_dif > int_del:
+                del_user(elem['code'])
