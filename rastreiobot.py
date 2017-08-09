@@ -21,6 +21,7 @@ TOKEN = config['RASTREIOBOT']['TOKEN']
 int_check = int(config['RASTREIOBOT']['int_check'])
 LOG_INFO_FILE = config['RASTREIOBOT']['text_log']
 LOG_ROUTINE_FILE = config['RASTREIOBOT']['routine_log']
+LOG_ALERTS_FILE = config['RASTREIOBOT']['alerts_log']
 PATREON = config['RASTREIOBOT']['patreon']
 
 logger_info = logging.getLogger('InfoLogger')
@@ -255,9 +256,9 @@ def echo_all(message):
 @bot.message_handler(commands=['status', 'Status'])
 def echo_all(message):
     log_text(message.chat.id, message.message_id, message.text + '\t' + str(message.from_user.first_name))
-    with open(LOG_ROUTINE_FILE) as f:
+    with open(LOG_ALERTS_FILE) as f:
         today = (sum(1 for _ in f))
-    with open(LOG_ROUTINE_FILE + '.1') as f:
+    with open(LOG_ALERTS_FILE + '.1') as f:
         yesterday = (sum(1 for _ in f))
     qtd, wait = count_packages()
     chatid = message.chat.id
