@@ -140,4 +140,4 @@ if __name__ == '__main__':
             logger_info.info(str(datetime.now()) + '\tEXCEPT: ' + str(e)
                 + str(code) + ' \t' + str(user))
             sys.exit()
-    logger_rout.info(str(datetime.now()) + '\t' + '--- UPDATE ' + multiple + ' finished! --- ' + '\tAlertas: ' + str(sent))
+    logger_rout.info(str(datetime.now()) + '\t' + 'UPDATE ' + multiple + ' finished!' + '\tAlertas: ' + str(sent))
