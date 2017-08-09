@@ -18,7 +18,7 @@ TOKEN = config['RASTREIOBOT']['TOKEN']
 int_check = int(config['RASTREIOBOT']['int_check'])
 LOG_INFO_FILE = config['RASTREIOBOT']['routine_log']
 PATREON = config['RASTREIOBOT']['patreon']
-INTERVAL = 0.03
+INTERVAL = 0.015
 
 logger_info = logging.getLogger('InfoLogger')
 logger_info.setLevel(logging.DEBUG)
@@ -75,13 +75,11 @@ if __name__ == '__main__':
     else:
         sys.exit()
     for elem in cursor1:
-        # print(elem['code'] + ' ' + elem['code'][10])
         try:
             if elem['code'][10] != multiple:
                 continue
-            print(elem['code'] + '\t' + elem['time'])
             now = time()
-            if int(now) - int(start) > 500:
+            if int(now) - int(start) > 550:
                 logger_info.info(str(datetime.now()) + '\tRoutine too long. ' + str(multiple))
                 break
             code = elem['code']
@@ -104,7 +102,6 @@ if __name__ == '__main__':
                 "code": code
             })
             len_new_state = len(cursor2['stat'])
-            # print(str(len_old_state) + ' ' + str(len_new_state))
             if len_old_state != len_new_state:
                 for user in elem['users']:
                     logger_info.info(str(datetime.now()) + '\tUPDATE: '
@@ -126,14 +123,13 @@ if __name__ == '__main__':
                         bot.send_message(str(user), message, parse_mode='HTML',
                             disable_web_page_preview=True)
                         sent = sent + 1
-                        sleep(INTERVAL)
                     except Exception as e:
                         logger_info.info(str(datetime.now())
                              + '\tEXCEPT: ' + str(user) + ' '
                              + code + '\t -> ' + str(e))
+                    sleep(INTERVAL)
         except Exception as e:
             logger_info.info(str(datetime.now()) + '\tEXCEPT: ' + str(e)
                 + str(code) + ' \t' + str(user))
             sys.exit()
-        sleep(INTERVAL)
     # logger_info.info(str(datetime.now()) + '\t' + '--- UPDATE ' + multiple + ' finished! --- ' + '\tAlertas: ' + str(sent))
