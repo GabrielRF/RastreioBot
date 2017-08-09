@@ -78,6 +78,7 @@ if __name__ == '__main__':
     cursor1 = db.rastreiobot.find()
     start = time()
     sent = 0
+    error_msg = ''
     if check_system():
         pass
     else:
@@ -88,7 +89,7 @@ if __name__ == '__main__':
                 continue
             now = time()
             if int(now) - int(start) > 550:
-                logger_rout.info(str(datetime.now()) + '\tRoutine too long. ' + str(multiple))
+                error_msg = '\tRoutine too long'
                 break
             code = elem['code']
             time_dif = int(time() - float(elem['time']))
@@ -101,6 +102,12 @@ if __name__ == '__main__':
             old_state = elem['stat'][len(elem['stat'])-1]
             len_old_state = len(elem['stat'])
             if 'objeto entregue ao' in old_state.lower():
+                continue
+            elif 'objeto apreendido por órgão de fiscalização' in old_state.lower():
+                continue
+            elif 'objeto devolvido' in old_state.lower():
+                continue
+            elif 'objeto roubado' in old_state.lower():
                 continue
             stat = get_package(code)
             if stat == 0:
@@ -140,4 +147,4 @@ if __name__ == '__main__':
             logger_info.info(str(datetime.now()) + '\tEXCEPT: ' + str(e)
                 + str(code) + ' \t' + str(user))
             sys.exit()
-    logger_rout.info(str(datetime.now()) + '\t' + 'UPDATE ' + multiple + ' finished!' + '\tAlertas: ' + str(sent))
+    logger_rout.info(str(datetime.now()) + '\t' + 'UPDATE ' + multiple + ' finished!' + '\tAlertas: ' + str(sent) + error_msg)
