@@ -16,15 +16,23 @@ config.read('bot.conf')
 
 TOKEN = config['RASTREIOBOT']['TOKEN']
 int_check = int(config['RASTREIOBOT']['int_check'])
-LOG_INFO_FILE = config['RASTREIOBOT']['routine_log']
+LOG_INFO_FILE = config['RASTREIOBOT']['alerts_log']
+LOG_ROUTINE_FILE = config['RASTREIOBOT']['routine_log']
 PATREON = config['RASTREIOBOT']['patreon']
 INTERVAL = 0.015
 
 logger_info = logging.getLogger('InfoLogger')
-logger_info.setLevel(logging.DEBUG)
+logger_info.setLevel(logging.INFO)
 handler_info = logging.handlers.TimedRotatingFileHandler(LOG_INFO_FILE,
     when='midnight', interval=1, backupCount=5, encoding='utf-8')
 logger_info.addHandler(handler_info)
+
+logger_rout = logging.getLogger('RoutineLogger')
+logger_rout.setLevel(logging.DEBUG)
+handler_rout = logging.handlers.TimedRotatingFileHandler(LOG_ROUTINE_FILE,
+    when='midnight', interval=1, backupCount=5, encoding='utf-8')
+logger_rout.addHandler(handler_rout)
+
 
 bot = telebot.TeleBot(TOKEN)
 client = MongoClient()
@@ -80,7 +88,7 @@ if __name__ == '__main__':
                 continue
             now = time()
             if int(now) - int(start) > 550:
-                logger_info.info(str(datetime.now()) + '\tRoutine too long. ' + str(multiple))
+                logger_rout.info(str(datetime.now()) + '\tRoutine too long. ' + str(multiple))
                 break
             code = elem['code']
             time_dif = int(time() - float(elem['time']))
@@ -132,4 +140,4 @@ if __name__ == '__main__':
             logger_info.info(str(datetime.now()) + '\tEXCEPT: ' + str(e)
                 + str(code) + ' \t' + str(user))
             sys.exit()
-    # logger_info.info(str(datetime.now()) + '\t' + '--- UPDATE ' + multiple + ' finished! --- ' + '\tAlertas: ' + str(sent))
+    logger_rout.info(str(datetime.now()) + '\t' + '--- UPDATE ' + multiple + ' finished! --- ' + '\tAlertas: ' + str(sent))
