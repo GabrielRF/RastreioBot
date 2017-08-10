@@ -51,13 +51,10 @@ def check_update(code, max_retries=3):
         return 3
 
     if len(tabela) < 1:
-        print('Codigo não encontrado')
         return 1
     stats.append(str(u'\U0001F4EE') + ' <b>' + code + '</b>')
     for evento in reversed(tabela):
-        # print(index)
         data = evento['data'] + ' ' + evento['hora']
-        # print(data)
         try:
             local = evento['unidade']['local']
         except:
@@ -84,7 +81,4 @@ def check_update(code, max_retries=3):
             if 'liberado sem' in observacao.lower():
                 mensagem = mensagem + ' ' + str(u'\U0001F389')
         stats.append(mensagem)
-    # for elem in stats:
-        # print(elem)
-        # print('-')
     return stats
