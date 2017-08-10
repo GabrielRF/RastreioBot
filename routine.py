@@ -85,10 +85,10 @@ if __name__ == '__main__':
         sys.exit()
     for elem in cursor1:
         try:
-            if elem['code'][10] != multiple:
+            if elem['code'][9] != multiple:
                 continue
             now = time()
-            if int(now) - int(start) > 550:
+            if int(now) - int(start) > 500:
                 error_msg = '\tRoutine too long'
                 break
             code = elem['code']
@@ -142,7 +142,8 @@ if __name__ == '__main__':
                         logger_info.info(str(datetime.now())
                              + '\tEXCEPT: ' + str(user) + ' '
                              + code + '\t -> ' + str(e))
-                    sleep(INTERVAL)
+                        continue
+                    # sleep(INTERVAL)
         except Exception as e:
             logger_info.info(str(datetime.now()) + '\tEXCEPT: ' + str(e)
                 + str(code) + ' \t' + str(user))
