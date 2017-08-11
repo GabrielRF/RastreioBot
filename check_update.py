@@ -60,6 +60,15 @@ def check_update(code, max_retries=3):
         except:
             local = False
         situacao = evento['descricao']
+        if 'endereço indicado' in evento['descricao']:
+            try:
+                situacao = (situacao + '\n</b>' +
+                evento['unidade']['endereco']['numero'] + ' '
+                + evento['unidade']['endereco']['logradouro'] + '\n'
+                + evento['unidade']['endereco']['bairro'] + '<b>'
+                )
+            except:
+                pass
         try:
             observacao =str(evento['destino'][0]['local'])
         except:
