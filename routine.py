@@ -19,7 +19,7 @@ int_check = int(config['RASTREIOBOT']['int_check'])
 LOG_INFO_FILE = config['RASTREIOBOT']['alerts_log']
 LOG_ROUTINE_FILE = config['RASTREIOBOT']['routine_log']
 PATREON = config['RASTREIOBOT']['patreon']
-INTERVAL = 0.015
+INTERVAL = 0.01
 
 logger_info = logging.getLogger('InfoLogger')
 logger_info.setLevel(logging.INFO)
@@ -143,7 +143,7 @@ if __name__ == '__main__':
                              + '\tEXCEPT: ' + str(user) + ' '
                              + code + '\t -> ' + str(e))
                         continue
-                    # sleep(INTERVAL)
+                    sleep(INTERVAL)
         except Exception as e:
             logger_info.info(str(datetime.now()) + '\tEXCEPT: ' + str(e)
                 + str(code) + ' \t' + str(user))
