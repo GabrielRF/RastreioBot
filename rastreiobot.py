@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 from check_update import check_update
-from datetime import datetime
+from datetime import datetime, timedelta
 from time import time
 from pymongo import MongoClient
 from telebot import types
@@ -258,7 +258,9 @@ def echo_all(message):
     log_text(message.chat.id, message.message_id, message.text + '\t' + str(message.from_user.first_name))
     with open(LOG_ALERTS_FILE) as f:
         today = (sum(1 for _ in f))
-    with open(LOG_ALERTS_FILE + '.1') as f:
+    str_yesterday = datetime.now() - timedelta(1)
+    str_yesterday = str_yesterday.strftime('%Y-%m-%d')
+    with open(LOG_ALERTS_FILE + '.' + str_yesterday) as f:
         yesterday = (sum(1 for _ in f))
     qtd, wait = count_packages()
     chatid = message.chat.id
