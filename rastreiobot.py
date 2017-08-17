@@ -304,9 +304,13 @@ def echo_all(message):
 @bot.message_handler(commands=['del', 'Del'])
 def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')
+    log_text(message.chat.id, message.message_id, message.text + '\t' + str(message.from_user.first_name))
     try:
         code = message.text.split(' ')[1]
+        code = code.replace('@',' ')
         del_user(message.chat.id, code)
+        bot.send_message(message.chat.id,
+            'Pacote removido.')
     except:
         bot.send_message(message.chat.id,
             'Envie <code>/del código do pacote</code> para excluir o pacote de sua lista.'
