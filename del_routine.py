@@ -15,11 +15,11 @@ config.read('bot.conf')
 
 TOKEN = config['RASTREIOBOT']['TOKEN']
 int_del = int(config['RASTREIOBOT']['int_del'])
-LOG_INFO_FILE = config['RASTREIOBOT']['routine_log']
+LOG_DEL_FILE = config['RASTREIOBOT']['delete_log']
 
 logger_info = logging.getLogger('InfoLogger')
 logger_info.setLevel(logging.DEBUG)
-handler_info = logging.handlers.RotatingFileHandler(LOG_INFO_FILE,
+handler_info = logging.handlers.RotatingFileHandler(LOG_DEL_FILE,
     maxBytes=10240, backupCount=5, encoding='utf-8')
 logger_info.addHandler(handler_info)
 
@@ -28,6 +28,7 @@ client = MongoClient()
 db = client.rastreiobot
 
 def del_user(code):
+    logger_info.info(str(datetime.now()) + '\t' + code )
     cursor = db.rastreiobot.delete_one (
     { "code" : code.upper() }
     )
@@ -39,7 +40,7 @@ if __name__ == '__main__':
         code = elem['code']
         time_dif = int(time() - float(elem['time']))
         old_state = elem['stat'][len(elem['stat'])-1]
-        print(str(elem['code']) + ' ' + str(time_dif))
+        # print(str(elem['code']) + ' ' + str(time_dif))
         if 'Entrega Efetuada' in old_state:
             if time_dif > int_del:
                 # print(elem['code'])
