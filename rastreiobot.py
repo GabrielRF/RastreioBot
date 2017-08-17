@@ -151,15 +151,19 @@ def add_user(code, user):
         }
     })
 
-def del_user(code, user):
-    cursor = db.rastreiobot.update (
+def del_user(chatid, code):
+    cursor = db.rastreiobot.find()
+    for elem in cursor:
+        if str(chatid) in elem['users']:
+            array = elem['users']
+            array.remove(str(chatid))
+    cursor = db.rastreiobot.update_one (
     { "code" : code.upper() },
     {
-        "$pull": {
-            "users" : str(user)
+        "$set": {
+            "users" : array
         }
     })
-    print(str(cursor))
 
 ## Set a description to a package
 def set_desc(code, user, desc):
@@ -296,6 +300,19 @@ def echo_all(message):
         + '\n\n' + str(u'\U0001F517')  + ad
         + '\n\n@GabrielRF',
         disable_web_page_preview=True, parse_mode='HTML')
+
+@bot.message_handler(commands=['del', 'Del'])
+def echo_all(message):
+    bot.send_chat_action(message.chat.id, 'typing')
+    try:
+        code = message.text.split(' ')[1]
+        del_user(message.chat.id, code)
+    except:
+        bot.send_message(message.chat.id,
+            'Envie <code>/del código do pacote</code> para excluir o pacote de sua lista.'
+            '\n\n<code>/del PN123456789CD</code>'
+        , parse_mode='HTML')
+
 
 @bot.message_handler(content_types=['document', 'audio', 'photo'])
 def echo_all(message):
