@@ -264,8 +264,11 @@ def echo_all(message):
         today = (sum(1 for _ in f))
     str_yesterday = datetime.now() - timedelta(1)
     str_yesterday = str_yesterday.strftime('%Y-%m-%d')
-    with open(LOG_ALERTS_FILE + '.' + str_yesterday) as f:
-        yesterday = (sum(1 for _ in f))
+    try:
+        with open(LOG_ALERTS_FILE + '.' + str_yesterday) as f:
+            yesterday = (sum(1 for _ in f))
+    except:
+        yesterday = ''
     qtd, wait = count_packages()
     chatid = message.chat.id
     bot.send_message(chatid, str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n'
@@ -301,7 +304,7 @@ def echo_all(message):
         + '\n\n@GabrielRF',
         disable_web_page_preview=True, parse_mode='HTML')
 
-@bot.message_handler(commands=['del', 'Del'])
+@bot.message_handler(commands=['del', 'Del', 'remover', 'apagar'])
 def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')
     log_text(message.chat.id, message.message_id, message.text + '\t' + str(message.from_user.first_name))
