@@ -3,6 +3,7 @@ import json
 import requests
 import re
 from bs4 import BeautifulSoup
+from datetime import date
 
 config = configparser.ConfigParser()
 config.sections()
@@ -54,7 +55,22 @@ def check_update(code, max_retries=3):
         return 1
     stats.append(str(u'\U0001F4EE') + ' <b>' + code + '</b>')
     for evento in reversed(tabela):
+        try:
+            dia0 = int(tabela[len(tabela)-1]['data'].split('/')[0])
+            mes0 = int(tabela[len(tabela)-1]['data'].split('/')[1])
+            ano0 = int(tabela[len(tabela)-1]['data'].split('/')[2])
+            data0 = date(ano0, mes0, dia0)
+            dia1 = int(evento['data'].split('/')[0])
+            mes1 = int(evento['data'].split('/')[1])
+            ano1 = int(evento['data'].split('/')[2])
+            data1 = date(ano1, mes1, dia1)
+            delta = data1 - data0
+        except:
+            delta = 0
+            pass
         data = evento['data'] + ' ' + evento['hora']
+        if delta.days > 0:
+            data = data + ' (' + str(delta.days)  + ' dias)'
         try:
             local = evento['unidade']['local']
         except:
