@@ -27,13 +27,6 @@ handler_info = logging.handlers.TimedRotatingFileHandler(LOG_INFO_FILE,
     when='midnight', interval=1, backupCount=5, encoding='utf-8')
 logger_info.addHandler(handler_info)
 
-logger_rout = logging.getLogger('RoutineLogger')
-logger_rout.setLevel(logging.DEBUG)
-handler_rout = logging.handlers.TimedRotatingFileHandler(LOG_ROUTINE_FILE,
-    when='midnight', interval=1, backupCount=5, encoding='utf-8')
-logger_rout.addHandler(handler_rout)
-
-
 bot = telebot.TeleBot(TOKEN)
 client = MongoClient()
 db = client.rastreiobot
@@ -77,8 +70,7 @@ if __name__ == '__main__':
     sleep(60*int(multiple))
     cursor1 = db.rastreiobot.find()
     start = time()
-    sent = 0
-    error_msg = ''
+    sent = 1
     if check_system():
         pass
     else:
@@ -89,7 +81,7 @@ if __name__ == '__main__':
                 continue
             now = time()
             if int(now) - int(start) > 500:
-                error_msg = '\tRoutine too long'
+                logger_info.info(str(datetime.now()) + '\t' + multiple + '\tRoutine too long')
                 break
             code = elem['code']
             time_dif = int(time() - float(elem['time']))
@@ -119,8 +111,8 @@ if __name__ == '__main__':
             len_new_state = len(cursor2['stat'])
             if len_old_state != len_new_state:
                 for user in elem['users']:
-                    logger_info.info(str(datetime.now()) + '\tUPDATE: '
-                        + str(code) + ' \t' + str(user) + '\t' + str(sent))
+                    logger_info.info(str(datetime.now()) + '\t' + multiple + '\t'
+                        + str(code) + ' \t' + str(user) + ' \t' + str(sent))
                     try:
                         message = (str(u'\U0001F4EE') + '<b>' + code + '</b>\n')
                         if elem[user] != code:
@@ -145,7 +137,6 @@ if __name__ == '__main__':
                         continue
                     sleep(INTERVAL)
         except Exception as e:
-            logger_info.info(str(datetime.now()) + '\tEXCEPT: ' + str(e)
+            logger_info.info(str(datetime.now()) + '\t' + multiple + '\tEXCEPT: ' + str(e)
                 + str(code) + ' \t' + str(user))
             sys.exit()
-    logger_rout.info(str(datetime.now()) + '\t' + 'UPDATE ' + multiple + ' finished!' + '\tAlertas: ' + str(sent) + error_msg)
