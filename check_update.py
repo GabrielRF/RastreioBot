@@ -69,7 +69,9 @@ def check_update(code, max_retries=3):
             delta = 0
             pass
         data = evento['data'] + ' ' + evento['hora']
-        if delta.days > 0:
+        if delta.days == 1:
+            data = data + ' (' + str(delta.days)  + ' dia)'
+        elif delta.days > 1:
             data = data + ' (' + str(delta.days)  + ' dias)'
         try:
             local = evento['unidade']['local']
