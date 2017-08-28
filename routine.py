@@ -16,13 +16,13 @@ config.read('bot.conf')
 
 TOKEN = config['RASTREIOBOT']['TOKEN']
 int_check = int(config['RASTREIOBOT']['int_check'])
-LOG_INFO_FILE = config['RASTREIOBOT']['alerts_log']
+LOG_ALERTS_FILE = config['RASTREIOBOT']['alerts_log']
 PATREON = config['RASTREIOBOT']['patreon']
 INTERVAL = 0.01
 
 logger_info = logging.getLogger('InfoLogger')
 logger_info.setLevel(logging.DEBUG)
-handler_info = logging.handlers.TimedRotatingFileHandler(LOG_INFO_FILE,
+handler_info = logging.handlers.TimedRotatingFileHandler(LOG_ALERTS_FILE,
     when='midnight', interval=1, backupCount=5, encoding='utf-8')
 logger_info.addHandler(handler_info)
 
