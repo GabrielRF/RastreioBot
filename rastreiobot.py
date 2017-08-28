@@ -290,6 +290,7 @@ def echo_all(message):
         + str(u'\U0001F579') + '<b>Instruções</b>'
         + '\nEnvie para o bot o código de rastreio seguido da descrição do pacote.'
         + '\n<code>PN123456789BR Minha encomenda</code>'
+        + '\n\n Você também pode editar o nome da encomenda reenviando o código, com outro nome.'
         + '\n\n' + str(u'\U00002B50') + '<b>Avalie o bot:</b>'
         + '\nhttps://telegram.me/storebot?start=rastreiobot\n\n'
         + str(u'\U0001F4D6') + '<b>Bot open source:</b>\nhttps://github.com/GabrielRF/RastreioBot'
