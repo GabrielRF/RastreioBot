@@ -93,7 +93,7 @@ def check_update(code, max_retries=3):
             observacao = False
         mensagem = 'Data: ' + data.strip()
         if local:
-            mensagem = mensagem + '\nLocal: ' + local.strip()
+            mensagem = mensagem + '\nLocal: ' + local.strip().title()
         if situacao:
             mensagem = (mensagem + '\nSituação: <b>' +
                 situacao.strip() + '</b>')
