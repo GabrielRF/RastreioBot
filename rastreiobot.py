@@ -60,37 +60,41 @@ def count_packages():
 
 ## List packages of a user
 def list_packages(chatid, done):
-    cursor = db.rastreiobot.find()
-    aux = ''
-    qtd = 0
-    for elem in cursor:
-        if str(chatid) in elem['users']:
-            if not done:
-                if ('objeto entregue ao' not in elem['stat'][len(elem['stat'])-1].lower() and
-                    'objeto apreendido' not in elem['stat'][len(elem['stat'])-1].lower() and
-                    'objeto roubado' not in elem['stat'][len(elem['stat'])-1].lower() and
-                    'objeto devolvido' not in elem['stat'][len(elem['stat'])-1].lower()):
-                    aux = aux + '/' + elem['code']
-                    try:
-                        if elem[str(chatid)] != elem['code']:
-                            aux = aux + ' ' +  elem[str(chatid)]
-                    except:
-                        pass
-                    aux = aux + '\n'
-                    qtd = qtd + 1
-            else:
-                if ('objeto entregue ao' in elem['stat'][len(elem['stat'])-1].lower() or
-                    'objeto apreendido' in elem['stat'][len(elem['stat'])-1].lower() or
-                    'objeto roubado' in elem['stat'][len(elem['stat'])-1].lower() or
-                    'objeto devolvido' in elem['stat'][len(elem['stat'])-1].lower()):
-                    aux = aux + elem['code']
-                    try:
-                        if elem[str(chatid)] != elem['code']:
-                            aux = aux + ' ' +  elem[str(chatid)]
-                    except:
-                        pass
-                    aux = aux + '\n'
-                    qtd = qtd + 1
+    try:
+        cursor = db.rastreiobot.find()
+        aux = ''
+        qtd = 0
+        for elem in cursor:
+            if str(chatid) in elem['users']:
+                if not done:
+                    if ('objeto entregue ao' not in elem['stat'][len(elem['stat'])-1].lower() and
+                        'objeto apreendido' not in elem['stat'][len(elem['stat'])-1].lower() and
+                        'objeto roubado' not in elem['stat'][len(elem['stat'])-1].lower() and
+                        'objeto devolvido' not in elem['stat'][len(elem['stat'])-1].lower()):
+                        aux = aux + '/' + elem['code']
+                        try:
+                            if elem[str(chatid)] != elem['code']:
+                                aux = aux + ' ' +  elem[str(chatid)]
+                        except:
+                            pass
+                        aux = aux + '\n'
+                        qtd = qtd + 1
+                else:
+                    if ('objeto entregue ao' in elem['stat'][len(elem['stat'])-1].lower() or
+                        'objeto apreendido' in elem['stat'][len(elem['stat'])-1].lower() or
+                        'objeto roubado' in elem['stat'][len(elem['stat'])-1].lower() or
+                        'objeto devolvido' in elem['stat'][len(elem['stat'])-1].lower()):
+                        aux = aux + elem['code']
+                        try:
+                            if elem[str(chatid)] != elem['code']:
+                                aux = aux + ' ' +  elem[str(chatid)]
+                        except:
+                            pass
+                        aux = aux + '\n'
+                        qtd = qtd + 1
+    except:
+        bot.send_message('9083329', 'Erro MongoBD')
+        qtd = -1
     return aux, qtd
 
 ## Get last state of a package from DB
@@ -228,8 +232,10 @@ def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')
     chatid = message.chat.id
     message, qtd = list_packages(chatid, False)
-    if len(message) < 1:
-        message = "Nenhum pacote encontrado."
+    if qtd == 0:
+        message = 'Nenhum pacote encontrado.'
+    elif qtd == -1:
+        message = 'Ops!\nHouve um problema com o bot.\nTente novamente mais tarde.'
     else:
         message = '<b>Clique para ver o histórico:</b>\n' + message
     if qtd > 7 and str(chatid) not in PATREON:
