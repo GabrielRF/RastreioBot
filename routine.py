@@ -136,5 +136,5 @@ if __name__ == '__main__':
                     sleep(INTERVAL)
         except Exception as e:
             logger_info.info(str(datetime.now()) + '\t' + multiple + '\tEXCEPT: ' + str(e)
-                + str(code) + ' \t' + str(user))
+                + '\t' + str(code) + ' \t' + str(user))
             sys.exit()
