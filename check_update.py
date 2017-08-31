@@ -104,7 +104,7 @@ def check_update(code, max_retries=3):
             elif 'postado' in situacao.lower():
                 mensagem = mensagem + ' ' + str(u'\U0001F4E6')
         if observacao:
-            mensagem = mensagem + '\nObservação: ' + observacao.strip()
+            mensagem = mensagem + '\nObservação: ' + observacao.strip().title()
             if 'liberado sem' in observacao.lower():
                 mensagem = mensagem + ' ' + str(u'\U0001F389')
         stats.append(mensagem)
