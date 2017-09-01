@@ -27,8 +27,8 @@ bot = telebot.TeleBot(TOKEN)
 client = MongoClient()
 db = client.rastreiobot
 
-def del_user(code):
-    logger_info.info(str(datetime.now()) + '\t' + code )
+def del_user(code, msg):
+    logger_info.info(str(datetime.now()) + '\t' + code + '\t' + msg.replace('\n',' '))
     cursor = db.rastreiobot.delete_one (
     { "code" : code.upper() }
     )
@@ -44,26 +44,26 @@ if __name__ == '__main__':
         if 'Entrega Efetuada' in old_state:
             if time_dif > int_del:
                 # print(elem['code'])
-                del_user(elem['code'])
+                del_user(elem['code'], old_state)
         if 'Objeto entregue ao destinatário' in old_state:
             if time_dif > int_del:
                 # print(elem['code'])
-                del_user(elem['code'])
+                del_user(elem['code'], old_state)
         if 'Objeto apreendido por órgão de fiscalização' in old_state:
             if time_dif > int_del:
-                del_user(elem['code'])
+                del_user(elem['code'], old_state)
         if 'Objetvo devolvido' in old_state:
             if time_dif > int_del:
-                del_user(elem['code'])
+                del_user(elem['code'], old_state)
         if 'Objetvo roubado' in old_state:
             if time_dif > int_del:
-                del_user(elem['code'])
+                del_user(elem['code'], old_state)
         if 'Aguardando recebimento pelo ECT.' in old_state:
             if time_dif > int_del:
-                del_user(elem['code'])
+                del_user(elem['code'], old_state)
         if 'Aguardando recebimento pela ECT.' in old_state:
             if time_dif > int_del:
-                del_user(elem['code'])
+                del_user(elem['code'], old_state)
         if 'Objeto não localizado no fluxo postal.' in old_state:
             if time_dif > int_del:
-                del_user(elem['code'])
+                del_user(elem['code'], old_state)
