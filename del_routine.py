@@ -45,25 +45,28 @@ if __name__ == '__main__':
             if time_dif > int_del:
                 # print(elem['code'])
                 del_user(elem['code'], old_state)
-        if 'Objeto entregue ao destinatário' in old_state:
+        elif 'Objeto entregue ao destinatário' in old_state:
             if time_dif > int_del:
                 # print(elem['code'])
                 del_user(elem['code'], old_state)
-        if 'Objeto apreendido por órgão de fiscalização' in old_state:
+        elif 'Objeto apreendido por órgão de fiscalização' in old_state:
             if time_dif > int_del:
                 del_user(elem['code'], old_state)
-        if 'Objetvo devolvido' in old_state:
+        elif 'Objetvo devolvido' in old_state:
             if time_dif > int_del:
                 del_user(elem['code'], old_state)
-        if 'Objetvo roubado' in old_state:
+        elif 'Objetvo roubado' in old_state:
             if time_dif > int_del:
                 del_user(elem['code'], old_state)
-        if 'Aguardando recebimento pelo ECT.' in old_state:
+        elif 'Aguardando recebimento pelo ECT.' in old_state:
             if time_dif > int_del:
                 del_user(elem['code'], old_state)
-        if 'Aguardando recebimento pela ECT.' in old_state:
+        elif 'Aguardando recebimento pela ECT.' in old_state:
             if time_dif > int_del:
                 del_user(elem['code'], old_state)
-        if 'Objeto não localizado no fluxo postal.' in old_state:
+        elif 'Objeto não localizado no fluxo postal.' in old_state:
             if time_dif > int_del:
+                del_user(elem['code'], old_state)
+        else:
+            if time_dif > 2 * int_del:
                 del_user(elem['code'], old_state)
