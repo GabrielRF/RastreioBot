@@ -18,7 +18,7 @@ TOKEN = config['RASTREIOBOT']['TOKEN']
 int_check = int(config['RASTREIOBOT']['int_check'])
 LOG_ALERTS_FILE = config['RASTREIOBOT']['alerts_log']
 PATREON = config['RASTREIOBOT']['patreon']
-INTERVAL = 0.01
+INTERVAL = 0.03
 
 logger_info = logging.getLogger('InfoLogger')
 logger_info.setLevel(logging.DEBUG)
@@ -75,10 +75,10 @@ if __name__ == '__main__':
         sys.exit()
     for elem in cursor1:
         try:
-            if elem['code'][9] != multiple:
+            if elem['code'][5] != multiple:
                 continue
             now = time()
-            if int(now) - int(start) > 500:
+            if int(now) - int(start) > 830:
                 logger_info.info(str(datetime.now()) + '\t' + multiple + '\tRoutine too long')
                 break
             code = elem['code']
