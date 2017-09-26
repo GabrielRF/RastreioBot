@@ -284,7 +284,7 @@ def echo_all(message):
         + 'Alertas enviados ontem: ' + str(yesterday)
     , parse_mode='HTML')
 
-@bot.message_handler(commands=['info', 'Info'])
+@bot.message_handler(commands=['info', 'Info', 'help', 'Help'])
 def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')
     log_text(message.chat.id, message.message_id, message.text + '\t' + str(message.from_user.first_name))
