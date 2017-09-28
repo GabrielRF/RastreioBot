@@ -78,7 +78,8 @@ if __name__ == '__main__':
             if elem['code'][5] != multiple:
                 continue
             now = time()
-            if int(now) - int(start) > 830:
+            timediff = int(now) - int(start)
+            if timediff > 800:
                 logger_info.info(str(datetime.now()) + '\t' + multiple + '\tRoutine too long')
                 break
             code = elem['code']
@@ -110,7 +111,9 @@ if __name__ == '__main__':
             if len_old_state != len_new_state:
                 for user in elem['users']:
                     logger_info.info(str(datetime.now()) + '\t' + multiple + '\t'
-                        + str(code) + ' \t' + str(user) + ' \t' + str(sent))
+                        + str(code) + ' \t' + str(user) + ' \t' + str(sent) + '\t'
+                        + str(timediff) + ' ' + str(len_old_state) + ' '
+                        + str(len_new_state))
                     try:
                         message = (str(u'\U0001F4EE') + '<b>' + code + '</b>\n')
                         if elem[user] != code:
