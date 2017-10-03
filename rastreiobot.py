@@ -35,7 +35,7 @@ client = MongoClient()
 db = client.rastreiobot
 
 markup_btn = types.ReplyKeyboardMarkup(resize_keyboard=True)
-markup_btn.row('/Pacotes','/Info','/Concluidos')
+markup_btn.row('/Pacotes','/Info','/Concluidos', '/ConcluidosAlfa')
 markup_clean = types.ReplyKeyboardRemove(selective=False)
 
 ## Check if package exists in DB
@@ -58,10 +58,19 @@ def count_packages():
             qtd = qtd + 1
     return qtd, wait
 
+
+def sort_alpha(chatid):
+    chat = str(chatid)
+    packages = db.rastreiobot.find({'users': chat}).sort(chat, ASCENDING)
+    return packages
+
 ## List packages of a user
-def list_packages(chatid, done):
+def list_packages(chatid, done, alfa=False):
     try:
-        cursor = db.rastreiobot.find().sort('data_postagem', ASCENDING)
+        if alfa:
+            cursor = sort_alpha(chatid)
+        else:
+            cursor = db.rastreiobot.find().sort('data_postagem', ASCENDING)
         aux = ''
         qtd = 0
         for elem in cursor:
@@ -328,6 +337,25 @@ def echo_all(message):
             'Envie <code>/del código do pacote</code> para excluir o pacote de sua lista.'
             '\n\n<code>/del PN123456789CD</code>'
         , parse_mode='HTML')
+
+
+@bot.message_handler(commands=['concluidosalfa', 'ConcluidosAlfa', 'Concluidosalfa', 'concluidosAlfa'])
+def echo_all(message):
+    bot.send_chat_action(message.chat.id, 'typing')
+    chatid = message.chat.id
+    message, qtd = list_packages(chatid, True, True)
+
+    if len(message) < 1:
+        message = "Nenhum pacote encontrado."
+    else:
+        message = '<b>Pacotes concluídos nos últimos 30 dias:</b>\n' + message
+    if qtd > 12 and str(chatid) not in PATREON:
+        message = (
+            message + '\n'
+            + str(u'\U0001F4B5') + '<b>Colabore!</b>'
+            + '\nhttp://grf.xyz/paypal'
+        )
+    bot.send_message(chatid, message, parse_mode='HTML')
 
 
 @bot.message_handler(content_types=['document', 'audio', 'photo'])
