@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 from check_update import check_update
 from datetime import datetime, timedelta
 from time import time
-from pymongo import MongoClient
+from pymongo import MongoClient, ASCENDING
 from telebot import types
 
 import configparser
@@ -61,7 +61,7 @@ def count_packages():
 ## List packages of a user
 def list_packages(chatid, done):
     try:
-        cursor = db.rastreiobot.find()
+        cursor = db.rastreiobot.find().sort('data_postagem', ASCENDING)
         aux = ''
         qtd = 0
         for elem in cursor:
@@ -119,7 +119,7 @@ def check_user(code, user):
 ## Insert package on DB
 def add_package(code, user):
     # import ipdb; ipdb.set_trace()
-    stat = get_update(code)
+    stat, data_postagem = get_update(code)
     if stat == 0:
         return stat
     elif stat == 2:
@@ -140,7 +140,8 @@ def add_package(code, user):
             "code" : code.upper(),
             "users" : [user],
             "stat" : stat,
-            "time" : str(time())
+            "time" : str(time()),
+            "data_postagem": data_postagem
         })
         stat = 10
     return stat

@@ -3,7 +3,7 @@ import json
 import requests
 import re
 from bs4 import BeautifulSoup
-from datetime import date
+from datetime import date, datetime
 
 config = configparser.ConfigParser()
 config.sections()
@@ -18,6 +18,7 @@ def check_update(code, max_retries=3):
     if not (re.search(regexp, code)):
         return 2
     stats = []
+    data_postagem = ''
     try:
         request_xml = '''
             <rastroObjeto>
@@ -55,6 +56,8 @@ def check_update(code, max_retries=3):
         return 1
     stats.append(str(u'\U0001F4EE') + ' <b>' + code + '</b>')
     for evento in reversed(tabela):
+        if 'postagem' in evento.keys() and evento.get('postagem', {}).get('datapostagem'):
+            data_postagem = datetime.strptime(evento.get('postagem').get('datapostagem'), '%d/%m/%Y %H:%M:%S')
         try:
             dia0 = int(tabela[len(tabela)-1]['data'].split('/')[0])
             mes0 = int(tabela[len(tabela)-1]['data'].split('/')[1])
@@ -108,4 +111,4 @@ def check_update(code, max_retries=3):
             if 'liberado sem' in observacao.lower():
                 mensagem = mensagem + ' ' + str(u'\U0001F389')
         stats.append(mensagem)
-    return stats
+    return stats, data_postagem
