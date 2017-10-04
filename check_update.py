@@ -56,6 +56,7 @@ def check_update(code, max_retries=3):
         return 1
     stats.append(str(u'\U0001F4EE') + ' <b>' + code + '</b>')
     for evento in reversed(tabela):
+        # extract string post date and make a cast to datetime
         if 'postagem' in evento.keys() and evento.get('postagem', {}).get('datapostagem'):
             data_postagem = datetime.strptime(evento.get('postagem').get('datapostagem'), '%d/%m/%Y %H:%M:%S')
         try:

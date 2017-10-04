@@ -60,13 +60,25 @@ def count_packages():
 
 
 def sort_alpha(chatid):
+    '''
+    Retrieves a user packages in alphabetical order
+
+    Args:
+        chatid (int): user/chat id
+
+    Returns:
+        Mongodb cursor: packages in alphabetical order
+    '''
     chat = str(chatid)
+
+    # query user packages and sort them in alphabetical order using the user description
     packages = db.rastreiobot.find({'users': chat}).sort(chat, ASCENDING)
     return packages
 
 ## List packages of a user
 def list_packages(chatid, done, alfa=False):
     try:
+        # "alfa" parameter sort the packages in alphabetical order by description
         if alfa:
             cursor = sort_alpha(chatid)
         else:
@@ -339,6 +351,7 @@ def echo_all(message):
         , parse_mode='HTML')
 
 
+# Query packages and sort in alphabetical order
 @bot.message_handler(commands=['pacotesalfa', 'PacotesAlfa', 'Pacotesalfa', 'pacotesAlfa'])
 def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')
@@ -360,6 +373,7 @@ def echo_all(message):
     bot.send_message(chatid, message, parse_mode='HTML', reply_markup=markup_clean)
 
 
+# Query done packages and sort in alphabetical order
 @bot.message_handler(commands=['concluidosalfa', 'ConcluidosAlfa', 'Concluidosalfa', 'concluidosAlfa'])
 def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')

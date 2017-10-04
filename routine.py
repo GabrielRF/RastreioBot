@@ -33,6 +33,7 @@ db = client.rastreiobot
 multiple = sys.argv[1]
 
 def get_package(code):
+    # ignores the second parameter
     stat, _ = check_update(code)
     if stat == 0:
         stat = 'Sistema dos Correios fora do ar.'
