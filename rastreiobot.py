@@ -35,7 +35,7 @@ client = MongoClient()
 db = client.rastreiobot
 
 markup_btn = types.ReplyKeyboardMarkup(resize_keyboard=True)
-markup_btn.row('/Pacotes','/Info','/Concluidos', '/ConcluidosAlfa')
+markup_btn.row('/Pacotes','/Info','/Concluidos')
 markup_clean = types.ReplyKeyboardRemove(selective=False)
 
 ## Check if package exists in DB
@@ -337,6 +337,27 @@ def echo_all(message):
             'Envie <code>/del código do pacote</code> para excluir o pacote de sua lista.'
             '\n\n<code>/del PN123456789CD</code>'
         , parse_mode='HTML')
+
+
+@bot.message_handler(commands=['pacotesalfa', 'PacotesAlfa', 'Pacotesalfa', 'pacotesAlfa'])
+def echo_all(message):
+    bot.send_chat_action(message.chat.id, 'typing')
+    chatid = message.chat.id
+    message, qtd = list_packages(chatid, done=False, alfa=True)
+
+    if qtd == 0:
+        message = 'Nenhum pacote encontrado.'
+    elif qtd == -1:
+        message = 'Ops!\nHouve um problema com o bot.\nTente novamente mais tarde.'
+    else:
+        message = '<b>Clique para ver o histórico:</b>\n' + message
+    if qtd > 7 and str(chatid) not in PATREON:
+        message = (
+            message + '\n'
+            + str(u'\U0001F4B5') + '<b>Colabore!</b>'
+            + '\nhttp://grf.xyz/paypal'
+        )
+    bot.send_message(chatid, message, parse_mode='HTML', reply_markup=markup_clean)
 
 
 @bot.message_handler(commands=['concluidosalfa', 'ConcluidosAlfa', 'Concluidosalfa', 'concluidosAlfa'])
