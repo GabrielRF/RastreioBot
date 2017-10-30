@@ -340,7 +340,7 @@ def echo_all(message):
     log_text(message.chat.id, message.message_id, message.text)
     user = str(message.chat.id)
     code = str(message.text.split(' ')[0]).replace('/','')
-    code = code.upper()
+    code = code.upper().strip()
     code = code.replace('@RASTREIOBOT', '')
     try:
         desc = str(message.text.split(' ', 1)[1])
