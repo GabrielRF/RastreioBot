@@ -90,8 +90,11 @@ if __name__ == '__main__':
                         continue
                 else:
                     print(user)
-            old_state = elem['stat'][len(elem['stat'])-1]
-            len_old_state = len(elem['stat'])
+            try:
+                old_state = elem['stat'][len(elem['stat'])-1]
+                len_old_state = len(elem['stat'])
+            except:
+                len_old_state = 1
             if 'objeto entregue ao' in old_state.lower():
                 continue
             elif 'objeto apreendido por órgão de fiscalização' in old_state.lower():
@@ -107,7 +110,10 @@ if __name__ == '__main__':
             {
                 "code": code
             })
-            len_new_state = len(cursor2['stat'])
+            try:
+                len_new_state = len(cursor2['stat'])
+            except:
+                len_new_state = 1
             if len_old_state != len_new_state:
                 for user in elem['users']:
                     logger_info.info(str(datetime.now()) + '\t' + multiple + '\t'
