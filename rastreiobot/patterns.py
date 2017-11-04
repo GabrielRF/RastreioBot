@@ -1,13 +1,19 @@
+import re
+
 from bottery.conf.patterns import Pattern
-from bottery.views import pong
-from bottery.message import render
+
+from views import add_pacote, info, lista_pacotes
 
 
-def info(message):
-    return render(message, 'info.md')
+class RegexPattern(Pattern):
+    def check(self, message):
+        if bool(re.match(self.pattern, message.text)):
+            return self.view
+        return False
 
 
 patterns = [
-    Pattern('ping', pong),
     Pattern('/info', info),
+    Pattern('/pacotes', lista_pacotes),
+    RegexPattern(r'^[A-Za-z]{2}\d{9}[A-Za-z]{2}$', add_pacote),
 ]
