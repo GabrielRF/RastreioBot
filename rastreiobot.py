@@ -67,6 +67,10 @@ def list_packages(chatid, done):
         qtd = 0
         for elem in cursor:
             if str(chatid) in elem['users']:
+                try:
+                    len(elem['stat'])
+                except:
+                    elem['stat'] = ['Sistema fora do ar']
                 if not done:
                     if ('objeto entregue ao' not in elem['stat'][len(elem['stat'])-1].lower() and
                         'objeto apreendido' not in elem['stat'][len(elem['stat'])-1].lower() and
@@ -132,9 +136,6 @@ def add_package(code, user):
         stats.append(str(u'\U0001F4EE') + ' <b>' + code + '</b>')
         if stat == 1:
             stats.append('Aguardando recebimento pela ECT.')
-            stat = stats
-        elif stat == 3:
-            stats.append('Sistema indisponível. Seu pacote foi salvo e você receberá as atualizações assim que o sistema retornar.')
             stat = stats
         cursor = db.rastreiobot.insert_one (
         {
