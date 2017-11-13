@@ -49,7 +49,7 @@ def check_update(code, max_retries=3):
         result = json.loads(response)
         tabela = result['objeto'][0]['evento']
     except:
-        return 3
+        return 1
 
     if len(tabela) < 1:
         return 1
