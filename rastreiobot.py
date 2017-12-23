@@ -209,7 +209,7 @@ def log_text(chatid, message_id, text):
         + ' \t' + str(text)
     )
 
-@bot.message_handler(commands=['start', 'Repetir', 'Historico'])
+@bot.message_handler(commands=['Repetir', 'Historico'])
 def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')
     chatid = message.chat.id
@@ -341,7 +341,7 @@ def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')
     log_text(message.chat.id, message.message_id, message.text)
     user = str(message.chat.id)
-    code = str(message.text.split(' ')[0]).replace('/','')
+    code = str(message.text.replace('/start ','').split(' ')[0]).replace('/','')
     code = code.upper()
     code = code.replace('@RASTREIOBOT', '')
     try:
@@ -400,6 +400,22 @@ def echo_all(message):
                         status_package(code)[last], parse_mode='HTML',
                         reply_markup=markup_clean
                     )
+    elif code == 'START':
+        user = (str(u'\U0001F4EE') + '<b>@RastreioBot!</b>\n\n'
+            'Por favor, envie um código de objeto.\n\n' +
+            'Para adicionar uma descrição, envie um código ' +
+            'seguido da descrição.\n\n' +
+            '<i>PN123456789BR Minha encomenda</i>')
+        group = (str(u'\U0001F4EE') + '<b>@RastreioBot!</b>\n\n'
+            'Por favor, envie um código de objeto.\n\n' +
+            'Para adicionar uma descrição, envie um código ' +
+            'seguido da descrição.\n\n' +
+            '<i>/PN123456789BR Minha encomenda</i>')
+        if int(message.chat.id) > 0:
+            bot.send_message(message.chat.id, user, parse_mode='HTML', reply_markup=markup_clean)
+        else:
+            bot.send_message(message.chat.id, group, parse_mode='HTML', reply_markup=markup_clean)
+
     else:
         if int(user) > 0:
             bot.reply_to(message, "Erro.\nVerifique se o código foi digitado corretamente.")
