@@ -306,9 +306,9 @@ def echo_all(message):
         + '\n\n' + str(u'\U0001F680') + '<b>Conheça meus outros projetos:</b>'
         + '\nhttp://grf.xyz/telegrambr\n\n'
         + str(u'\U0001F4B5') + '<b>Colabore!</b>'
-        + '\nhttp://patreon.com/gabrielrf'
-        + '\nhttp://grf.xyz/paypal'
-        + '\nPicPay: GabrielRF'
+        + '\nPicPay: http://grf.xyz/picpay'
+        + '\nPayPal: http://grf.xyz/paypal'
+        + '\nPatreon: http://grf.xyz/patreon'
         + '\n\n<b>Colaboradores recorrentes recebem os alertas mais rapidamente!</b>'
         + '\n\n' + str(u'\U0001F517')  + ad
         + '\n\n@GabrielRF',
