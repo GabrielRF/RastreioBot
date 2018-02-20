@@ -240,6 +240,8 @@ def echo_all(message):
         message = 'Ops!\nHouve um problema com o bot.\nTente novamente mais tarde.'
     else:
         message = '<b>Clique para ver o histórico:</b>\n' + message
+        if len(message) > 4000:
+            message = message[0:4000]
     if qtd > 7 and str(chatid) not in PATREON:
         message = (
             message + '\n'
