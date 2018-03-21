@@ -49,5 +49,4 @@ patreon = (
 not_found = ('Nenhum pacote encontrado.')
 
 remove = ('Envie <code>/del código do pacote</code> para excluir o pacote de sua lista.'
-    '\n\n<code>/del PN123456789CD</code>'
-)
+    '\n\n<code>/del PN123456789CD</code>')

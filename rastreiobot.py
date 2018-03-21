@@ -6,6 +6,7 @@ from time import time
 
 import configparser
 import msgs
+import status
 import requests
 import telebot
 from check_update import check_update
@@ -135,11 +136,10 @@ def check_user(code, user):
 
 # Insert package on DB
 def add_package(code, user):
-    print("add_package")
     stat = get_update(code)
-    if stat == 0:
+    if stat == status.OFFLINE:
         return stat
-    elif stat == 2:
+    elif stat == status.TYPO:
         return stat
     else:
         stats = []
@@ -153,7 +153,7 @@ def add_package(code, user):
                 "stat": stat,
                 "time": str(time())
             })
-        stat = 10
+        stat = status.OK
     return stat
 
 
@@ -349,11 +349,11 @@ def echo_all(message):
             exists = check_user(code, user)
             if not exists:
                 add_user(code, user)
-            status = status_package(code)
+            statts = status_package(code)
             message = ''
             system = check_system()
-            for status in status_package(code):
-                message = message + '\n\n' + status
+            for stat in statts_package(code):
+                message = message + '\n\n' + stat
             if not system:
                 message = (message + msgs.error_sys)
             if int(user) > 0:
@@ -369,13 +369,13 @@ def echo_all(message):
                 set_desc(str(code), str(user), desc)
         else:
             stat = add_package(str(code), str(user))
-            if stat == 0:
+            if stat == status.OFFLINE:
                 bot.reply_to(message, 'Correios fora do ar')
-            if stat == 2:
+            if stat == status.TYPO:
                 bot.reply_to(message, msgs.typo)
-            elif stat == 1:
+            elif stat == status.NOT_FOUND:
                 bot.reply_to(message, msgs.not_found)
-            elif stat == 10:
+            elif stat == status.OK:
                 set_desc(str(code), str(user), desc)
                 if int(message.chat.id) > 0:
                     bot.reply_to(
@@ -389,8 +389,8 @@ def echo_all(message):
                         'Pacote cadastrado.',
                         reply_markup=markup_clean
                     )
-                status = status_package(code)
-                last = len(status) - 1
+                stats = status_package(code)
+                last = len(stats) - 1
                 if int(user) > 0:
                     bot.send_message(
                         user,

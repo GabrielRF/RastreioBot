@@ -1,22 +1,24 @@
 import json
 from datetime import date
-
-from apicorreios import get
+import status
 from misc import check_type
 
 
 def check_update(code, max_retries=3):
-    if check_type(code) is None:
-            return 2
+    api_type = check_type(code)
+    if check_type(api_type) is None:
+            print("falhando no teste")
+            return status.TYPO
     stats = []
     try:
-        response = get(code, max_retries)
+        response = api_type.get(code, max_retries)
+        print(response)
         result = json.loads(response)
         tabela = result['objeto'][0]['evento']
     except Exception:
-        return 1
+        return status.NOT_FOUND
     if len(tabela) < 1:
-        return 1
+        return status.NOT_FOUND
     stats.append(str(u'\U0001F4EE') + ' <b>' + code + '</b>')
     for evento in reversed(tabela):
         try:
