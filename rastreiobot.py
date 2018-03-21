@@ -36,7 +36,8 @@ client = MongoClient()
 db = client.rastreiobot
 
 markup_btn = types.ReplyKeyboardMarkup(resize_keyboard=True)
-markup_btn.row('/Pacotes','/Info','/Concluidos')
+markup_btn.row('/Pacotes','/Resumo')
+markup_btn.row('/Info','/Concluidos')
 markup_clean = types.ReplyKeyboardRemove(selective=False)
 
 ## Check if package exists in DB
@@ -60,7 +61,7 @@ def count_packages():
     return qtd, wait
 
 ## List packages of a user
-def list_packages(chatid, done):
+def list_packages(chatid, done, status):
     aux = ''
     try:
         cursor = db.rastreiobot.find({'users': str(chatid)}).sort(str(chatid), ASCENDING)
@@ -76,10 +77,15 @@ def list_packages(chatid, done):
                         'objeto apreendido' not in elem['stat'][len(elem['stat'])-1].lower() and
                         'objeto roubado' not in elem['stat'][len(elem['stat'])-1].lower() and
                         'objeto devolvido' not in elem['stat'][len(elem['stat'])-1].lower()):
-                        aux = aux + '/' + elem['code']
+                        if status:
+                            aux = aux +  elem['code']
+                        else:
+                            aux = aux + '/' + elem['code']
                         try:
                             if elem[str(chatid)] != elem['code']:
-                                aux = aux + ' ' +  elem[str(chatid)]
+                                aux = aux + ' <b>' +  elem[str(chatid)] + '</b>'
+                            if status:
+                                aux = aux + '\n' + elem['stat'][len(elem['stat'])-1] + '\n'
                         except:
                             pass
                         aux = aux + '\n'
@@ -233,13 +239,14 @@ def echo_all(message):
 def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')
     chatid = message.chat.id
-    message, qtd = list_packages(chatid, False)
+    message, qtd = list_packages(chatid, False, False)
     if qtd == 0:
         message = 'Nenhum pacote encontrado.'
     elif qtd == -1:
         message = 'Ops!\nHouve um problema com o bot.\nTente novamente mais tarde.'
     else:
         message = '<b>Clique para ver o histórico:</b>\n' + message
+        msg = message
         if len(message) > 4000:
             message = message[0:4000]
     if qtd > 7 and str(chatid) not in PATREON:
@@ -249,12 +256,40 @@ def echo_all(message):
             + '\nhttp://grf.xyz/paypal'
         )
     bot.send_message(chatid, message, parse_mode='HTML', reply_markup=markup_clean)
+    if len(msg) > 4000:
+        message = msg[4000:]
+        bot.send_message(chatid, message, parse_mode='HTML', reply_markup=markup_clean)
+
+@bot.message_handler(commands=['resumo', 'Resumo'])
+def echo_all(message):
+    bot.send_chat_action(message.chat.id, 'typing')
+    chatid = message.chat.id
+    message, qtd = list_packages(chatid, False, True)
+    if qtd == 0:
+        message = 'Nenhum pacote encontrado.'
+    elif qtd == -1:
+        message = 'Ops!\nHouve um problema com o bot.\nTente novamente mais tarde.'
+    else:
+        message = '<b>Resumo dos pacotes:</b>\n\n' + message
+        msg = message
+        if len(message) > 4000:
+            message = message[0:4000]
+    if qtd > 7 and str(chatid) not in PATREON:
+        message = (
+            message + '\n'
+            + str(u'\U0001F4B5') + '<b>Colabore!</b>'
+            + '\nhttp://grf.xyz/paypal'
+        )
+    bot.send_message(chatid, message, parse_mode='HTML', reply_markup=markup_clean)
+    if len(msg) > 4000:
+        message = msg[4000:]
+        bot.send_message(chatid, message, parse_mode='HTML', reply_markup=markup_clean)
 
 @bot.message_handler(commands=['concluidos','Concluidos'])
 def echo_all(message):
     bot.send_chat_action(message.chat.id, 'typing')
     chatid = message.chat.id
-    message, qtd = list_packages(chatid, True)
+    message, qtd = list_packages(chatid, True, False)
     if len(message) < 1:
         message = "Nenhum pacote encontrado."
     else:
