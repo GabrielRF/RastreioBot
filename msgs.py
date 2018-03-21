@@ -1,0 +1,53 @@
+user = (str(u'\U0001F4EE') + '<b>@RastreioBot!</b>\n\n'
+    'Por favor, envie um código de objeto.\n\n' +
+    'Para adicionar uma descrição, envie um código ' +
+    'seguido da descrição.\n\n' +
+    '<i>PN123456789BR Minha encomenda</i>')
+
+group = (str(u'\U0001F4EE') + '<b>@RastreioBot!</b>\n\n'
+    'Por favor, envie um código de objeto.\n\n' +
+    'Para adicionar uma descrição, envie um código ' +
+    'seguido da descrição.\n\n' +
+    '<i>/PN123456789BR Minha encomenda</i>')
+
+error_sys = ('\n\n' + str(u'\U000026A0') + ' <b>Atenção</b>\n' +
+    'Sistema dos Correios indisponível.\n'+
+    'Os alertas poderão atrasar.')
+
+not_found = ('Código não foi encontrado no sistema dos Correios.\n'
+    + 'Talvez seja necessário aguardar algumas horas para'
+    + ' que esteja disponível para consultas.')
+
+typo = ('Erro.\nVerifique se o código foi digitado corretamente.')
+
+howto = (str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n'
+    + str(u'\U0001F579') + '<b>Instruções</b>'
+    + '\nEnvie para o bot o código de rastreio seguido da descrição do pacote.'
+    + '\n<code>PN123456789BR Minha encomenda</code>'
+    + '\nPara editar a descrição, repita o procedimento.'
+    + '\nUtilize <code>/del</code> para remover pacotes.'
+    + '\n\n' + str(u'\U00002B50') + '<b>Avalie o bot:</b>'
+    + '\nhttps://telegram.me/storebot?start=rastreiobot\n\n'
+    + str(u'\U0001F4D6') + '<b>Bot open source:</b>\nhttps://github.com/GabrielRF/RastreioBot'
+    + '\n\n' + str(u'\U0001F680') + '<b>Conheça meus outros projetos:</b>'
+    + '\nhttp://grf.xyz/telegrambr\n\n'
+    + str(u'\U0001F4B5') + '<b>Colabore!</b>'
+    + '\nPicPay: http://grf.xyz/picpay'
+    + '\nPayPal: http://grf.xyz/paypal'
+    + '\nPatreon: http://grf.xyz/patreon'
+    + '\n\n<b>Colaboradores recorrentes recebem os alertas mais rapidamente!</b>'
+    + '\n\n' + str(u'\U0001F517'))
+
+error_bot = ('Ops!\nHouve um problema com o bot.\nTente novamente mais tarde.')
+
+patreon = (
+    '\n'
+    + str(u'\U0001F4B5') + '<b>Colabore!</b>'
+    + '\nhttp://grf.xyz/paypal'
+    )
+
+not_found = ('Nenhum pacote encontrado.')
+
+remove = ('Envie <code>/del código do pacote</code> para excluir o pacote de sua lista.'
+    '\n\n<code>/del PN123456789CD</code>'
+)
