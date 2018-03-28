@@ -10,6 +10,7 @@ def check_update(code, max_retries=3):
     if api_type is None:
             return status.TYPO
     stats = []
+    print(api_type)
     try:
         response = api_type.get(code, max_retries)
         result = json.loads(response)
