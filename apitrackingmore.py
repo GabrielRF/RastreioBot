@@ -1,18 +1,16 @@
-import sys
-import json
 import urllib.request
 import urllib.parse
-import http.client
+
 # arquivo original em
 # https://www.trackingmore.com/api-class_python.html
-headers={"Content-Type":"application/json",
+headers = {"Content-Type":"application/json",
         "Trackingmore-Api-Key":"YOUR API KEY",
         'X-Requested-With':'XMLHttpRequest'
         }
 
 
 def get(code):
-    print("trackingmore")
+    print("chegando no trackingmore")
     result = trackingmore(code, "", "get")
     return result
 
@@ -54,7 +52,3 @@ def trackingmore(requestData, urlStr, method):
         req = urllib.request.Request(RelUrl,requestData.encode('utf-8'), headers=headers,method="POST")
         result = urllib.request.urlopen(req).read()
     return result
-
-
-
-

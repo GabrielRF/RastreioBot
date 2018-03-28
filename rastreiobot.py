@@ -52,6 +52,7 @@ def check_package(code):
 # Count packages
 def count_packages():
     cursor = db.rastreiobot.find()
+    print('count')
     print(str(cursor))
     qtd = 0
     wait = 0
@@ -117,6 +118,8 @@ def status_elem(elem):
 
 # Get last state of a package from DB
 def status_package(code):
+    print("code:" + code)
+    print(db)
     cursor = db.rastreiobot.find_one({
         "code": code
     })
@@ -136,6 +139,7 @@ def check_user(code, user):
 
 # Insert package on DB
 def add_package(code, user):
+    print("add_package")
     stat = get_update(code)
     if stat == status.OFFLINE:
         return stat
@@ -147,7 +151,7 @@ def add_package(code, user):
         if stat == 1:
             stats.append('Aguardando recebimento pela ECT.')
             stat = stats
-            db.rastreiobot.insert_one({
+        db.rastreiobot.insert_one({
                 "code": code.upper(),
                 "users": [user],
                 "stat": stat,
@@ -196,6 +200,7 @@ def check_system():
         response = requests.get(url, timeout=3)
     except Exception:
         return False
+        print('check_system')
     print(str(response))
     if '200' in str(response):
         return True
@@ -218,7 +223,7 @@ def log_text(chatid, message_id, text):
 
 
 @bot.message_handler(commands=['Repetir', 'Historico'])
-def echo_all(message):
+def cmd_repetir(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if int(message.chat.id) > 0:
         send_clean_msg(bot, message.chat.id, msgs.user)
@@ -227,7 +232,7 @@ def echo_all(message):
 
 
 @bot.message_handler(commands=['pacotes', 'Pacotes'])
-def echo_all(message):
+def cmd_pacotes(message):
     bot.send_chat_action(message.chat.id, 'typing')
     chatid = message.chat.id
     message, qtd = list_packages(chatid, False)
@@ -245,7 +250,7 @@ def echo_all(message):
 
 
 @bot.message_handler(commands=['concluidos', 'Concluidos'])
-def echo_all(message):
+def cmd_concluidos(message):
     bot.send_chat_action(message.chat.id, 'typing')
     chatid = message.chat.id
     message, qtd = list_packages(chatid, True)
@@ -259,7 +264,7 @@ def echo_all(message):
 
 
 @bot.message_handler(commands=['status', 'Status'])
-def echo_all(message):
+def cmd_status(message):
     log_text(
         message.chat.id,
         message.message_id,
@@ -287,7 +292,7 @@ def echo_all(message):
 
 
 @bot.message_handler(commands=['info', 'Info', 'help', 'Help'])
-def echo_all(message):
+def cmd_help(message):
     bot.send_chat_action(message.chat.id, 'typing')
     log_text(
         message.chat.id,
@@ -306,7 +311,7 @@ def echo_all(message):
 
 
 @bot.message_handler(commands=['del', 'Del', 'remover', 'apagar'])
-def echo_all(message):
+def cmd_remove(message):
     bot.send_chat_action(message.chat.id, 'typing')
     log_text(
         message.chat.id,
@@ -323,14 +328,14 @@ def echo_all(message):
 
 
 @bot.message_handler(content_types=['document', 'audio', 'photo'])
-def echo_all(message):
+def cmd_format(message):
     bot.reply_to(message, 'Formato inválido')
     log_text(message.chat.id, message.message_id, 'Formato inválido')
 
 
 # entry point for adding a tracking number
 @bot.message_handler(func=lambda m: True)
-def echo_all(message):
+def cmd_magic(message):
     bot.send_chat_action(message.chat.id, 'typing')
     log_text(message.chat.id, message.message_id, message.text)
     user = str(message.chat.id)
@@ -342,17 +347,17 @@ def echo_all(message):
         desc = str(message.text.split(' ', 1)[1])
     except Exception:
         desc = code
-        # aqui vou separar em dois tipo de rastreio
     if check_type(code) is not None:
         exists = check_package(code)
         if exists:
+            print('exists true')
             exists = check_user(code, user)
             if not exists:
                 add_user(code, user)
             statts = status_package(code)
             message = ''
             system = check_system()
-            for stat in statts_package(code):
+            for stat in statts:
                 message = message + '\n\n' + stat
             if not system:
                 message = (message + msgs.error_sys)
@@ -389,8 +394,7 @@ def echo_all(message):
                         'Pacote cadastrado.',
                         reply_markup=markup_clean
                     )
-                stats = status_package(code)
-                last = len(stats) - 1
+                last = len(status_package(code)) - 1
                 if int(user) > 0:
                     bot.send_message(
                         user,

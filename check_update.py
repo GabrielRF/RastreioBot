@@ -5,14 +5,13 @@ from misc import check_type
 
 
 def check_update(code, max_retries=3):
+    print(' check_update')
     api_type = check_type(code)
-    if check_type(api_type) is None:
-            print("falhando no teste")
+    if api_type is None:
             return status.TYPO
     stats = []
     try:
         response = api_type.get(code, max_retries)
-        print(response)
         result = json.loads(response)
         tabela = result['objeto'][0]['evento']
     except Exception:
