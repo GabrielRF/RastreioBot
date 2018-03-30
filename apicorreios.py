@@ -11,6 +11,7 @@ token = config['CORREIOS']['token']
 
 
 def get(code, retries):
+    print("correios")
     try:
         request_xml = '''
             <rastroObjeto>

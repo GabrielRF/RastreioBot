@@ -2,7 +2,6 @@ import logging
 import logging.handlers
 import random
 from datetime import datetime, timedelta
-from time import time
 
 import configparser
 import msgs
@@ -52,8 +51,6 @@ def check_package(code):
 # Count packages
 def count_packages():
     cursor = db.rastreiobot.find()
-    print('count')
-    print(str(cursor))
     qtd = 0
     wait = 0
     for elem in cursor:
@@ -118,8 +115,6 @@ def status_elem(elem):
 
 # Get last state of a package from DB
 def status_package(code):
-    print("code:" + code)
-    print(db)
     cursor = db.rastreiobot.find_one({
         "code": code
     })
@@ -151,19 +146,18 @@ def add_package(code, user):
         if stat == 1:
             stats.append('Aguardando recebimento pela ECT.')
             stat = stats
-        db.rastreiobot.insert_one({
-                "code": code.upper(),
-                "users": [user],
-                "stat": stat,
-                "time": str(time())
-            })
+        # db.rastreiobot.insert_one({
+        #         "code": code.upper(),
+        #         "users": [user],
+        #         "stat": stat,
+        #         "time": str(time())
+        #     })
         stat = status.OK
     return stat
 
 
 # Add a user to a package that exists on DB
 def add_user(code, user):
-    print("add_user")
     db.rastreiobot.update_one({
         "code": code.upper()}, {
         "$push": {
@@ -201,7 +195,6 @@ def check_system():
     except Exception:
         return False
         print('check_system')
-    print(str(response))
     if '200' in str(response):
         return True
     else:
@@ -210,6 +203,7 @@ def check_system():
 
 # Update package tracking state
 def get_update(code):
+    print("get_update")
     return check_update(code)
 
 
@@ -350,8 +344,9 @@ def cmd_magic(message):
     if check_type(code) is not None:
         exists = check_package(code)
         if exists:
-            print('exists true')
+            print("exists:" + str(exists))
             exists = check_user(code, user)
+            print(exists)
             if not exists:
                 add_user(code, user)
             statts = status_package(code)
@@ -383,25 +378,14 @@ def cmd_magic(message):
             elif stat == status.OK:
                 set_desc(str(code), str(user), desc)
                 if int(message.chat.id) > 0:
-                    bot.reply_to(
-                        message,
-                        'Pacote cadastrado.',
-                        reply_markup=markup_btn
-                    )
+                    bot.reply_to(message, 'Pacote cadastrado.', reply_markup=markup_btn)
                 else:
-                    bot.reply_to(
-                        message,
-                        'Pacote cadastrado.',
-                        reply_markup=markup_clean
-                    )
-                last = len(status_package(code)) - 1
+                    bot.reply_to(message, 'Pacote cadastrado.', reply_markup=markup_clean)
+                sttus = status_package(code)
+                print(sttus)
+                last = len(sttus) - 1
                 if int(user) > 0:
-                    bot.send_message(
-                        user,
-                        status_package(code)[last],
-                        parse_mode='HTML',
-                        reply_markup=markup_btn
-                    )
+                    bot.send_message(user, status_package(code)[last], parse_mode='HTML', reply_markup=markup_btn)
                 else:
                     send_clean_msg(bot, user, status_package(code)[last])
     elif code == 'START':
