@@ -1,6 +1,7 @@
 import logging
 import logging.handlers
 import random
+from time import time
 from datetime import datetime, timedelta
 
 import configparser
@@ -115,6 +116,7 @@ def status_elem(elem):
 
 # Get last state of a package from DB
 def status_package(code):
+    print("status_package")
     cursor = db.rastreiobot.find_one({
         "code": code
     })
@@ -136,23 +138,21 @@ def check_user(code, user):
 def add_package(code, user):
     print("add_package")
     stat = get_update(code)
-    if stat == status.OFFLINE:
-        return stat
-    elif stat == status.TYPO:
+    if stat in [status.OFFLINE, status.TYPO]:
         return stat
     else:
         stats = []
         stats.append(str(u'\U0001F4EE') + ' <b>' + code + '</b>')
-        if stat == 1:
+        if stat == status.NOT_FOUND:
             stats.append('Aguardando recebimento pela ECT.')
             stat = stats
-        # db.rastreiobot.insert_one({
-        #         "code": code.upper(),
-        #         "users": [user],
-        #         "stat": stat,
-        #         "time": str(time())
-        #     })
-        stat = status.OK
+            db.rastreiobot.insert_one({
+                    "code": code.upper(),
+                    "users": [user],
+                    "stat": stat,
+                    "time": str(time())
+            })
+            stat = status.OK
     return stat
 
 
@@ -180,9 +180,10 @@ def del_user(chatid, code):
 
 # Set a description to a package
 def set_desc(code, user, desc):
+    print("set_desc")
     if not desc:
         desc = code
-    db.rastreiobot.update_one({
+    result = db.rastreiobot.update_one({
         "code": code.upper()}, {
         "$set": {user: desc}
     })
@@ -344,9 +345,7 @@ def cmd_magic(message):
     if check_type(code) is not None:
         exists = check_package(code)
         if exists:
-            print("exists:" + str(exists))
             exists = check_user(code, user)
-            print(exists)
             if not exists:
                 add_user(code, user)
             statts = status_package(code)
@@ -371,7 +370,7 @@ def cmd_magic(message):
             stat = add_package(str(code), str(user))
             if stat == status.OFFLINE:
                 bot.reply_to(message, 'Correios fora do ar')
-            if stat == status.TYPO:
+            elif stat == status.TYPO:
                 bot.reply_to(message, msgs.typo)
             elif stat == status.NOT_FOUND:
                 bot.reply_to(message, msgs.not_found)
@@ -382,7 +381,6 @@ def cmd_magic(message):
                 else:
                     bot.reply_to(message, 'Pacote cadastrado.', reply_markup=markup_clean)
                 sttus = status_package(code)
-                print(sttus)
                 last = len(sttus) - 1
                 if int(user) > 0:
                     bot.send_message(user, status_package(code)[last], parse_mode='HTML', reply_markup=markup_btn)

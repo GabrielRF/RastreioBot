@@ -1,12 +1,9 @@
 [[source]]
-
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
-
 [packages]
-
 appdirs = "==1.4.0"
 backports-abc = "==0.5"
 "beautifulsoup4" = "==4.5.3"
@@ -31,18 +28,14 @@ pytelegrambotapi = "==2.3.0"
 python-dateutil = "==2.6.0"
 pytz = "==2016.10"
 pyyaml = "==3.12"
-requests = "==2.13.0"
+requests = "*"
 simplegeneric = "==0.8.1"
 six = "==1.10.0"
 tornado = "==4.4.2"
 traitlets = "==4.3.1"
 wcwidth = "==0.1.7"
 
-
 [dev-packages]
 
-
-
 [requires]
-
 python_version = "3.6"

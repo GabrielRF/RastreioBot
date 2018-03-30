@@ -1,5 +1,6 @@
 import configparser
 import requests
+import status
 
 config = configparser.ConfigParser()
 config.sections()
@@ -39,9 +40,9 @@ def get(code, retries):
     except Exception:
         if retries > 0:
             return get(code, retries - 1)
-        return 0
+        return status.OFFLINE
     if len(str(response)) < 10:
-        return 0
+        return status.OFFLINE
     elif 'ERRO' in str(response):
-        return 1
+        return status.NOT_FOUND
     return response
