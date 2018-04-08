@@ -1,4 +1,5 @@
-from check_update import check_update
+import asyncio
+from check_update import async_check_update
 from datetime import datetime
 from pymongo import MongoClient
 from time import time, sleep
@@ -14,23 +15,21 @@ config = configparser.ConfigParser()
 config.sections()
 config.read('bot.conf')
 
-#TOKEN = config['RASTREIOBOT']['TOKEN']
-# int_check = int(config['RASTREIOBOT']['int_check'])
-#LOG_ALERTS_FILE = config['RASTREIOBOT']['alerts_log']
-#PATREON = config['RASTREIOBOT']['patreon']
+TOKEN = config['RASTREIOBOT']['TOKEN']
+LOG_ALERTS_FILE = config['RASTREIOBOT']['alerts_log']
 INTERVAL = 0.03
 
 logger_info = logging.getLogger(__file__)
-#handler_info = logging.handlers.TimedRotatingFileHandler(LOG_ALERTS_FILE,
-#    when='midnight', interval=1, backupCount=5, encoding='utf-8')
-#logger_info.addHandler(handler_info)
+handler_info = logging.handlers.TimedRotatingFileHandler(LOG_ALERTS_FILE,
+    when='midnight', interval=1, backupCount=5, encoding='utf-8')
+logger_info.addHandler(handler_info)
 
-#bot = telebot.TeleBot(TOKEN)
+bot = telebot.TeleBot(TOKEN)
 client = MongoClient()
 db = client.rastreiobot
 
-def get_package(code):
-    stat = check_update(code)
+async def get_package(code):
+    stat = await async_check_update(code)
     if stat == 0:
         stat = 'Sistema dos Correios fora do ar.'
     elif stat == 1:
@@ -52,21 +51,18 @@ def check_system():
         URL = ('http://webservice.correios.com.br/')
         response = requests.get(URL, timeout=3)
     except:
-        print(str(datetime.now()) + '\tCorreios indisponível')
+        logger_info.info(str(datetime.now()) + '\tCorreios indisponível')
         return False
-    print(str(response))
+    logger_info.info(str(response))
     if '200' in str(response):
         return True
     else:
-        print(str(datetime.now()) + '\tCorreios indisponível')
+        logger_info.info(str(datetime.now()) + '\tCorreios indisponível')
         return False
 
-if __name__ == '__main__':
-    cursor1 = db.rastreiobot.find()
-    sent = 1
-    if not check_system():
-        sys.exit()
 
+async def funcao(cursor1):
+    sent = 1
     for elem in cursor1:
         try:
             code = elem['code']
@@ -84,7 +80,7 @@ if __name__ == '__main__':
                 continue
             elif 'objeto roubado' in old_state.lower():
                 continue
-            stat = get_package(code)
+            stat = await get_package(code)
             if stat == 0:
                 break
             cursor2 = db.rastreiobot.find_one(
@@ -97,7 +93,7 @@ if __name__ == '__main__':
                 len_new_state = 1
             if len_old_state != len_new_state:
                 for user in elem['users']:
-                    print(str(datetime.now()) + '\t' + '\t'
+                    logger_info.info(str(datetime.now()) + '\t' + '\t'
                         + str(code) + ' \t' + str(user) + ' \t' + str(sent) + '\t'
                         + ' ' + str(len_old_state) + ' '
                         + str(len_new_state))
@@ -115,11 +111,11 @@ if __name__ == '__main__':
                             + 'Avalie o bot</a> - '
                             + str(u'\U0001F4B5')
                             + '<a href="http://grf.xyz/paypal">Colabore</a>')
-                        # bot.send_message(str(user), message, parse_mode='HTML',
-                        #     disable_web_page_preview=True)
+                        bot.send_message(str(user), message, parse_mode='HTML',
+                            disable_web_page_preview=True)
                         sent = sent + 1
                     except Exception as e:
-                        print(str(datetime.now())
+                        logger_info.info(str(datetime.now())
                              + '\tEXCEPT: ' + str(user) + ' ' + code + ' ' + str(e))
                         # bot.send_message(str(user), message, parse_mode='HTML',
                         #     disable_web_page_preview=True)
@@ -131,6 +127,15 @@ if __name__ == '__main__':
                     #    continue
                     #sleep(INTERVAL)
         except Exception as e:
-            print(str(datetime.now()) + '\t' + '\tEXCEPT: ' + str(e)
+            logger_info.info(str(datetime.now()) + '\t' + '\tEXCEPT: ' + str(e)
                 + '\t' + str(code) + ' \t' + str(user))
             sys.exit()
+
+
+if __name__ == '__main__':
+    cursor1 = db.rastreiobot.find()
+    if not check_system():
+        sys.exit()
+
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(funcao(cursor1))
