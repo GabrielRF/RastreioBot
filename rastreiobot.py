@@ -183,7 +183,7 @@ def set_desc(code, user, desc):
     print("set_desc")
     if not desc:
         desc = code
-    result = db.rastreiobot.update_one({
+    db.rastreiobot.update_one({
         "code": code.upper()}, {
         "$set": {user: desc}
     })
@@ -205,7 +205,9 @@ def check_system():
 # Update package tracking state
 def get_update(code):
     print("get_update")
-    return check_update(code)
+    retorno = check_update(code)
+    print("check up: ", retorno)
+    return retorno
 
 
 # Add to log
@@ -242,6 +244,28 @@ def cmd_pacotes(message):
     if qtd > 7 and str(chatid) not in PATREON:
         message = message + msgs.patreon
     send_clean_msg(bot, chatid, message)
+
+
+@bot.message_handler(commands=['resumo', 'Resumo'])
+def cmd_resumo(message):
+    bot.send_chat_action(message.chat.id, 'typing')
+    chatid = message.chat.id
+    message, qtd = list_packages(chatid, False, True)
+    if qtd == 0:
+        message = msgs.not_found
+    elif qtd == -1:
+        message = msgs.error_bot
+    else:
+        message = '<b>Resumo dos pacotes:</b>\n\n' + message
+        msg = message
+        if len(message) > 4000:
+            message = message[0:4000]
+    if qtd > 7 and str(chatid) not in PATREON:
+        message = message + msgs.patreon
+    send_clean_msg(bot, chatid, message)
+    if len(msg) > 4000:
+        message = msg[4000:]
+        send_clean_msg(bot, chatid, message)
 
 
 @bot.message_handler(commands=['concluidos', 'Concluidos'])
@@ -377,13 +401,26 @@ def cmd_magic(message):
             elif stat == status.OK:
                 set_desc(str(code), str(user), desc)
                 if int(message.chat.id) > 0:
-                    bot.reply_to(message, 'Pacote cadastrado.', reply_markup=markup_btn)
+                    bot.reply_to(
+                        message,
+                        'Pacote cadastrado.',
+                        reply_markup=markup_btn
+                    )
                 else:
-                    bot.reply_to(message, 'Pacote cadastrado.', reply_markup=markup_clean)
+                    bot.reply_to(
+                        message,
+                        'Pacote cadastrado.',
+                        reply_markup=markup_clean
+                    )
                 sttus = status_package(code)
                 last = len(sttus) - 1
                 if int(user) > 0:
-                    bot.send_message(user, status_package(code)[last], parse_mode='HTML', reply_markup=markup_btn)
+                    bot.send_message(
+                        user,
+                        status_package(code)[last],
+                        parse_mode='HTML',
+                        reply_markup=markup_btn
+                    )
                 else:
                     send_clean_msg(bot, user, status_package(code)[last])
     elif code == 'START':

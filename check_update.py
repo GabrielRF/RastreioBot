@@ -2,13 +2,15 @@ import json
 from datetime import date
 import status
 from misc import check_type
+import apicorreios as correios
 
 
 def check_update(code, max_retries=3):
     print('check_update')
     api_type = check_type(code)
-    if api_type is None:
-            return status.TYPO
+    # TODO: add suport to more api's
+    if api_type is not correios:
+        return status.TYPO
     stats = []
     try:
         response = api_type.get(code, max_retries)
@@ -16,7 +18,6 @@ def check_update(code, max_retries=3):
             print("resposta : " + str(response))
             return response
         result = json.loads(response)
-        print(result)
         tabela = result['objeto'][0]['evento']
     except Exception:
         return status.NOT_FOUND
