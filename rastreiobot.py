@@ -250,9 +250,9 @@ def echo_all(message):
     else:
         message = '<b>Clique para ver o histórico:</b>\n\n' + message
         msg = message
-        msg_split = message.split('\n/')
+        msg_split = message.split('\n')
         for elem in range(0, len(msg_split), 10):
-             s = '\n/'
+             s = '\n'
              bot.send_message(chatid,
                  s.join(msg_split[elem:elem+10]), parse_mode='HTML',
                  reply_markup=markup_clean)
