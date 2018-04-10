@@ -269,14 +269,8 @@ def echo_all(message):
     else:
         message = '<b>Resumo dos pacotes:</b>\n\n' + message
         msg = message
-        if len(message) > 4000:
+        if len(message) > 3000:
             message = 'Muitos pacotes cadastrado para utilizar tal função.\nPor favor, envie /Pacotes.'
-    if qtd > 7 and str(chatid) not in PATREON:
-        message = (
-            message + '\n'
-            + str(u'\U0001F4B5') + '<b>Colabore!</b>'
-            + '\nhttp://grf.xyz/paypal'
-        )
     bot.send_message(chatid, message, parse_mode='HTML', reply_markup=markup_clean)
     if len(msg) > 4000:
         message = msg[4000:]
