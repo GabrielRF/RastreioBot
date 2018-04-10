@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from check_update import check_update
 from datetime import datetime, timedelta
+from math import ceil
 from time import time
 from pymongo import MongoClient
 from pymongo import ASCENDING
@@ -78,7 +79,7 @@ def list_packages(chatid, done, status):
                         'objeto roubado' not in elem['stat'][len(elem['stat'])-1].lower() and
                         'objeto devolvido' not in elem['stat'][len(elem['stat'])-1].lower()):
                         if status:
-                            aux = aux +  elem['code']
+                            aux = aux +  str(u'\U0001F4EE') + elem['code']
                         else:
                             aux = aux + '/' + elem['code']
                         try:
@@ -242,23 +243,19 @@ def echo_all(message):
     message, qtd = list_packages(chatid, False, False)
     if qtd == 0:
         message = 'Nenhum pacote encontrado.'
+        bot.send_message(chatid, message, parse_mode='HTML', reply_markup=markup_clean)
     elif qtd == -1:
         message = 'Ops!\nHouve um problema com o bot.\nTente novamente mais tarde.'
-    else:
-        message = '<b>Clique para ver o histórico:</b>\n' + message
-        msg = message
-        if len(message) > 4000:
-            message = message[0:4000]
-    if qtd > 7 and str(chatid) not in PATREON:
-        message = (
-            message + '\n'
-            + str(u'\U0001F4B5') + '<b>Colabore!</b>'
-            + '\nhttp://grf.xyz/paypal'
-        )
-    bot.send_message(chatid, message, parse_mode='HTML', reply_markup=markup_clean)
-    if len(msg) > 4000:
-        message = msg[4000:]
         bot.send_message(chatid, message, parse_mode='HTML', reply_markup=markup_clean)
+    else:
+        message = '<b>Clique para ver o histórico:</b>\n\n' + message
+        msg = message
+        msg_split = message.split('\n/')
+        for elem in range(0, len(msg_split), 10):
+             s = '\n/'
+             bot.send_message(chatid,
+                 s.join(msg_split[elem:elem+10]), parse_mode='HTML',
+                 reply_markup=markup_clean)
 
 @bot.message_handler(commands=['resumo', 'Resumo'])
 def echo_all(message):
@@ -273,7 +270,7 @@ def echo_all(message):
         message = '<b>Resumo dos pacotes:</b>\n\n' + message
         msg = message
         if len(message) > 4000:
-            message = message[0:4000]
+            message = 'Muitos pacotes cadastrado para utilizar tal função.\nPor favor, envie /Pacotes.'
     if qtd > 7 and str(chatid) not in PATREON:
         message = (
             message + '\n'
