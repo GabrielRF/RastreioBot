@@ -10,6 +10,7 @@ import status
 import requests
 import telebot
 from check_update import check_update
+from math import ceil
 from misc import check_type, send_clean_msg
 from pymongo import ASCENDING, MongoClient
 from telebot import types
@@ -37,7 +38,8 @@ client = MongoClient()
 db = client.rastreiobot
 
 markup_btn = types.ReplyKeyboardMarkup(resize_keyboard=True)
-markup_btn.row('/Pacotes', '/Info', '/Concluidos')
+markup_btn.row('/Pacotes','/Resumo')
+markup_btn.row('/Info','/Concluidos')
 markup_clean = types.ReplyKeyboardRemove(selective=False)
 
 
@@ -61,9 +63,9 @@ def count_packages():
             qtd = qtd + 1
     return qtd, wait
 
-
-# List packages of a user
-def list_packages(chatid, done):
+  
+## List packages of a user
+def list_packages(chatid, done, status):
     aux = ''
     try:
         cursor = db.rastreiobot.find(
@@ -81,10 +83,15 @@ def list_packages(chatid, done):
                             'objeto apreendido' not in status_elem(elem) and
                             'objeto roubado' not in status_elem(elem) and
                             'objeto devolvido' not in status_elem(elem)):
-                        aux = aux + '/' + elem['code']
+                        if status:
+                            aux = aux +  str(u'\U0001F4EE') + elem['code']
+                        else:
+                            aux = aux + '/' + elem['code']
                         try:
                             if elem[str(chatid)] != elem['code']:
                                 aux = aux + ' ' + elem[str(chatid)]
+                            if status:
+                                aux = aux + '\n' + elem['stat'][len(elem['stat'])-1] + '\n'
                         except Exception:
                             pass
                         aux = aux + '\n'
@@ -232,18 +239,20 @@ def cmd_repetir(message):
 def cmd_pacotes(message):
     bot.send_chat_action(message.chat.id, 'typing')
     chatid = message.chat.id
-    message, qtd = list_packages(chatid, False)
+    message, qtd = list_packages(chatid, False, False)
     if qtd == 0:
-        message = msgs.not_found
+        send_clean_msg(bot, chatid, msgs.not_found)
     elif qtd == -1:
-        message = msgs.error_bot
+        send_clean_msg(bot, chatid, msgs.error_bot)
     else:
         message = '<b>Clique para ver o histórico:</b>\n' + message
-        if len(message) > 4000:
-            message = message[0:4000]
-    if qtd > 7 and str(chatid) not in PATREON:
-        message = message + msgs.patreon
-    send_clean_msg(bot, chatid, message)
+        msg = message
+        msg_split = message.split('\n')
+        for elem in range(0, len(msg_split), 10):
+             s = '\n'
+             bot.send_message(chatid,
+                 s.join(msg_split[elem:elem+10]), parse_mode='HTML',
+                 reply_markup=markup_clean)
 
 
 @bot.message_handler(commands=['resumo', 'Resumo'])
@@ -258,28 +267,29 @@ def cmd_resumo(message):
     else:
         message = '<b>Resumo dos pacotes:</b>\n\n' + message
         msg = message
-        if len(message) > 4000:
-            message = message[0:4000]
-    if qtd > 7 and str(chatid) not in PATREON:
-        message = message + msgs.patreon
-    send_clean_msg(bot, chatid, message)
+        if len(message) > 3000:
+            message = 'Muitos pacotes cadastrados para utilizar tal função.\nPor favor, envie /Pacotes.'
+    bot.send_message(chatid, message, parse_mode='HTML', reply_markup=markup_clean)
     if len(msg) > 4000:
         message = msg[4000:]
-        send_clean_msg(bot, chatid, message)
+        bot.send_message(chatid, message, parse_mode='HTML', reply_markup=markup_clean)
 
 
 @bot.message_handler(commands=['concluidos', 'Concluidos'])
 def cmd_concluidos(message):
     bot.send_chat_action(message.chat.id, 'typing')
     chatid = message.chat.id
-    message, qtd = list_packages(chatid, True)
+    message, qtd = list_packages(chatid, True, False)
     if len(message) < 1:
-        message = msgs.not_found
+        bot.send_message(chatid, msgs.not_found, parse_mode='HTML')
     else:
         message = '<b>Pacotes concluídos nos últimos 30 dias:</b>\n' + message
-    if qtd > 12 and str(chatid) not in PATREON:
-        message = message + msgs.patreon
-    bot.send_message(chatid, message, parse_mode='HTML')
+        msg_split = message.split('\n')
+        for elem in range(0, len(msg_split), 10):
+            s = '\n'
+            bot.send_message(chatid,
+                s.join(msg_split[elem:elem+10]), parse_mode='HTML',
+                reply_markup=markup_clean)
 
 
 @bot.message_handler(commands=['status', 'Status'])
