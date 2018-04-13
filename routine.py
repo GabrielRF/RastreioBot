@@ -31,7 +31,7 @@ client = MongoClient()
 db = client.rastreiobot
 
 multiple = sys.argv[1]
-
+print(multiple)
 def get_package(code):
     stat = check_update(code)
     if stat == 0:

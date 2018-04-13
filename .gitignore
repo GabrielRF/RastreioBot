@@ -1,3 +1,7 @@
 bot.conf
 *.db
 ad.txt
+__pycache__
+bot.log*
+*.pyc
+*.lock
