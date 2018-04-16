@@ -153,13 +153,13 @@ def add_package(code, user):
         if stat == status.NOT_FOUND:
             stats.append('Aguardando recebimento pela ECT.')
             stat = stats
-            db.rastreiobot.insert_one({
-                    "code": code.upper(),
-                    "users": [user],
-                    "stat": stat,
-                    "time": str(time())
-            })
-            stat = status.OK
+        db.rastreiobot.insert_one({
+                "code": code.upper(),
+                "users": [user],
+                "stat": stat,
+                "time": str(time())
+        })
+        stat = status.OK
     return stat
 
 
@@ -187,7 +187,6 @@ def del_user(chatid, code):
 
 # Set a description to a package
 def set_desc(code, user, desc):
-    print("set_desc")
     if not desc:
         desc = code
     db.rastreiobot.update_one({
@@ -270,9 +269,6 @@ def cmd_resumo(message):
         if len(message) > 3000:
             message = 'Muitos pacotes cadastrados para utilizar tal função.\nPor favor, envie /Pacotes.'
     bot.send_message(chatid, message, parse_mode='HTML', reply_markup=markup_clean)
-    if len(msg) > 4000:
-        message = msg[4000:]
-        bot.send_message(chatid, message, parse_mode='HTML', reply_markup=markup_clean)
 
 
 @bot.message_handler(commands=['concluidos', 'Concluidos'])
@@ -376,6 +372,7 @@ def cmd_magic(message):
         desc = str(message.text.split(' ', 1)[1])
     except Exception:
         desc = code
+        print('380')
     if check_type(code) is not None:
         exists = check_package(code)
         if exists:
@@ -409,6 +406,7 @@ def cmd_magic(message):
             elif stat == status.NOT_FOUND:
                 bot.reply_to(message, msgs.not_found)
             elif stat == status.OK:
+                print('ok')
                 set_desc(str(code), str(user), desc)
                 if int(message.chat.id) > 0:
                     bot.reply_to(
