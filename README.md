@@ -12,7 +12,7 @@
 
 ## About
 
-This is a [Telegram](http://telegram.org) Bot that tracks packages from the [Brazilian Mail Service](www.correios.com.br). It runs on Python 3 and uses MongoDB.
+This is a [Telegram](http://telegram.org) Bot that tracks packages from the [Brazilian Mail Service](https://www.correios.com.br/). It runs on Python 3 and uses MongoDB.
 
 [Try it!](http://telegram.me/RastreioBot)
 
