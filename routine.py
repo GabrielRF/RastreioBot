@@ -122,8 +122,11 @@ if __name__ == '__main__':
                         + str(len_new_state))
                     try:
                         message = (str(u'\U0001F4EE') + '<b>' + code + '</b>\n')
-                        if elem[user] != code:
+                        #if elem[user] != code:
+                        try:
                             message = message + elem[user] + '\n'
+                        except:
+                            pass
                         message = (
                             message + '\n'
                             +  cursor2['stat'][len(cursor2['stat'])-1])
