@@ -81,8 +81,8 @@ def list_packages(chatid, done, status):
                     if (
                             'objeto entregue ao' not in status_elem(elem) and
                             'objeto apreendido' not in status_elem(elem) and
-                            'objeto roubado' not in status_elem(elem) and
-                            'objeto devolvido' not in status_elem(elem)):
+                            'objeto roubado' not in status_elem(elem)): # and
+                            #'objeto devolvido' not in status_elem(elem)):
                         if status:
                             aux = aux +  str(u'\U0001F4EE') + elem['code']
                         else:
@@ -100,8 +100,8 @@ def list_packages(chatid, done, status):
                     if (
                             'objeto entregue ao' in status_elem(elem) or
                             'objeto apreendido' in status_elem(elem) or
-                            'objeto roubado' in status_elem(elem) or
-                            'objeto devolvido' in status_elem(elem)):
+                            'objeto roubado' in status_elem(elem)): # or
+                            #'objeto devolvido' in status_elem(elem)):
                         aux = aux + elem['code']
                         try:
                             if elem[str(chatid)] != elem['code']:
