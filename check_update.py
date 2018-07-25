@@ -76,6 +76,14 @@ def check_update(code, max_retries=3):
                 mensagem = mensagem + ' ' + str(u'\U00002197')
             elif 'postado' in situacao.lower():
                 mensagem = mensagem + ' ' + str(u'\U0001F4E6')
+            elif 'saiu para entrega' in situacao.lower():
+                mensagem = mensagem + ' ' + str(u'\U0001F69A')
+            elif 'recebido pelos correios' in situacao.lower():
+                mensagem = mensagem + ' ' + str(u'\U0001F4E5')
+            elif 'aguardando retirada' in situacao.lower():
+                mensagem = mensagem + ' ' + str(u'\U0001F3E2')
+            elif 'objeto apreendido' in situacao.lower():
+                mensagem = mensagem + ' ' + str(u'\U0001F46E')
         if observacao:
             mensagem = mensagem + '\nObservação: ' + observacao.strip().title()
             if 'liberado sem' in observacao.lower():
