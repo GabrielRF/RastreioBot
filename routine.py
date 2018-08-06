@@ -124,7 +124,8 @@ if __name__ == '__main__':
                         message = (str(u'\U0001F4EE') + '<b>' + code + '</b>\n')
                         #if elem[user] != code:
                         try:
-                            message = message + elem[user] + '\n'
+                            if code not in elem[user]:
+                                message = message + elem[user] + '\n'
                         except:
                             pass
                         message = (
