@@ -2,7 +2,7 @@
 
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7Q29T7QE6A948)
 
-![Rastreiobot](https://github.com/GabrielRF/RastreioBot/blob/master/icon.jpg?raw=true)
+![Rastreiobot](https://github.com/GabrielRF/RastreioBot/blob/master/rastreiobot.png?raw=true)
 
 * [About](#about)
 * [Setup](#setup)
