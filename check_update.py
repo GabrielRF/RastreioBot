@@ -84,7 +84,9 @@ def check_update(code, max_retries=3):
                 mensagem = mensagem + ' ' + str(u'\U0001F3E2')
             elif 'objeto apreendido' in situacao.lower():
                 mensagem = mensagem + ' ' + str(u'\U0001F46E')
-            elif 'pagamento' in situacao.lower():
+            elif 'aguardando confirmação de pagamento' in situacao.lower():
+                mensagem = mensagem + ' ' + str(u'\U0001F554')
+            elif 'aguardando pagamento' in situacao.lower():
                 mensagem = (mensagem + ' ' + str(u'\U0001F4B8') + 
                 '\n<i>Links para efetuar pagamentos aos Correios:</i>' + 
                 '\n<a href="https://www2.correios.com.br/sistemas/rastreamento/">Rastreamento</a>' +
