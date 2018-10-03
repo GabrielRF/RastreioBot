@@ -144,15 +144,9 @@ if __name__ == '__main__':
                     except Exception as e:
                         logger_info.info(str(datetime.now())
                              + '\tEXCEPT: ' + str(user) + ' ' + code + ' ' + str(e))
-                        # bot.send_message(str(user), message, parse_mode='HTML',
-                        #     disable_web_page_preview=True)
-                        # sent = sent + 1
+                       
                         continue
-                    #else:
-                    #    logger_info.info(str(datetime.now())
-                    #         + '\tELSE:\t' + str(user) + ' ' + code)
-                    #    continue
-                    #sleep(INTERVAL)
+                  
         except Exception as e:
             logger_info.info(str(datetime.now()) + '\t' + multiple + '\tEXCEPT: ' + str(e)
                 + '\t' + str(code) + ' \t' + str(user))
