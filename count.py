@@ -36,7 +36,8 @@ if __name__ == '__main__':
     config = configparser.ConfigParser()
     config.sections()
     config.read('bot.conf')
-
+    
+    #conetando ao banco de dados
     db = 'RastreioBot.db'
     table = 'RastreioBot'
 
