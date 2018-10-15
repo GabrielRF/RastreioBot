@@ -10,7 +10,6 @@ import status
 import requests
 import telebot
 from check_update import check_update
-from math import ceil
 from misc import check_type, send_clean_msg
 from pymongo import ASCENDING, MongoClient
 from telebot import types
@@ -38,13 +37,14 @@ client = MongoClient()
 db = client.rastreiobot
 
 markup_btn = types.ReplyKeyboardMarkup(resize_keyboard=True)
-markup_btn.row('/Pacotes','/Resumo')
-markup_btn.row('/Info','/Concluidos')
+markup_btn.row('/Pacotes', '/Resumo')
+markup_btn.row('/Info', '/Concluidos')
 markup_clean = types.ReplyKeyboardRemove(selective=False)
 
 
 # Check if package exists in DB
 def check_package(code):
+    print("check_package")
     cursor = db.rastreiobot.find_one({"code": code.upper()})
     if cursor:
         return True
@@ -53,6 +53,7 @@ def check_package(code):
 
 # Count packages
 def count_packages():
+    print("count_packages")
     cursor = db.rastreiobot.find()
     qtd = 0
     wait = 0
@@ -63,9 +64,10 @@ def count_packages():
             qtd = qtd + 1
     return qtd, wait
 
-  
-## List packages of a user
+
+# List packages of a user
 def list_packages(chatid, done, status):
+    print("list_packages")
     aux = ''
     try:
         cursor = db.rastreiobot.find(
@@ -132,6 +134,7 @@ def status_package(code):
 
 # Check if user exists on a specific tracking code
 def check_user(code, user):
+    print("check_user")
     cursor = db.rastreiobot.find_one({
         "code": code.upper(),
         "users": user
@@ -165,6 +168,7 @@ def add_package(code, user):
 
 # Add a user to a package that exists on DB
 def add_user(code, user):
+    print("add_user")
     db.rastreiobot.update_one({
         "code": code.upper()}, {
         "$push": {
@@ -187,6 +191,7 @@ def del_user(chatid, code):
 
 # Set a description to a package
 def set_desc(code, user, desc):
+    print("set_desc")
     if not desc:
         desc = code
     db.rastreiobot.update_one({
@@ -196,6 +201,7 @@ def set_desc(code, user, desc):
 
 
 def check_system():
+    print("check_system")
     try:
         url = ('http://webservice.correios.com.br/')
         response = requests.get(url, timeout=3)
@@ -227,6 +233,7 @@ def log_text(chatid, message_id, text):
 
 @bot.message_handler(commands=['Repetir', 'Historico'])
 def cmd_repetir(message):
+    print("cmd_repetir")
     bot.send_chat_action(message.chat.id, 'typing')
     if int(message.chat.id) > 0:
         send_clean_msg(bot, message.chat.id, msgs.user)
@@ -236,6 +243,7 @@ def cmd_repetir(message):
 
 @bot.message_handler(commands=['pacotes', 'Pacotes'])
 def cmd_pacotes(message):
+    print("cmd_pacotes")
     bot.send_chat_action(message.chat.id, 'typing')
     chatid = message.chat.id
     message, qtd = list_packages(chatid, False, False)
@@ -248,14 +256,16 @@ def cmd_pacotes(message):
         msg = message
         msg_split = message.split('\n')
         for elem in range(0, len(msg_split), 10):
-             s = '\n'
-             bot.send_message(chatid,
-                 s.join(msg_split[elem:elem+10]), parse_mode='HTML',
-                 reply_markup=markup_clean)
+            s = '\n'
+            bot.send_message(
+                chatid,
+                s.join(msg_split[elem:elem+10]), parse_mode='HTML',
+                reply_markup=markup_clean)
 
 
 @bot.message_handler(commands=['resumo', 'Resumo'])
 def cmd_resumo(message):
+    print("cmd_resumo")
     bot.send_chat_action(message.chat.id, 'typing')
     chatid = message.chat.id
     message, qtd = list_packages(chatid, False, True)
@@ -273,6 +283,7 @@ def cmd_resumo(message):
 
 @bot.message_handler(commands=['concluidos', 'Concluidos'])
 def cmd_concluidos(message):
+    print("concluidos")
     bot.send_chat_action(message.chat.id, 'typing')
     chatid = message.chat.id
     message, qtd = list_packages(chatid, True, False)
@@ -290,6 +301,7 @@ def cmd_concluidos(message):
 
 @bot.message_handler(commands=['status', 'Status'])
 def cmd_status(message):
+    print("status")
     log_text(
         message.chat.id,
         message.message_id,
@@ -318,6 +330,7 @@ def cmd_status(message):
 
 @bot.message_handler(commands=['info', 'Info', 'help', 'Help'])
 def cmd_help(message):
+    print("help")
     bot.send_chat_action(message.chat.id, 'typing')
     log_text(
         message.chat.id,
@@ -337,6 +350,7 @@ def cmd_help(message):
 
 @bot.message_handler(commands=['del', 'Del', 'remover', 'apagar'])
 def cmd_remove(message):
+    print("remove")
     bot.send_chat_action(message.chat.id, 'typing')
     log_text(
         message.chat.id,
@@ -354,6 +368,7 @@ def cmd_remove(message):
 
 @bot.message_handler(content_types=['document', 'audio', 'photo'])
 def cmd_format(message):
+    print("format")
     bot.reply_to(message, 'Formato inválido')
     log_text(message.chat.id, message.message_id, 'Formato inválido')
 
@@ -361,6 +376,7 @@ def cmd_format(message):
 # entry point for adding a tracking number
 @bot.message_handler(func=lambda m: True)
 def cmd_magic(message):
+    print("magic")
     bot.send_chat_action(message.chat.id, 'typing')
     log_text(message.chat.id, message.message_id, message.text)
     user = str(message.chat.id)
@@ -437,8 +453,8 @@ def cmd_magic(message):
         else:
             send_clean_msg(bot, message.chat.id, msgs.group)
     else:
-        if int(user) > 0:
-            bot.reply_to(message, msgs.typo)
+        # if int(user) > 0: // aqui falta um else...
+        bot.reply_to(message, msgs.typo)
 
 
 bot.polling()

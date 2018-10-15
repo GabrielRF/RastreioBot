@@ -1,6 +1,6 @@
 import re
 import apicorreios as correios
-# import apitrackingmore as trackingmore
+import apicainiao as cainiao
 from telebot import types
 
 
@@ -10,8 +10,8 @@ def check_type(code):
 
     if re.search(s10, str(code)):
         return correios
-#    elif re.search(ali, str(code)):
-#        return trackingmore
+    elif re.search(ali, str(code)):
+        return cainiao
     else:
         return None
 
