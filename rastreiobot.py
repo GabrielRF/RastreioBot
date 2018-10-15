@@ -83,15 +83,15 @@ def list_packages(chatid, done, status):
                     if (
                             'objeto entregue ao' not in status_elem(elem) and
                             'objeto apreendido' not in status_elem(elem) and
-                            'objeto roubado' not in status_elem(elem) and
-                            'objeto devolvido' not in status_elem(elem)):
+                            'objeto roubado' not in status_elem(elem)): # and
+                            #'objeto devolvido' not in status_elem(elem)):
                         if status:
                             aux = aux +  str(u'\U0001F4EE') + elem['code']
                         else:
                             aux = aux + '/' + elem['code']
                         try:
                             if elem[str(chatid)] != elem['code']:
-                                aux = aux + ' ' + elem[str(chatid)]
+                                aux = aux + ' <b>' + elem[str(chatid)] + '</b>'
                             if status:
                                 aux = aux + '\n' + elem['stat'][len(elem['stat'])-1] + '\n'
                         except Exception:
@@ -102,8 +102,8 @@ def list_packages(chatid, done, status):
                     if (
                             'objeto entregue ao' in status_elem(elem) or
                             'objeto apreendido' in status_elem(elem) or
-                            'objeto roubado' in status_elem(elem) or
-                            'objeto devolvido' in status_elem(elem)):
+                            'objeto roubado' in status_elem(elem)): # or
+                            #'objeto devolvido' in status_elem(elem)):
                         aux = aux + elem['code']
                         try:
                             if elem[str(chatid)] != elem['code']:
@@ -256,11 +256,18 @@ def cmd_pacotes(message):
         msg = message
         msg_split = message.split('\n')
         for elem in range(0, len(msg_split), 10):
-            s = '\n'
-            bot.send_message(
-                chatid,
-                s.join(msg_split[elem:elem+10]), parse_mode='HTML',
-                reply_markup=markup_clean)
+             s = '\n'
+             bot.send_message(chatid,
+                 s.join(msg_split[elem:elem+10]), parse_mode='HTML',
+                 reply_markup=markup_clean, disable_web_page_preview=True)
+        if qtd > 7 and chatid > 0:
+            bot.send_message(chatid,
+                str(u'\U0001F4B5') + '<b>Colabore!</b>'
+                + '\nPicPay: http://grf.xyz/picpay'
+                + '\nPayPal: http://grf.xyz/paypal'
+                + '\nPatreon: http://grf.xyz/patreon',
+                parse_mode='HTML', reply_markup=markup_clean,
+                disable_web_page_preview=True)
 
 
 @bot.message_handler(commands=['resumo', 'Resumo'])
@@ -278,7 +285,7 @@ def cmd_resumo(message):
         msg = message
         if len(message) > 3000:
             message = 'Muitos pacotes cadastrados para utilizar tal função.\nPor favor, envie /Pacotes.'
-    bot.send_message(chatid, message, parse_mode='HTML', reply_markup=markup_clean)
+    bot.send_message(chatid, message, parse_mode='HTML', reply_markup=markup_clean, disable_web_page_preview=True)
 
 
 @bot.message_handler(commands=['concluidos', 'Concluidos'])
@@ -288,7 +295,7 @@ def cmd_concluidos(message):
     chatid = message.chat.id
     message, qtd = list_packages(chatid, True, False)
     if len(message) < 1:
-        bot.send_message(chatid, msgs.not_found, parse_mode='HTML')
+        bot.send_message(chatid, msgs.not_found, parse_mode='HTML', disable_web_page_preview=True)
     else:
         message = '<b>Pacotes concluídos nos últimos 30 dias:</b>\n' + message
         msg_split = message.split('\n')
@@ -296,7 +303,7 @@ def cmd_concluidos(message):
             s = '\n'
             bot.send_message(chatid,
                 s.join(msg_split[elem:elem+10]), parse_mode='HTML',
-                reply_markup=markup_clean)
+                reply_markup=markup_clean, disable_web_page_preview=True)
 
 
 @bot.message_handler(commands=['status', 'Status'])
@@ -407,7 +414,8 @@ def cmd_magic(message):
                     user,
                     message,
                     parse_mode='HTML',
-                    reply_markup=markup_btn
+                    reply_markup=markup_btn,
+                    disable_web_page_preview=True
                 )
             else:
                 send_clean_msg(bot, user, message)
@@ -443,7 +451,8 @@ def cmd_magic(message):
                         user,
                         status_package(code)[last],
                         parse_mode='HTML',
-                        reply_markup=markup_btn
+                        reply_markup=markup_btn,
+                        disable_web_page_preview=True
                     )
                 else:
                     send_clean_msg(bot, user, status_package(code)[last])

@@ -75,9 +75,31 @@ def check_update(code, max_retries=3):
                 mensagem = mensagem + ' ' + str(u'\U00002197')
             elif 'postado' in situacao.lower():
                 mensagem = mensagem + ' ' + str(u'\U0001F4E6')
+            elif 'saiu para entrega' in situacao.lower():
+                mensagem = mensagem + ' ' + str(u'\U0001F69A')
+            elif 'recebido pelos correios' in situacao.lower():
+                mensagem = mensagem + ' ' + str(u'\U0001F4E5')
+            elif 'aguardando retirada' in situacao.lower():
+                mensagem = mensagem + ' ' + str(u'\U0001F3E2')
+            elif 'objeto apreendido' in situacao.lower():
+                mensagem = mensagem + ' ' + str(u'\U0001F46E')
+            elif 'aguardando confirmação de pagamento' in situacao.lower():
+                mensagem = mensagem + ' ' + str(u'\U0001F554')
+            elif 'objeto pago' in situacao.lower():
+                mensagem = mensagem + ' ' + str(u'\U0001F4B8')
+            elif 'aguardando pagamento' in situacao.lower():
+                mensagem = (mensagem + ' ' + str(u'\U0001F52B') + 
+                '\n<i>Links para efetuar pagamentos aos Correios:</i>' + 
+                '\n<a href="https://www2.correios.com.br/sistemas/rastreamento/">Rastreamento</a>' +
+                '\n<a href="https://apps.correios.com.br/portalimportador/">Portal Importador</a>')
+            elif 'liberado sem' in situacao.lower():
+                mensagem = mensagem + ' ' + str(u'\U0001F389')
         if observacao:
             mensagem = mensagem + '\nObservação: ' + observacao.strip().title()
             if 'liberado sem' in observacao.lower():
                 mensagem = mensagem + ' ' + str(u'\U0001F389')
+            elif 'pagamento' in observacao.lower():
+                mensagem = (mensagem + 
+                '\nhttps://www2.correios.com.br/sistemas/rastreamento/')
         stats.append(mensagem)
     return stats

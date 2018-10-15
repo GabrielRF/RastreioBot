@@ -1,8 +1,9 @@
 # [RastreioBot](http://telegram.me/RastreioBot) 
 
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7Q29T7QE6A948)
+[![Twitter Follow](https://img.shields.io/twitter/follow/espadrine.svg?style=social&label=Follow)](https://twitter.com/gabrf)
 
-![Rastreiobot](https://github.com/GabrielRF/RastreioBot/blob/master/icon.jpg?raw=true)
+![Rastreiobot](https://github.com/GabrielRF/RastreioBot/blob/master/rastreiobot.png?raw=true)
 
 * [About](#about)
 * [Setup](#setup)
@@ -12,7 +13,7 @@
 
 ## About
 
-This is a [Telegram](http://telegram.org) Bot that tracks packages from the [Brazilian Mail Service](www.correios.com.br). It runs on Python 3 and uses MongoDB.
+This is a [Telegram](http://telegram.org) Bot that tracks packages from the [Brazilian Mail Service](https://www.correios.com.br/). It runs on Python 3 and uses MongoDB.
 
 [Try it!](http://telegram.me/RastreioBot)
 
