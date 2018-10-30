@@ -225,6 +225,12 @@ def log_text(chatid, message_id, text):
     )
 
 
+@bot.message_handler(commands=['gif'])
+def cmd_repetir(message):
+    bot.send_chat_action(message.chat.id, 'typing')
+    bot.send_document(message.chat.id, 'CgADAQADhgAD45bBRvd9d-3ACM-cAg')
+    bot.send_document(message.chat.id, 'CgADAQADWQADuVvARjeZRuSF_fMXAg')
+
 @bot.message_handler(commands=['Repetir', 'Historico'])
 def cmd_repetir(message):
     bot.send_chat_action(message.chat.id, 'typing')
@@ -358,12 +364,14 @@ def cmd_remove(message):
         bot.send_message(message.chat.id, 'Pacote removido.')
     except Exception:
         bot.send_message(message.chat.id, msgs.remove, parse_mode='HTML')
+        bot.send_document(message.chat.id, 'CgADAQADWQADuVvARjeZRuSF_fMXAg')
 
 
 @bot.message_handler(content_types=['document', 'audio', 'photo'])
 def cmd_format(message):
     bot.reply_to(message, 'Formato inválido')
     log_text(message.chat.id, message.message_id, 'Formato inválido')
+    print(message)
 
 
 # entry point for adding a tracking number
@@ -444,6 +452,7 @@ def cmd_magic(message):
     elif code == 'START':
         if int(message.chat.id) > 0:
             send_clean_msg(bot, message.chat.id, msgs.user)
+            bot.send_document(message.chat.id, 'CgADAQADhgAD45bBRvd9d-3ACM-cAg')
         else:
             send_clean_msg(bot, message.chat.id, msgs.group)
     else:
