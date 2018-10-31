@@ -41,6 +41,7 @@ markup_btn = types.ReplyKeyboardMarkup(resize_keyboard=True)
 markup_btn.row('/Pacotes','/Resumo')
 markup_btn.row('/Info','/Concluidos')
 markup_clean = types.ReplyKeyboardRemove(selective=False)
+markup_btn = types.ReplyKeyboardRemove(selective=False)
 
 
 # Check if package exists in DB
@@ -228,7 +229,8 @@ def log_text(chatid, message_id, text):
 @bot.message_handler(commands=['gif'])
 def cmd_repetir(message):
     bot.send_chat_action(message.chat.id, 'typing')
-    bot.send_document(message.chat.id, 'CgADAQADhgAD45bBRvd9d-3ACM-cAg')
+    # bot.send_document(message.chat.id, 'CgADAQADhgAD45bBRvd9d-3ACM-cAg')
+    bot.send_document(message.chat.id, 'CgADAQADTAAD9-zRRl9s8doDwrMmAg')
     bot.send_document(message.chat.id, 'CgADAQADWQADuVvARjeZRuSF_fMXAg')
 
 @bot.message_handler(commands=['Repetir', 'Historico'])
@@ -388,7 +390,6 @@ def cmd_magic(message):
         desc = str(message.text.split(' ', 1)[1])
     except Exception:
         desc = code
-        print('380')
     if check_type(code) is not None:
         exists = check_package(code)
         if exists:
@@ -423,7 +424,6 @@ def cmd_magic(message):
             elif stat == status.NOT_FOUND:
                 bot.reply_to(message, msgs.not_found)
             elif stat == status.OK:
-                print('ok')
                 set_desc(str(code), str(user), desc)
                 if int(message.chat.id) > 0:
                     bot.reply_to(
@@ -431,6 +431,8 @@ def cmd_magic(message):
                         'Pacote cadastrado.',
                         reply_markup=markup_btn
                     )
+                    if desc == code:
+                        send_clean_msg(bot, user, msgs.desc)
                 else:
                     bot.reply_to(
                         message,
@@ -452,7 +454,8 @@ def cmd_magic(message):
     elif code == 'START':
         if int(message.chat.id) > 0:
             send_clean_msg(bot, message.chat.id, msgs.user)
-            bot.send_document(message.chat.id, 'CgADAQADhgAD45bBRvd9d-3ACM-cAg')
+            # bot.send_document(message.chat.id, 'CgADAQADhgAD45bBRvd9d-3ACM-cAg')
+            bot.send_document(message.chat.id, 'CgADAQADTAAD9-zRRl9s8doDwrMmAg')
         else:
             send_clean_msg(bot, message.chat.id, msgs.group)
     else:

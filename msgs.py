@@ -26,6 +26,7 @@ howto = (str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n'
     + '\n<code>PN123456789BR Minha encomenda</code>'
     + '\nPara editar a descrição, repita o procedimento.'
     + '\nUtilize <code>/del</code> para remover pacotes.'
+    + '\n\nDúvidas? Clique em /gif.'
     + '\n\n' + str(u'\U00002B50') + '<b>Avalie o bot:</b>'
     + '\nhttps://telegram.me/storebot?start=rastreiobot\n\n'
     + str(u'\U0001F4D6') + '<b>Bot open source:</b>\nhttps://github.com/GabrielRF/RastreioBot'
@@ -50,3 +51,6 @@ not_found = ('Nenhum pacote encontrado.')
 
 remove = ('Envie <code>/del código do pacote</code> para excluir o pacote de sua lista.'
     '\n\n<code>/del PN123456789CD</code>')
+
+desc = ('Você sabia que é possível descrever um pacote?'
+    + '\nClique em /start para ver um exemplo.')
