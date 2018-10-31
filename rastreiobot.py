@@ -41,7 +41,6 @@ markup_btn = types.ReplyKeyboardMarkup(resize_keyboard=True)
 markup_btn.row('/Pacotes','/Resumo')
 markup_btn.row('/Info','/Concluidos')
 markup_clean = types.ReplyKeyboardRemove(selective=False)
-markup_btn = types.ReplyKeyboardRemove(selective=False)
 
 
 # Check if package exists in DB
