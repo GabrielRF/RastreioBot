@@ -233,7 +233,8 @@ def cmd_repetir(message):
     # bot.send_document(message.chat.id, 'CgADAQADTAAD9-zRRl9s8doDwrMmAg')
     # bot.send_document(message.chat.id, 'CgADAQADPgADBm7QRkzGU7UpR3JzAg')
     bot.send_document(message.chat.id, 'CgADAQADWQADGu_QRlzGc4VIGIYaAg')
-    bot.send_document(message.chat.id, 'CgADAQADWQADuVvARjeZRuSF_fMXAg')
+    # bot.send_document(message.chat.id, 'CgADAQADWQADuVvARjeZRuSF_fMXAg')
+    bot.send_document(message.chat.id, 'CgADAQADWgADGu_QRo7Gbbxg4ugLAg')
 
 @bot.message_handler(commands=['Repetir', 'Historico'])
 def cmd_repetir(message):
@@ -368,7 +369,8 @@ def cmd_remove(message):
         bot.send_message(message.chat.id, 'Pacote removido.')
     except Exception:
         bot.send_message(message.chat.id, msgs.remove, parse_mode='HTML')
-        bot.send_document(message.chat.id, 'CgADAQADWQADuVvARjeZRuSF_fMXAg')
+        # bot.send_document(message.chat.id, 'CgADAQADWQADuVvARjeZRuSF_fMXAg')
+        bot.send_document(message.chat.id, 'CgADAQADWgADGu_QRo7Gbbxg4ugLAg')
 
 
 @bot.message_handler(content_types=['document', 'audio', 'photo'])
