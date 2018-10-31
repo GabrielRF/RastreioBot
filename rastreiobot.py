@@ -230,7 +230,9 @@ def log_text(chatid, message_id, text):
 def cmd_repetir(message):
     bot.send_chat_action(message.chat.id, 'typing')
     # bot.send_document(message.chat.id, 'CgADAQADhgAD45bBRvd9d-3ACM-cAg')
-    bot.send_document(message.chat.id, 'CgADAQADTAAD9-zRRl9s8doDwrMmAg')
+    # bot.send_document(message.chat.id, 'CgADAQADTAAD9-zRRl9s8doDwrMmAg')
+    # bot.send_document(message.chat.id, 'CgADAQADPgADBm7QRkzGU7UpR3JzAg')
+    bot.send_document(message.chat.id, 'CgADAQADWQADGu_QRlzGc4VIGIYaAg')
     bot.send_document(message.chat.id, 'CgADAQADWQADuVvARjeZRuSF_fMXAg')
 
 @bot.message_handler(commands=['Repetir', 'Historico'])
@@ -455,7 +457,9 @@ def cmd_magic(message):
         if int(message.chat.id) > 0:
             send_clean_msg(bot, message.chat.id, msgs.user)
             # bot.send_document(message.chat.id, 'CgADAQADhgAD45bBRvd9d-3ACM-cAg')
-            bot.send_document(message.chat.id, 'CgADAQADTAAD9-zRRl9s8doDwrMmAg')
+            # bot.send_document(message.chat.id, 'CgADAQADTAAD9-zRRl9s8doDwrMmAg')
+            # bot.send_document(message.chat.id, 'CgADAQADPgADBm7QRkzGU7UpR3JzAg')
+            bot.send_document(message.chat.id, 'CgADAQADWQADGu_QRlzGc4VIGIYaAg')
         else:
             send_clean_msg(bot, message.chat.id, msgs.group)
     else:
