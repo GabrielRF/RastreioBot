@@ -18,7 +18,7 @@ not_found = ('Código não foi encontrado no sistema dos Correios.\n'
     + 'Talvez seja necessário aguardar algumas horas para'
     + ' que esteja disponível para consultas.')
 
-typo = ('Erro.\nVerifique se o código foi digitado corretamente.')
+typo = ('Erro.\nVerifique se o código foi digitado corretamente.\nCaso precise de ajuda, clique em /info ou /gif.')
 
 howto = (str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n'
     + str(u'\U0001F579') + '<b>Instruções</b>'
