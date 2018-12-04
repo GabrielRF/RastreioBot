@@ -54,3 +54,5 @@ remove = ('Envie <code>/del código do pacote</code> para excluir o pacote de su
 
 desc = ('Você sabia que é possível descrever um pacote?'
     + '\nClique em /start para ver um exemplo.')
+
+invalid = ('<b>Use a nuvem privada do Telegram!</b>\n\nO app disponibiliza a aba de "Mensagens salvas" onde tudo pode ser armazenado!\n\nDesde textos, fotos e gifs até documentos/arquivos (limitados a 1,5GB cada)!\nPara acessar esse chat, clique no link abaixo.\nEsta é a forma mais fácil e segura de armazenar os seus dados.\n\n<a href="tg://user?id={}">Mensagens Salvas</a>\n\nDúvidas? @GabrielRF')

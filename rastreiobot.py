@@ -375,6 +375,8 @@ def cmd_remove(message):
 @bot.message_handler(content_types=['document', 'audio', 'photo'])
 def cmd_format(message):
     bot.reply_to(message, 'Formato inválido')
+    # bot.reply_to(message, ('<a href="tg://user?id={}">{}</a>').format(message.from_user.id, message.from_user.first_name), parse_mode='HTML')
+    send_clean_msg(bot, message.from_user.id, msgs.invalid.format(message.from_user.id))
     log_text(message.chat.id, message.message_id, 'Formato inválido')
     print(message)
 
