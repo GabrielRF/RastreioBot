@@ -133,9 +133,9 @@ if __name__ == '__main__':
                             +  cursor2['stat'][len(cursor2['stat'])-1])
                         if 'objeto entregue' in message.lower():
                             message = (message + '\n\n'
-                            + str(u'\U00002B50')
-                            + '<a href="https://telegram.me/storebot?start=rastreiobot">'
-                            + 'Avalie o bot</a> - '
+                            #+  str(u'\U00002B50')
+                            #+ '<a href="https://telegram.me/storebot?start=rastreiobot">'
+                            #+ 'Avalie o bot</a> - '
                             + str(u'\U0001F4B5')
                             + '<a href="http://grf.xyz/paypal">Colabore</a>')
                         bot.send_message(str(user), message, parse_mode='HTML',
