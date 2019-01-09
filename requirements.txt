@@ -22,7 +22,7 @@ pyparsing==2.1.10
 pyTelegramBotAPI==2.3.0
 python-dateutil==2.6.0
 pytz==2016.10
-PyYAML==3.12
+PyYAML==3.13
 requests==2.20.0
 simplegeneric==0.8.1
 six==1.10.0
