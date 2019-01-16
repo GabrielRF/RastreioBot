@@ -88,6 +88,9 @@ def check_update(code, max_retries=3):
                 mensagem = mensagem + ' ' + str(u'\U0001F554')
             elif 'objeto pago' in situacao.lower():
                 mensagem = mensagem + ' ' + str(u'\U0001F4B8')
+            elif 'aduaneira finalizada' in situacao.lower():
+                '\n<i>Acesse o ambiente </i>' + 
+                '<a href="https://apps.correios.com.br/cas/login?service=https%3A%2F%2Fapps.correios.com.br%2Fportalimportador%2Fpages%2FpesquisarRemessaImportador%2FpesquisarRemessaImportador.jsf">Minhas Importações</a>' +
             elif 'aguardando pagamento' in situacao.lower():
                 mensagem = (mensagem + ' ' + str(u'\U0001F52B') + 
                 '\n<i>Links para efetuar pagamentos aos Correios:</i>' + 
