@@ -67,8 +67,8 @@ def check_system():
 
 if __name__ == '__main__':
 
-    sentry_url = config.get('SENTRY').get('url')
-    if sentry_url
+    sentry_url = config['SENTRY']['url']
+    if sentry_url:
         sentry_sdk.init(sentry_url)
 
     sleep(60*int(multiple))

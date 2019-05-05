@@ -471,7 +471,7 @@ def cmd_magic(message):
             bot.reply_to(message, msgs.typo)
 
 
-sentry_url = config.get('SENTRY').get('url')
+sentry_url = config['SENTRY']['url']
 if sentry_url
     sentry_sdk.init(sentry_url)
 
