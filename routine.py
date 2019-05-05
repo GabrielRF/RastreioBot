@@ -7,8 +7,9 @@ import configparser
 import logging
 import logging.handlers
 import requests
-import telebot
+import sentry_sdk
 import sys
+import telebot
 
 config = configparser.ConfigParser()
 config.sections()
@@ -65,6 +66,11 @@ def check_system():
         return False
 
 if __name__ == '__main__':
+
+    sentry_url = config.get('SENTRY').get('url')
+    if sentry_url
+        sentry_sdk.init(sentry_url)
+
     sleep(60*int(multiple))
     cursor1 = db.rastreiobot.find()
     start = time()
@@ -137,8 +143,8 @@ if __name__ == '__main__':
                             #+ '<a href="https://telegram.me/storebot?start=rastreiobot">'
                             #+ 'Avalie o bot</a> - '
                             + str(u'\U0001F4B3')
-                            + '<a href="http://grf.xyz/assine">Assine o bot</a> - ' 
-                            + str(u'\U0001F4B5') 
+                            + '<a href="http://grf.xyz/assine">Assine o bot</a> - '
+                            + str(u'\U0001F4B5')
                             + ' <a href="http://grf.xyz/paypal">Colabore</a>')
                         bot.send_message(str(user), message, parse_mode='HTML',
                             disable_web_page_preview=True)

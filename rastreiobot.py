@@ -1,13 +1,14 @@
+import configparser
 import logging
 import logging.handlers
 import random
-from time import time
 from datetime import datetime, timedelta
+from time import time
 
-import configparser
 import msgs
-import status
 import requests
+import sentry_sdk
+import status
 import telebot
 from check_update import check_update
 from math import ceil
@@ -63,7 +64,7 @@ def count_packages():
             qtd = qtd + 1
     return qtd, wait
 
-  
+
 ## List packages of a user
 def list_packages(chatid, done, status):
     aux = ''
@@ -268,7 +269,7 @@ def cmd_pacotes(message):
                 + '\nPicPay: http://grf.xyz/picpay'
                 + '\nPayPal: http://grf.xyz/paypal'
                 + '\nPatreon: http://grf.xyz/patreon',
-                parse_mode='HTML', reply_markup=markup_clean, 
+                parse_mode='HTML', reply_markup=markup_clean,
                 disable_web_page_preview=True)
 
 
@@ -469,5 +470,9 @@ def cmd_magic(message):
         if int(user) > 0:
             bot.reply_to(message, msgs.typo)
 
+
+sentry_url = config.get('SENTRY').get('url')
+if sentry_url
+    sentry_sdk.init(sentry_url)
 
 bot.polling()
