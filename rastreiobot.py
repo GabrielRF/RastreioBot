@@ -472,7 +472,7 @@ def cmd_magic(message):
 
 
 sentry_url = config['SENTRY']['url']
-if sentry_url
+if sentry_url:
     sentry_sdk.init(sentry_url)
 
 bot.polling()
