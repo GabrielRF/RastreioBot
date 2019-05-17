@@ -143,7 +143,7 @@ if __name__ == '__main__':
                             #+ '<a href="https://telegram.me/storebot?start=rastreiobot">'
                             #+ 'Avalie o bot</a> - '
                             + str(u'\U0001F4B3')
-                            + '<a href="http://grf.xyz/assine">Assine o bot</a> - '
+                            + ' <a href="http://grf.xyz/assine">Assine o bot</a> - '
                             + str(u'\U0001F4B5')
                             + ' <a href="http://grf.xyz/paypal">Colabore</a>')
                         bot.send_message(str(user), message, parse_mode='HTML',
