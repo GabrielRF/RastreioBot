@@ -256,7 +256,6 @@ def cmd_pacotes(message):
         send_clean_msg(bot, chatid, msgs.error_bot)
     else:
         message = '<b>Clique para ver o histórico:</b>\n' + message
-        msg = message
         msg_split = message.split('\n')
         for elem in range(0, len(msg_split), 10):
              s = '\n'
