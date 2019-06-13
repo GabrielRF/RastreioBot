@@ -3,7 +3,7 @@ import logging
 import logging.handlers
 import random
 from datetime import datetime, timedelta
-from time import time
+from time import time, sleep
 
 import msgs
 import requests
@@ -396,6 +396,7 @@ def cmd_magic(message):
     except Exception:
         desc = code
     if check_type(code) is not None:
+        sleep(random.randrange(0,2000,100)/1000)
         exists = check_package(code)
         if exists:
             exists = check_user(code, user)
