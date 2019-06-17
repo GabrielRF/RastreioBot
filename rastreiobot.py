@@ -396,7 +396,7 @@ def cmd_magic(message):
     except Exception:
         desc = code
     if check_type(code) is not None:
-        sleep(random.randrange(0,2000,100)/1000)
+        sleep(random.randrange(500,2000,100)/1000)
         exists = check_package(code)
         if exists:
             exists = check_user(code, user)
