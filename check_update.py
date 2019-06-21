@@ -23,7 +23,7 @@ def check_update(code, max_retries=3):
         return status.NOT_FOUND
     if len(tabela) < 1:
         return status.NOT_FOUND
-    stats.append(str(u'\U0001F4EE') + ' <b>' + code + '</b>')
+    stats.append(str(u'\U0001F4EE') + ' <b><code>' + code + '</code></b>')
     for evento in reversed(tabela):
         try:
             dia0 = int(tabela[len(tabela) - 1]['data'].split('/')[0])
