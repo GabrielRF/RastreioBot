@@ -388,11 +388,13 @@ def cmd_magic(message):
     log_text(message.chat.id, message.message_id, message.text)
     user = str(message.chat.id)
     code = (
-        str(message.text.replace('/start ', '').split(' ')[0])
+        str(message.text.strip().replace('/start ', '').replace('\n',' ')
         .replace('/', '').upper().replace('@RASTREIOBOT', '')
+        .replace('📮 ','').replace('📮','').split(' ')[0])
     )
     try:
-        desc = str(message.text.split(' ', 1)[1])
+        desc = (str(message.text.replace('\n',' ')
+            .split(' ', 1)[1].split('Data:')[0].replace('  ','')))
     except Exception:
         desc = code
     if check_type(code) is not None:
