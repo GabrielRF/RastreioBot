@@ -85,7 +85,7 @@ def list_packages(chatid, done, status):
                             'objeto roubado' not in status_elem(elem)): # and
                             #'objeto devolvido' not in status_elem(elem)):
                         if status:
-                            aux = aux +  str(u'\U0001F4EE') + elem['code']
+                            aux = aux +  str(u'\U0001F4EE') + '<code>' + elem['code'] + '</code>'
                         else:
                             aux = aux + '/' + elem['code']
                         try:
