@@ -471,6 +471,8 @@ def cmd_magic(message):
     else:
         if int(user) > 0:
             bot.reply_to(message, msgs.typo)
+        if int(user) > 0 and len(message.text) > 100:
+            send_clean_msg(bot, message.from_user.id, msgs.invalid.format(message.from_user.id))
 
 
 sentry_url = config['SENTRY']['url']
