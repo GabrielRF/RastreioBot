@@ -313,10 +313,20 @@ def cmd_status(message):
         message.message_id,
         message.text + '\t' + str(message.from_user.first_name)
     )
-    with open(LOG_ALERTS_FILE) as f:
-        today = (sum(1 for _ in f))
+
     str_yesterday = datetime.now() - timedelta(1)
     str_yesterday = str_yesterday.strftime('%Y-%m-%d')
+
+    with open(LOG_INFO_FILE) as f:
+        todaymsg = (sum(1 for _ in f))
+    try:
+        with open(LOG_INFO_FILE + '.' + str_yesterday) as f:
+            yesterdaymsg = (sum(1 for _ in f))
+    except Exception:
+            yesterdaymsg = ''
+
+    with open(LOG_ALERTS_FILE) as f:
+        today = (sum(1 for _ in f))
     try:
         with open(LOG_ALERTS_FILE + '.' + str_yesterday) as f:
             yesterday = (sum(1 for _ in f))
@@ -328,6 +338,8 @@ def cmd_status(message):
         chatid, str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n' +
         'Pacotes em andamento: ' + str(qtd) + '\n' +
         'Pacotes em espera: ' + str(wait) + '\n\n' +
+        'Mensagens recebidas hoje: ' + str(todaymsg) + '\n' +
+        'Mensagens recebidas ontem: ' + str(yesterdaymsg) + '\n\n' +
         'Alertas enviados hoje: ' + str(today) + '\n' +
         'Alertas enviados ontem: ' + str(yesterday),
         parse_mode='HTML'
@@ -471,7 +483,7 @@ def cmd_magic(message):
     else:
         if int(user) > 0:
             bot.reply_to(message, msgs.typo)
-        if int(user) > 0 and len(message.text) > 100:
+        if int(user) > 0 and len(message.text) > 25:
             send_clean_msg(bot, message.from_user.id, msgs.invalid.format(message.from_user.id))
 
 
