@@ -336,7 +336,8 @@ def cmd_status(message):
         'Pacotes importados: ' + str(importado) + '\n' +
         'Taxados em R$15: ' + str(round(100*despacho/importado, 2)) + '%\n' +
         #'Pacotes sem tributação: ' + str(round(100*sem_imposto/importado, 2)) + '%\n' +
-        'Pacotes tributados: ' + str(round(100*tributado/importado, 2)) + '%',
+        'Pacotes tributados: ' + str(round(100*tributado/importado, 2)) + '%\n\n'
+        '<code>Estatísticas de todos os pacotes em andamento ou entregues nos últimos 30 dias</code>',
         parse_mode='HTML'
     )
 
