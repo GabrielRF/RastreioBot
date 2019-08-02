@@ -57,12 +57,24 @@ def count_packages():
     cursor = db.rastreiobot.find()
     qtd = 0
     wait = 0
+    despacho = 0
+    sem_imposto = 0
+    importado = 0
+    tributado = 0
     for elem in cursor:
         if 'Aguardando recebimento pel' in str(elem):
             wait = wait + 1
         else:
             qtd = qtd + 1
-    return qtd, wait
+        if 'Aguardando pagamento do despacho postal' in str(elem):
+            despacho = despacho + 1
+        if 'Liberado sem tributação' in str(elem):
+            sem_imposto = sem_imposto + 1
+        if 'Objeto recebido pelos Correios do Brasil' in str(elem):
+            importado = importado + 1
+        if 'Fiscalização Aduaneira finalizada' in str(elem):
+            tributado = tributado + 1
+    return qtd, wait, despacho, sem_imposto, importado, tributado
 
 
 ## List packages of a user
@@ -308,9 +320,33 @@ def cmd_concluidos(message):
 
 @bot.message_handler(commands=['status', 'Status'])
 def cmd_status(message):
+    bot.send_chat_action(message.chat.id, 'typing')
     log_text(
         message.chat.id,
         message.message_id,
+        message.text + '\t' + str(message.from_user.first_name)
+    )
+
+    qtd, wait, despacho, sem_imposto, importado, tributado = count_packages()
+    chatid = message.chat.id
+    bot.send_message(
+        chatid, str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n' +
+        'Pacotes em andamento: ' + str(qtd) + '\n' +
+        'Pacotes em espera: ' + str(wait) + '\n\n' +
+        'Pacotes importados: ' + str(importado) + '\n' +
+        'Taxados em R$15: ' + str(round(100*despacho/importado, 2)) + '%\n' +
+        #'Pacotes sem tributação: ' + str(round(100*sem_imposto/importado, 2)) + '%\n' +
+        'Pacotes tributados: ' + str(round(100*tributado/importado, 2)) + '%',
+        parse_mode='HTML'
+    )
+
+
+@bot.message_handler(commands=['statusall', 'Statusall'])
+def cmd_statusall(message):
+    bot.send_chat_action(message.chat.id, 'typing')
+    log_text(
+        message.chat.id,
+        message.message_id, 
         message.text + '\t' + str(message.from_user.first_name)
     )
 
@@ -332,12 +368,16 @@ def cmd_status(message):
             yesterday = (sum(1 for _ in f))
     except Exception:
         yesterday = ''
-    qtd, wait = count_packages()
+    qtd, wait, despacho, sem_imposto, importado, tributado = count_packages()
     chatid = message.chat.id
     bot.send_message(
         chatid, str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n' +
         'Pacotes em andamento: ' + str(qtd) + '\n' +
         'Pacotes em espera: ' + str(wait) + '\n\n' +
+        'Pacotes importados: ' + str(importado) + '\n' +
+        'Taxados em R$15: ' + str(round(100*despacho/importado, 2)) + '%\n' +
+        'Pacotes sem tributação: ' + str(round(100*sem_imposto/importado, 2)) + '%\n' +
+        'Pacotes tributados: ' + str(round(100*tributado/importado, 2)) + '%\n\n' +
         'Mensagens recebidas hoje: ' + str(todaymsg) + '\n' +
         'Mensagens recebidas ontem: ' + str(yesterdaymsg) + '\n\n' +
         'Alertas enviados hoje: ' + str(today) + '\n' +
