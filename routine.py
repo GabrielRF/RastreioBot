@@ -21,12 +21,6 @@ LOG_ALERTS_FILE = config['RASTREIOBOT']['alerts_log']
 PATREON = config['RASTREIOBOT']['patreon']
 INTERVAL = 0.03
 
-logger_info = logging.getLogger('InfoLogger')
-logger_info.setLevel(logging.DEBUG)
-handler_info = logging.handlers.TimedRotatingFileHandler(LOG_ALERTS_FILE,
-    when='midnight', interval=1, backupCount=5, encoding='utf-8')
-logger_info.addHandler(handler_info)
-
 bot = telebot.TeleBot(TOKEN)
 client = MongoClient()
 db = client.rastreiobot
@@ -66,12 +60,17 @@ def check_system():
         return False
 
 if __name__ == '__main__':
+    sleep(60*int(multiple))
+    logger_info = logging.getLogger('InfoLogger')
+    logger_info.setLevel(logging.DEBUG)
+    handler_info = logging.handlers.TimedRotatingFileHandler(LOG_ALERTS_FILE,
+        when='midnight', interval=1, backupCount=5, encoding='utf-8')
+    logger_info.addHandler(handler_info)
 
     sentry_url = config['SENTRY']['url']
     if sentry_url:
         sentry_sdk.init(sentry_url)
 
-    sleep(60*int(multiple))
     cursor1 = db.rastreiobot.find()
     start = time()
     sent = 1
