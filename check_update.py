@@ -6,7 +6,7 @@ import apicorreios as correios
 
 
 def check_update(code, max_retries=3):
-    print('check_update')
+    # print('check_update')
     api_type = check_type(code)
     # TODO: add suport to more api's
     if api_type is not correios:
@@ -15,7 +15,7 @@ def check_update(code, max_retries=3):
     try:
         response = api_type.get(code, max_retries)
         if response in status.types:
-            print("resposta : " + str(response))
+            # print("resposta : " + str(response))
             return response
         result = json.loads(response)
         tabela = result['objeto'][0]['evento']

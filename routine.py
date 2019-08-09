@@ -52,7 +52,7 @@ def check_system():
     except:
         logger_info.info(str(datetime.now()) + '\tCorreios indisponível')
         return False
-    print(str(response))
+    #print(str(response))
     if '200' in str(response):
         return True
     else:
@@ -62,9 +62,10 @@ def check_system():
 if __name__ == '__main__':
     sleep(60*int(multiple))
     logger_info = logging.getLogger('InfoLogger')
+    handler_info = logging.FileHandler(LOG_ALERTS_FILE)
     logger_info.setLevel(logging.DEBUG)
-    handler_info = logging.handlers.TimedRotatingFileHandler(LOG_ALERTS_FILE,
-        when='midnight', interval=1, backupCount=5, encoding='utf-8')
+#    handler_info = logging.handlers.TimedRotatingFileHandler(LOG_ALERTS_FILE,
+#        when='midnight', interval=1, backupCount=5, encoding='utf-8')
     logger_info.addHandler(handler_info)
 
     sentry_url = config['SENTRY']['url']
@@ -120,11 +121,12 @@ if __name__ == '__main__':
             except:
                 len_new_state = 1
             if len_old_state != len_new_state:
+                len_diff = len_new_state - len_old_state
                 for user in elem['users']:
-                    logger_info.info(str(datetime.now()) + '\t' + multiple + '\t'
+                    logger_info.info(str(datetime.now()) + ' ' + multiple + ' '
                         + str(code) + ' \t' + str(user) + ' \t' + str(sent) + '\t'
-                        + str(timediff) + ' ' + str(len_old_state) + ' '
-                        + str(len_new_state))
+                        + str(timediff) + '\t' + str(len_old_state) + '\t'
+                        + str(len_new_state) + '\t' + str(len_diff))
                     try:
                         message = (str(u'\U0001F4EE') + '<b>' + code + '</b>\n')
                         #if elem[user] != code:
@@ -133,11 +135,12 @@ if __name__ == '__main__':
                                 message = message + elem[user] + '\n'
                         except:
                             pass
-                        message = (
-                            message + '\n'
-                            +  cursor2['stat'][len(cursor2['stat'])-1])
+                        for k in reversed(range(1,len_diff+1)):
+                            message = (
+                                message + '\n'
+                                +  cursor2['stat'][len(cursor2['stat'])-k] + '\n')
                         if 'objeto entregue' in message.lower():
-                            message = (message + '\n\n'
+                            message = (message + '\n'
                             #+  str(u'\U00002B50')
                             #+ '<a href="https://telegram.me/storebot?start=rastreiobot">'
                             #+ 'Avalie o bot</a> - '
