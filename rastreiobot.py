@@ -26,6 +26,7 @@ LOG_INFO_FILE = config['RASTREIOBOT']['text_log']
 LOG_ROUTINE_FILE = config['RASTREIOBOT']['routine_log']
 LOG_ALERTS_FILE = config['RASTREIOBOT']['alerts_log']
 PATREON = config['RASTREIOBOT']['patreon']
+BANNED = config['RASTREIOBOT']['banned']
 
 logger_info = logging.getLogger('InfoLogger')
 logger_info.setLevel(logging.DEBUG)
@@ -260,6 +261,10 @@ def cmd_repetir(message):
 @bot.message_handler(commands=['pacotes', 'Pacotes'])
 def cmd_pacotes(message):
     bot.send_chat_action(message.chat.id, 'typing')
+    if str(message.chat.id) in BANNED:
+         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+         bot.send_message(message.chat.id, msgs.banned) 
+         return 0
     chatid = message.chat.id
     message, qtd = list_packages(chatid, False, False)
     if qtd == 0:
@@ -287,6 +292,10 @@ def cmd_pacotes(message):
 @bot.message_handler(commands=['resumo', 'Resumo'])
 def cmd_resumo(message):
     bot.send_chat_action(message.chat.id, 'typing')
+    if str(message.chat.id) in BANNED:
+         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+         bot.send_message(message.chat.id, msgs.banned) 
+         return 0
     chatid = message.chat.id
     message, qtd = list_packages(chatid, False, True)
     if qtd == 0:
@@ -304,6 +313,10 @@ def cmd_resumo(message):
 @bot.message_handler(commands=['concluidos', 'Concluidos'])
 def cmd_concluidos(message):
     bot.send_chat_action(message.chat.id, 'typing')
+    if str(message.chat.id) in BANNED:
+         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+         bot.send_message(message.chat.id, msgs.banned) 
+         return 0
     chatid = message.chat.id
     message, qtd = list_packages(chatid, True, False)
     if len(message) < 1:
@@ -321,6 +334,10 @@ def cmd_concluidos(message):
 @bot.message_handler(commands=['status', 'Status'])
 def cmd_status(message):
     bot.send_chat_action(message.chat.id, 'typing')
+    if str(message.chat.id) in BANNED:
+         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+         bot.send_message(message.chat.id, msgs.banned) 
+         return 0
     log_text(
         message.chat.id,
         message.message_id,
@@ -345,6 +362,10 @@ def cmd_status(message):
 @bot.message_handler(commands=['statusall', 'Statusall'])
 def cmd_statusall(message):
     bot.send_chat_action(message.chat.id, 'typing')
+    if str(message.chat.id) in BANNED:
+         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+         bot.send_message(message.chat.id, msgs.banned) 
+         return 0
     log_text(
         message.chat.id,
         message.message_id, 
@@ -390,6 +411,10 @@ def cmd_statusall(message):
 @bot.message_handler(commands=['info', 'Info', 'help', 'Help'])
 def cmd_help(message):
     bot.send_chat_action(message.chat.id, 'typing')
+    if str(message.chat.id) in BANNED:
+         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+         bot.send_message(message.chat.id, msgs.banned) 
+         return 0
     log_text(
         message.chat.id,
         message.message_id,
@@ -409,6 +434,10 @@ def cmd_help(message):
 @bot.message_handler(commands=['del', 'Del', 'remover', 'apagar'])
 def cmd_remove(message):
     bot.send_chat_action(message.chat.id, 'typing')
+    if str(message.chat.id) in BANNED:
+         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+         bot.send_message(message.chat.id, msgs.banned) 
+         return 0
     log_text(
         message.chat.id,
         message.message_id,
@@ -438,6 +467,10 @@ def cmd_format(message):
 @bot.message_handler(func=lambda m: True)
 def cmd_magic(message):
     bot.send_chat_action(message.chat.id, 'typing')
+    if str(message.chat.id) in BANNED:
+         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+         bot.send_message(message.chat.id, msgs.banned) 
+         return 0
     log_text(message.chat.id, message.message_id, message.text)
     user = str(message.chat.id)
     code = (

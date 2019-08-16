@@ -1,3 +1,5 @@
+banned = (str(u'\U0000274C') + 'Usuário banido')
+
 user = (str(u'\U0001F4EE') + '<b>@RastreioBot!</b>\n\n'
     'Por favor, envie um código de objeto.\n\n' +
     'Para adicionar uma descrição, envie um código ' +
