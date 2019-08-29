@@ -261,7 +261,7 @@ def cmd_repetir(message):
 @bot.message_handler(commands=['pacotes', 'Pacotes'])
 def cmd_pacotes(message):
     bot.send_chat_action(message.chat.id, 'typing')
-    if str(message.chat.id) in BANNED:
+    if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
          bot.send_message(message.chat.id, msgs.banned) 
          return 0
@@ -292,7 +292,7 @@ def cmd_pacotes(message):
 @bot.message_handler(commands=['resumo', 'Resumo'])
 def cmd_resumo(message):
     bot.send_chat_action(message.chat.id, 'typing')
-    if str(message.chat.id) in BANNED:
+    if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
          bot.send_message(message.chat.id, msgs.banned) 
          return 0
@@ -313,7 +313,7 @@ def cmd_resumo(message):
 @bot.message_handler(commands=['concluidos', 'Concluidos'])
 def cmd_concluidos(message):
     bot.send_chat_action(message.chat.id, 'typing')
-    if str(message.chat.id) in BANNED:
+    if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
          bot.send_message(message.chat.id, msgs.banned) 
          return 0
@@ -334,7 +334,7 @@ def cmd_concluidos(message):
 @bot.message_handler(commands=['status', 'Status'])
 def cmd_status(message):
     bot.send_chat_action(message.chat.id, 'typing')
-    if str(message.chat.id) in BANNED:
+    if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
          bot.send_message(message.chat.id, msgs.banned) 
          return 0
@@ -362,7 +362,7 @@ def cmd_status(message):
 @bot.message_handler(commands=['statusall', 'Statusall'])
 def cmd_statusall(message):
     bot.send_chat_action(message.chat.id, 'typing')
-    if str(message.chat.id) in BANNED:
+    if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
          bot.send_message(message.chat.id, msgs.banned) 
          return 0
@@ -411,7 +411,7 @@ def cmd_statusall(message):
 @bot.message_handler(commands=['info', 'Info', 'help', 'Help'])
 def cmd_help(message):
     bot.send_chat_action(message.chat.id, 'typing')
-    if str(message.chat.id) in BANNED:
+    if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
          bot.send_message(message.chat.id, msgs.banned) 
          return 0
@@ -434,7 +434,7 @@ def cmd_help(message):
 @bot.message_handler(commands=['del', 'Del', 'remover', 'apagar'])
 def cmd_remove(message):
     bot.send_chat_action(message.chat.id, 'typing')
-    if str(message.chat.id) in BANNED:
+    if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
          bot.send_message(message.chat.id, msgs.banned) 
          return 0
@@ -467,7 +467,7 @@ def cmd_format(message):
 @bot.message_handler(func=lambda m: True)
 def cmd_magic(message):
     bot.send_chat_action(message.chat.id, 'typing')
-    if str(message.chat.id) in BANNED:
+    if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
          bot.send_message(message.chat.id, msgs.banned) 
          return 0
