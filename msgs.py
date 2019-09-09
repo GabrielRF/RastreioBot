@@ -36,9 +36,9 @@ howto = (str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n'
     + '\nhttp://grf.xyz/telegrambr\n\n'
     + str(u'\U0001F4B5') + '<b>Colabore!</b>'
     + '\nPicPay: http://grf.xyz/picpay'
-    + '\nPayPal: http://grf.xyz/paypal'
-    + '\nPatreon: http://grf.xyz/patreon\n\n'
-    + str(u'\U0001F4B3') + '<b>Doe R$ 10 a cada seis meses e ajude o bot!</b>'
+    #+ '\nPayPal: http://grf.xyz/paypal'
+    #+ '\nPatreon: http://grf.xyz/patreon\n\n'
+    + str(u'\U0001F4B3') + '<b>Envie R$ 10 a cada seis meses e ajude o bot!</b>'
     + '\nhttp://grf.xyz/assine'
     + '\n\n' + str(u'\U0001F517'))
 
