@@ -5,7 +5,7 @@ from misc import check_type
 
 
 def check_update(code, max_retries=3):
-    print('check_update')
+    # print('check_update')
     api_type = check_type(code)
     # TODO: add suport to more api's
     if api_type is None:
@@ -14,7 +14,7 @@ def check_update(code, max_retries=3):
     try:
         response = api_type.get(code, max_retries)
         if response in status.types:
-            print("resposta : " + str(response))
+            # print("resposta : " + str(response))
             return response
         result = json.loads(response)
         tabela = result['objeto'][0]['evento']
@@ -87,6 +87,9 @@ def check_update(code, max_retries=3):
                 mensagem = mensagem + ' ' + str(u'\U0001F554')
             elif 'objeto pago' in situacao.lower():
                 mensagem = mensagem + ' ' + str(u'\U0001F4B8')
+            elif 'aduaneira finalizada' in situacao.lower():
+                mensagem = (mensagem + '\n<i>Acesse o ambiente </i>' +
+                '<a href="https://apps.correios.com.br/cas/login?service=https%3A%2F%2Fapps.correios.com.br%2Fportalimportador%2Fpages%2FpesquisarRemessaImportador%2FpesquisarRemessaImportador.jsf">Minhas Importações</a>')
             elif 'aguardando pagamento' in situacao.lower():
                 mensagem = (mensagem + ' ' + str(u'\U0001F52B') + 
                 '\n<i>Links para efetuar pagamentos aos Correios:</i>' + 

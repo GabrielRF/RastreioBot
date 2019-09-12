@@ -1,13 +1,14 @@
+import configparser
 import logging
 import logging.handlers
 import random
-from time import time
 from datetime import datetime, timedelta
+from time import time, sleep
 
-import configparser
 import msgs
-import status
 import requests
+import sentry_sdk
+import status
 import telebot
 from check_update import check_update
 from misc import check_type, send_clean_msg
@@ -24,6 +25,7 @@ LOG_INFO_FILE = config['RASTREIOBOT']['text_log']
 LOG_ROUTINE_FILE = config['RASTREIOBOT']['routine_log']
 LOG_ALERTS_FILE = config['RASTREIOBOT']['alerts_log']
 PATREON = config['RASTREIOBOT']['patreon']
+BANNED = config['RASTREIOBOT']['banned']
 
 logger_info = logging.getLogger('InfoLogger')
 logger_info.setLevel(logging.DEBUG)
@@ -57,15 +59,27 @@ def count_packages():
     cursor = db.rastreiobot.find()
     qtd = 0
     wait = 0
+    despacho = 0
+    sem_imposto = 0
+    importado = 0
+    tributado = 0
     for elem in cursor:
         if 'Aguardando recebimento pel' in str(elem):
             wait = wait + 1
         else:
             qtd = qtd + 1
-    return qtd, wait
+        if 'Aguardando pagamento do despacho postal' in str(elem):
+            despacho = despacho + 1
+        if 'Liberado sem tributação' in str(elem):
+            sem_imposto = sem_imposto + 1
+        if 'Objeto recebido pelos Correios do Brasil' in str(elem):
+            importado = importado + 1
+        if 'Fiscalização Aduaneira finalizada' in str(elem):
+            tributado = tributado + 1
+    return qtd, wait, despacho, sem_imposto, importado, tributado
 
 
-# List packages of a user
+## List packages of a user
 def list_packages(chatid, done, status):
     print("list_packages")
     aux = ''
@@ -86,7 +100,7 @@ def list_packages(chatid, done, status):
                             'objeto roubado' not in status_elem(elem)): # and
                             #'objeto devolvido' not in status_elem(elem)):
                         if status:
-                            aux = aux +  str(u'\U0001F4EE') + elem['code']
+                            aux = aux +  str(u'\U0001F4EE') + '<code>' + elem['code'] + '</code>'
                         else:
                             aux = aux + '/' + elem['code']
                         try:
@@ -231,6 +245,16 @@ def log_text(chatid, message_id, text):
     )
 
 
+@bot.message_handler(commands=['gif'])
+def cmd_repetir(message):
+    bot.send_chat_action(message.chat.id, 'typing')
+    # bot.send_document(message.chat.id, 'CgADAQADhgAD45bBRvd9d-3ACM-cAg')
+    # bot.send_document(message.chat.id, 'CgADAQADTAAD9-zRRl9s8doDwrMmAg')
+    # bot.send_document(message.chat.id, 'CgADAQADPgADBm7QRkzGU7UpR3JzAg')
+    bot.send_document(message.chat.id, 'CgADAQADWQADGu_QRlzGc4VIGIYaAg')
+    # bot.send_document(message.chat.id, 'CgADAQADWQADuVvARjeZRuSF_fMXAg')
+    bot.send_document(message.chat.id, 'CgADAQADWgADGu_QRo7Gbbxg4ugLAg')
+
 @bot.message_handler(commands=['Repetir', 'Historico'])
 def cmd_repetir(message):
     print("cmd_repetir")
@@ -245,6 +269,10 @@ def cmd_repetir(message):
 def cmd_pacotes(message):
     print("cmd_pacotes")
     bot.send_chat_action(message.chat.id, 'typing')
+    if str(message.from_user.id) in BANNED:
+         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+         bot.send_message(message.chat.id, msgs.banned) 
+         return 0
     chatid = message.chat.id
     message, qtd = list_packages(chatid, False, False)
     if qtd == 0:
@@ -253,7 +281,6 @@ def cmd_pacotes(message):
         send_clean_msg(bot, chatid, msgs.error_bot)
     else:
         message = '<b>Clique para ver o histórico:</b>\n' + message
-        msg = message
         msg_split = message.split('\n')
         for elem in range(0, len(msg_split), 10):
              s = '\n'
@@ -274,6 +301,10 @@ def cmd_pacotes(message):
 def cmd_resumo(message):
     print("cmd_resumo")
     bot.send_chat_action(message.chat.id, 'typing')
+    if str(message.from_user.id) in BANNED:
+         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+         bot.send_message(message.chat.id, msgs.banned) 
+         return 0
     chatid = message.chat.id
     message, qtd = list_packages(chatid, False, True)
     if qtd == 0:
@@ -292,6 +323,10 @@ def cmd_resumo(message):
 def cmd_concluidos(message):
     print("concluidos")
     bot.send_chat_action(message.chat.id, 'typing')
+    if str(message.from_user.id) in BANNED:
+         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+         bot.send_message(message.chat.id, msgs.banned) 
+         return 0
     chatid = message.chat.id
     message, qtd = list_packages(chatid, True, False)
     if len(message) < 1:
@@ -308,27 +343,75 @@ def cmd_concluidos(message):
 
 @bot.message_handler(commands=['status', 'Status'])
 def cmd_status(message):
-    print("status")
+    bot.send_chat_action(message.chat.id, 'typing')
+    if str(message.from_user.id) in BANNED:
+         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+         bot.send_message(message.chat.id, msgs.banned) 
+         return 0
     log_text(
         message.chat.id,
         message.message_id,
         message.text + '\t' + str(message.from_user.first_name)
     )
-    with open(LOG_ALERTS_FILE) as f:
-        today = (sum(1 for _ in f))
-    str_yesterday = datetime.now() - timedelta(1)
-    str_yesterday = str_yesterday.strftime('%Y-%m-%d')
-    try:
-        with open(LOG_ALERTS_FILE + '.' + str_yesterday) as f:
-            yesterday = (sum(1 for _ in f))
-    except Exception:
-        yesterday = ''
-    qtd, wait = count_packages()
+
+    qtd, wait, despacho, sem_imposto, importado, tributado = count_packages()
     chatid = message.chat.id
     bot.send_message(
         chatid, str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n' +
         'Pacotes em andamento: ' + str(qtd) + '\n' +
         'Pacotes em espera: ' + str(wait) + '\n\n' +
+        'Pacotes importados: ' + str(importado) + '\n' +
+        'Taxados em R$15: ' + str(round(100*despacho/importado, 2)) + '%\n' +
+        #'Pacotes sem tributação: ' + str(round(100*sem_imposto/importado, 2)) + '%\n' +
+        'Pacotes tributados: ' + str(round(100*tributado/importado, 2)) + '%\n\n'
+        '<code>Estatísticas de todos os pacotes em andamento ou entregues nos últimos 30 dias</code>',
+        parse_mode='HTML'
+    )
+
+
+@bot.message_handler(commands=['statusall', 'Statusall'])
+def cmd_statusall(message):
+    bot.send_chat_action(message.chat.id, 'typing')
+    if str(message.from_user.id) in BANNED:
+         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+         bot.send_message(message.chat.id, msgs.banned) 
+         return 0
+    log_text(
+        message.chat.id,
+        message.message_id, 
+        message.text + '\t' + str(message.from_user.first_name)
+    )
+
+    str_yesterday = datetime.now() - timedelta(1)
+    str_yesterday = str_yesterday.strftime('%Y-%m-%d')
+
+    with open(LOG_INFO_FILE) as f:
+        todaymsg = (sum(1 for _ in f))
+    try:
+        with open(LOG_INFO_FILE + '.' + str_yesterday) as f:
+            yesterdaymsg = (sum(1 for _ in f))
+    except Exception:
+            yesterdaymsg = ''
+
+    with open(LOG_ALERTS_FILE) as f:
+        today = (sum(1 for _ in f))
+    try:
+        with open(LOG_ALERTS_FILE + '.' + str_yesterday) as f:
+            yesterday = (sum(1 for _ in f))
+    except Exception:
+        yesterday = ''
+    qtd, wait, despacho, sem_imposto, importado, tributado = count_packages()
+    chatid = message.chat.id
+    bot.send_message(
+        chatid, str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n' +
+        'Pacotes em andamento: ' + str(qtd) + '\n' +
+        'Pacotes em espera: ' + str(wait) + '\n\n' +
+        'Pacotes importados: ' + str(importado) + '\n' +
+        'Taxados em R$15: ' + str(round(100*despacho/importado, 2)) + '%\n' +
+        'Pacotes sem tributação: ' + str(round(100*sem_imposto/importado, 2)) + '%\n' +
+        'Pacotes tributados: ' + str(round(100*tributado/importado, 2)) + '%\n\n' +
+        'Mensagens recebidas hoje: ' + str(todaymsg) + '\n' +
+        'Mensagens recebidas ontem: ' + str(yesterdaymsg) + '\n\n' +
         'Alertas enviados hoje: ' + str(today) + '\n' +
         'Alertas enviados ontem: ' + str(yesterday),
         parse_mode='HTML'
@@ -339,6 +422,10 @@ def cmd_status(message):
 def cmd_help(message):
     print("help")
     bot.send_chat_action(message.chat.id, 'typing')
+    if str(message.from_user.id) in BANNED:
+         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+         bot.send_message(message.chat.id, msgs.banned) 
+         return 0
     log_text(
         message.chat.id,
         message.message_id,
@@ -359,6 +446,10 @@ def cmd_help(message):
 def cmd_remove(message):
     print("remove")
     bot.send_chat_action(message.chat.id, 'typing')
+    if str(message.from_user.id) in BANNED:
+         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+         bot.send_message(message.chat.id, msgs.banned) 
+         return 0
     log_text(
         message.chat.id,
         message.message_id,
@@ -371,13 +462,18 @@ def cmd_remove(message):
         bot.send_message(message.chat.id, 'Pacote removido.')
     except Exception:
         bot.send_message(message.chat.id, msgs.remove, parse_mode='HTML')
+        # bot.send_document(message.chat.id, 'CgADAQADWQADuVvARjeZRuSF_fMXAg')
+        bot.send_document(message.chat.id, 'CgADAQADWgADGu_QRo7Gbbxg4ugLAg')
 
 
 @bot.message_handler(content_types=['document', 'audio', 'photo'])
 def cmd_format(message):
     print("format")
     bot.reply_to(message, 'Formato inválido')
+    # bot.reply_to(message, ('<a href="tg://user?id={}">{}</a>').format(message.from_user.id, message.from_user.first_name), parse_mode='HTML')
+    send_clean_msg(bot, message.from_user.id, msgs.invalid.format(message.from_user.id))
     log_text(message.chat.id, message.message_id, 'Formato inválido')
+    print(message)
 
 
 # entry point for adding a tracking number
@@ -385,18 +481,24 @@ def cmd_format(message):
 def cmd_magic(message):
     print("magic")
     bot.send_chat_action(message.chat.id, 'typing')
+    if str(message.from_user.id) in BANNED:
+         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+         bot.send_message(message.chat.id, msgs.banned) 
+         return 0
     log_text(message.chat.id, message.message_id, message.text)
     user = str(message.chat.id)
     code = (
-        str(message.text.replace('/start ', '').split(' ')[0])
+        str(message.text.strip().replace('/start ', '').replace('\n',' ')
         .replace('/', '').upper().replace('@RASTREIOBOT', '')
+        .replace('📮 ','').replace('📮','').split(' ')[0])
     )
     try:
-        desc = str(message.text.split(' ', 1)[1])
+        desc = (str(message.text.replace('\n',' ')
+            .split(' ', 1)[1].split('Data:')[0].replace('  ','')))
     except Exception:
         desc = code
-        print('380')
     if check_type(code) is not None:
+        sleep(random.randrange(500,2000,100)/1000)
         exists = check_package(code)
         if exists:
             exists = check_user(code, user)
@@ -430,7 +532,6 @@ def cmd_magic(message):
             elif stat == status.NOT_FOUND:
                 bot.reply_to(message, msgs.not_found)
             elif stat == status.OK:
-                print('ok')
                 set_desc(str(code), str(user), desc)
                 if int(message.chat.id) > 0:
                     bot.reply_to(
@@ -438,6 +539,8 @@ def cmd_magic(message):
                         'Pacote cadastrado.',
                         reply_markup=markup_btn
                     )
+                    if desc == code:
+                        send_clean_msg(bot, user, msgs.desc)
                 else:
                     bot.reply_to(
                         message,
@@ -459,11 +562,21 @@ def cmd_magic(message):
     elif code == 'START':
         if int(message.chat.id) > 0:
             send_clean_msg(bot, message.chat.id, msgs.user)
+            # bot.send_document(message.chat.id, 'CgADAQADhgAD45bBRvd9d-3ACM-cAg')
+            # bot.send_document(message.chat.id, 'CgADAQADTAAD9-zRRl9s8doDwrMmAg')
+            # bot.send_document(message.chat.id, 'CgADAQADPgADBm7QRkzGU7UpR3JzAg')
+            bot.send_document(message.chat.id, 'CgADAQADWQADGu_QRlzGc4VIGIYaAg')
         else:
             send_clean_msg(bot, message.chat.id, msgs.group)
     else:
-        # if int(user) > 0: // aqui falta um else...
-        bot.reply_to(message, msgs.typo)
+        if int(user) > 0:
+            bot.reply_to(message, msgs.typo)
+        if int(user) > 0 and len(message.text) > 25:
+            send_clean_msg(bot, message.from_user.id, msgs.invalid.format(message.from_user.id))
 
+
+sentry_url = config['SENTRY']['url']
+if sentry_url:
+    sentry_sdk.init(sentry_url)
 
 bot.polling()
