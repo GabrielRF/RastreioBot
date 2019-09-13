@@ -3,13 +3,15 @@ from datetime import date
 import status
 from misc import check_type
 import apicorreios as correios
-
+import apitrackingmore as trackingmore
 
 def check_update(code, max_retries=3):
     # print('check_update')
     api_type = check_type(code)
     # TODO: add suport to more api's
-    if api_type is not correios:
+    if api_type is trackingmore:
+        return trackingmore.get(code, max_retries)
+    if api_type is not (correios or trackingmore):
         return status.TYPO
     stats = []
     try:

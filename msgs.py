@@ -35,14 +35,18 @@ howto = (str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n'
     + '\n\n' + str(u'\U0001F680') + '<b>Conheça meus outros projetos:</b>'
     + '\nhttp://grf.xyz/telegrambr\n\n'
     + str(u'\U0001F4B5') + '<b>Colabore!</b>'
-    + '\nPicPay: http://grf.xyz/picpay'
+    + '\nPicPay: http://grf.xyz/picpay\n\n'
     #+ '\nPayPal: http://grf.xyz/paypal'
     #+ '\nPatreon: http://grf.xyz/patreon\n\n'
-    + str(u'\U0001F4B3') + '<b>Envie R$ 10 a cada seis meses e ajude o bot!</b>'
+    + str(u'\U0001F4B3') + '<b>Envie R$ 1 por mês e ajude o bot!</b>'
     + '\nhttp://grf.xyz/assine'
     + '\n\n' + str(u'\U0001F517'))
 
 error_bot = ('Ops!\nHouve um problema com o bot.\nTente novamente mais tarde.')
+
+premium = (
+    'Usuãrio não autorizado'
+    )
 
 patreon = (
     '\n'

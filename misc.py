@@ -1,6 +1,6 @@
 import re
 import apicorreios as correios
-# import apitrackingmore as trackingmore
+import apitrackingmore as trackingmore
 from telebot import types
 
 
@@ -10,8 +10,8 @@ def check_type(code):
 
     if re.search(s10, str(code)):
         return correios
-#    elif re.search(ali, str(code)):
-#        return trackingmore
+    elif re.search(ali, str(code)):
+        return trackingmore
     else:
         return None
 
@@ -19,3 +19,10 @@ def check_type(code):
 def send_clean_msg(bot, id, txt):
     markup_clean = types.ReplyKeyboardRemove(selective=False)
     bot.send_message(id, txt, parse_mode='HTML', reply_markup=markup_clean)
+
+
+def check_package(code):
+    cursor = db.rastreiobot.find_one({"code": code.upper()})
+    if cursor:
+        return True
+    return False

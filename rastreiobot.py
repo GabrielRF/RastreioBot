@@ -10,9 +10,10 @@ import requests
 import sentry_sdk
 import status
 import telebot
+import apicorreios as correios
 from check_update import check_update
 from math import ceil
-from misc import check_type, send_clean_msg
+from misc import check_type, send_clean_msg, check_package
 from pymongo import ASCENDING, MongoClient
 from telebot import types
 
@@ -43,14 +44,6 @@ markup_btn = types.ReplyKeyboardMarkup(resize_keyboard=True)
 markup_btn.row('/Pacotes','/Resumo')
 markup_btn.row('/Info','/Concluidos')
 markup_clean = types.ReplyKeyboardRemove(selective=False)
-
-
-# Check if package exists in DB
-def check_package(code):
-    cursor = db.rastreiobot.find_one({"code": code.upper()})
-    if cursor:
-        return True
-    return False
 
 
 # Count packages
@@ -484,6 +477,9 @@ def cmd_magic(message):
     except Exception:
         desc = code
     if check_type(code) is not None:
+        if check_type(code) is not correios and user not in PATREON: 
+            bot.reply_to(message, msgs.premium) 
+            return 0
         sleep(random.randrange(500,2000,100)/1000)
         exists = check_package(code)
         if exists:

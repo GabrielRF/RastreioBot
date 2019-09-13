@@ -147,7 +147,7 @@ if __name__ == '__main__':
                             + str(u'\U0001F4B3')
                             + ' <a href="http://grf.xyz/assine">Assine o bot</a> - '
                             + str(u'\U0001F4B5')
-                            + ' <a href="http://grf.xyz/paypal">Colabore</a>')
+                            + ' <a href="http://grf.xyz/picpay">Colabore</a>')
                         bot.send_message(str(user), message, parse_mode='HTML',
                             disable_web_page_preview=True)
                         sent = sent + 1
