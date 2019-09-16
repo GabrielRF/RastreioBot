@@ -55,7 +55,10 @@ def count_packages():
     sem_imposto = 0
     importado = 0
     tributado = 0
+    trackingmore = 0
     for elem in cursor:
+        if len(elem['code']) > 13:
+            trackingmore = trackingmore + 1
         if 'Aguardando recebimento pel' in str(elem):
             wait = wait + 1
         else:
@@ -68,7 +71,7 @@ def count_packages():
             importado = importado + 1
         if 'Fiscalização Aduaneira finalizada' in str(elem):
             tributado = tributado + 1
-    return qtd, wait, despacho, sem_imposto, importado, tributado
+    return qtd, wait, despacho, sem_imposto, importado, tributado, trackingmore
 
 
 ## List packages of a user
@@ -339,7 +342,7 @@ def cmd_status(message):
         message.text + '\t' + str(message.from_user.first_name)
     )
 
-    qtd, wait, despacho, sem_imposto, importado, tributado = count_packages()
+    qtd, wait, despacho, sem_imposto, importado, tributado, trackingmore = count_packages()
     chatid = message.chat.id
     bot.send_message(
         chatid, str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n' +
@@ -385,13 +388,14 @@ def cmd_statusall(message):
             yesterday = (sum(1 for _ in f))
     except Exception:
         yesterday = ''
-    qtd, wait, despacho, sem_imposto, importado, tributado = count_packages()
+    qtd, wait, despacho, sem_imposto, importado, tributado, trackingmore = count_packages()
     chatid = message.chat.id
     bot.send_message(
         chatid, str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n' +
         'Pacotes em andamento: ' + str(qtd) + '\n' +
         'Pacotes em espera: ' + str(wait) + '\n\n' +
         'Pacotes importados: ' + str(importado) + '\n' +
+        'TrackingMore: ' + str(trackingmore) + '\n' +
         'Taxados em R$15: ' + str(round(100*despacho/importado, 2)) + '%\n' +
         'Pacotes sem tributação: ' + str(round(100*sem_imposto/importado, 2)) + '%\n' +
         'Pacotes tributados: ' + str(round(100*tributado/importado, 2)) + '%\n\n' +

@@ -67,6 +67,9 @@ if __name__ == '__main__':
         elif 'Objeto não localizado no fluxo postal.' in old_state:
             if time_dif > int_del:
                 del_user(elem['code'], old_state)
+        elif 'Delivered' in old_state:
+            if time_dif > int_del:
+                del_user(elem['code'], old_state)
         else:
             if time_dif > 2 * int_del:
                 del_user(elem['code'], old_state)
