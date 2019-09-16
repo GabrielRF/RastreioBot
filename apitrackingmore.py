@@ -3,7 +3,7 @@ import status
 import trackingmore
 import sys
 
-# https://www.trackingmore.com/api-class_python.html
+# https://www.trackingmore.com/api-index.html
 config = configparser.ConfigParser()
 config.sections()
 config.read('bot.conf')
@@ -13,9 +13,16 @@ trackingmore.set_api_key(key)
 
 def get(code, times):
     try:
-        td = trackingmore.get_tracking_item('cainiao', code)
-    except trackingmore.trackingmore.TrackingMoreAPIException: 
-        return status.TYPO 
+        td = trackingmore.create_tracking_data('cainiao', code)
+        trackingmore.create_tracking_item(td)
+    except trackingmore.trackingmore.TrackingMoreAPIException as e:
+        if e.err_code == 4016: # Already exists
+            td = trackingmore.get_tracking_item('cainiao', code)
+    print(td)
+    if td['status'] == 'notfound':
+        return 3
+    if len(td) < 10:
+        return 0
     return formato_obj(td)
 
 
@@ -33,7 +40,6 @@ def formato_obj(json):
             '\nObservação: {}'
         ).format(data, situacao, observacao)
         stats.append(mensagem)
-    print(stats)
     return stats
         
 

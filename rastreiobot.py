@@ -88,7 +88,8 @@ def list_packages(chatid, done, status):
                     if (
                             'objeto entregue ao' not in status_elem(elem) and
                             'objeto apreendido' not in status_elem(elem) and
-                            'objeto roubado' not in status_elem(elem)): # and
+                            'objeto roubado' not in status_elem(elem) and
+                            'delivered' not in status_elem(elem)): # and
                             #'objeto devolvido' not in status_elem(elem)):
                         if status:
                             aux = aux +  str(u'\U0001F4EE') + '<code>' + elem['code'] + '</code>'
@@ -107,6 +108,7 @@ def list_packages(chatid, done, status):
                     if (
                             'objeto entregue ao' in status_elem(elem) or
                             'objeto apreendido' in status_elem(elem) or
+                            'delivered' in status_elem(elem) or
                             'objeto roubado' in status_elem(elem)): # or
                             #'objeto devolvido' in status_elem(elem)):
                         aux = aux + elem['code']
@@ -152,7 +154,7 @@ def check_user(code, user):
 def add_package(code, user):
     print("add_package")
     stat = get_update(code)
-    if stat in [status.OFFLINE, status.TYPO]:
+    if stat in [status.OFFLINE, status.TYPO, status.NOT_FOUND_TM]:
         return stat
     else:
         stats = []
@@ -202,7 +204,7 @@ def set_desc(code, user, desc):
     })
 
 
-def check_system():
+def check_system_correios():
     try:
         url = ('http://webservice.correios.com.br/')
         response = requests.get(url, timeout=3)
@@ -478,7 +480,8 @@ def cmd_magic(message):
         desc = code
     if check_type(code) is not None:
         if check_type(code) is not correios and user not in PATREON: 
-            bot.reply_to(message, msgs.premium) 
+            bot.reply_to(message, msgs.premium, parse_mode='HTML') 
+            log_text(message.chat.id, message.message_id, 'Pacote chines. Usuario nao assinante.')
             return 0
         sleep(random.randrange(500,2000,100)/1000)
         exists = check_package(code)
@@ -488,7 +491,7 @@ def cmd_magic(message):
                 add_user(code, user)
             statts = status_package(code)
             message = ''
-            system = check_system()
+            system = check_system_correios()
             for stat in statts:
                 message = message + '\n\n' + stat
             if not system:
@@ -513,6 +516,8 @@ def cmd_magic(message):
                 bot.reply_to(message, msgs.typo)
             elif stat == status.NOT_FOUND:
                 bot.reply_to(message, msgs.not_found)
+            elif stat == status.NOT_FOUND_TM:
+                bot.reply_to(message, msgs.not_found_tm)
             elif stat == status.OK:
                 set_desc(str(code), str(user), desc)
                 if int(message.chat.id) > 0:

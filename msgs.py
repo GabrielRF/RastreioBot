@@ -20,6 +20,8 @@ not_found = ('Código não foi encontrado no sistema dos Correios.\n'
     + 'Talvez seja necessário aguardar algumas horas para'
     + ' que esteja disponível para consultas.')
 
+not_found_tm = ('Código não encontrado no sistema.')
+
 typo = ('Erro.\nVerifique se o código foi digitado corretamente.\nCaso precise de ajuda, clique em /info ou /gif.')
 
 howto = (str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n'
@@ -45,7 +47,10 @@ howto = (str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n'
 error_bot = ('Ops!\nHouve um problema com o bot.\nTente novamente mais tarde.')
 
 premium = (
-    'Usuãrio não autorizado'
+    'Usuãrio não autorizado a rastrear pacotes com este formato.'
+    + '\nPara ter acesso a esta funcionalidade é necessário assinar o bot.'
+    + '\n<a href="https://grf.xyz/assine">Clique aqui para assinar</a>.'
+    + '\n\nCaso já tenha assinado, por favor, fale com @GabrielRF'
     )
 
 patreon = (

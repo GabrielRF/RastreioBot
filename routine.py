@@ -109,6 +109,8 @@ if __name__ == '__main__':
                 continue
             elif 'objeto roubado' in old_state.lower():
                 continue
+            elif 'delivered' in old_state.lower():
+                continue
             stat = get_package(code)
             if stat == 0:
                 break
@@ -120,7 +122,7 @@ if __name__ == '__main__':
                 len_new_state = len(cursor2['stat'])
             except:
                 len_new_state = 1
-            if len_old_state != len_new_state:
+            if len_old_state < len_new_state:
                 len_diff = len_new_state - len_old_state
                 for user in elem['users']:
                     logger_info.info(str(datetime.now()) + ' ' + multiple + ' '

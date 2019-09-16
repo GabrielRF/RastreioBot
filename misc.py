@@ -1,8 +1,11 @@
 import re
 import apicorreios as correios
 import apitrackingmore as trackingmore
+from pymongo import MongoClient
 from telebot import types
 
+client = MongoClient()
+db = client.rastreiobot
 
 def check_type(code):
     s10 = (r"^[A-Za-z]{2}\d{9}[A-Za-z]{2}$")
