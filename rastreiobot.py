@@ -12,12 +12,8 @@ import status
 import telebot
 import apicorreios as correios
 from check_update import check_update
-<<<<<<< HEAD
-from misc import check_type, send_clean_msg
-=======
 from math import ceil
 from misc import check_type, send_clean_msg, check_package
->>>>>>> upstream/master
 from pymongo import ASCENDING, MongoClient
 from telebot import types
 
@@ -92,11 +88,15 @@ def count_packages():
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 # List packages of a user
 =======
 ## List packages of a user
 >>>>>>> upstream/master
+=======
+## List packages of a user
+>>>>>>> 55dad8b66c954e7024a4b83ac857bf507321b12e
 def list_packages(chatid, done, status):
     print("list_packages")
     aux = ''
@@ -367,14 +367,20 @@ def cmd_concluidos(message):
 @bot.message_handler(commands=['status', 'Status'])
 def cmd_status(message):
 <<<<<<< HEAD
+<<<<<<< HEAD
     print("status")
 =======
+=======
+>>>>>>> 55dad8b66c954e7024a4b83ac857bf507321b12e
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
          bot.send_message(message.chat.id, msgs.banned) 
          return 0
+<<<<<<< HEAD
 >>>>>>> upstream/master
+=======
+>>>>>>> 55dad8b66c954e7024a4b83ac857bf507321b12e
     log_text(
         message.chat.id,
         message.message_id,
@@ -604,15 +610,21 @@ def cmd_magic(message):
             send_clean_msg(bot, message.chat.id, msgs.group)
     else:
 <<<<<<< HEAD
+<<<<<<< HEAD
         # if int(user) > 0: // aqui falta um else...
         bot.reply_to(message, msgs.typo)
 =======
+=======
+>>>>>>> 55dad8b66c954e7024a4b83ac857bf507321b12e
         if int(user) > 0:
             bot.reply_to(message, msgs.typo)
         if int(user) > 0 and len(message.text) > 25:
             send_clean_msg(bot, message.from_user.id, msgs.invalid.format(message.from_user.id))
 
+<<<<<<< HEAD
 >>>>>>> upstream/master
+=======
+>>>>>>> 55dad8b66c954e7024a4b83ac857bf507321b12e
 
 sentry_url = config['SENTRY']['url']
 if sentry_url:

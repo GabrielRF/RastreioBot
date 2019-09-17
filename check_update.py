@@ -2,24 +2,16 @@ import json
 from datetime import date
 import status
 from misc import check_type
-<<<<<<< HEAD
-
-=======
 import apicorreios as correios
 import apitrackingmore as trackingmore
->>>>>>> upstream/master
 
 def check_update(code, max_retries=3):
     # print('check_update')
     api_type = check_type(code)
     # TODO: add suport to more api's
-<<<<<<< HEAD
-    if api_type is None:
-=======
     if api_type is trackingmore:
         return trackingmore.get(code, max_retries)
     if api_type is not (correios or trackingmore):
->>>>>>> upstream/master
         return status.TYPO
     stats = []
     try:
