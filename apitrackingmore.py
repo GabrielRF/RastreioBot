@@ -1,62 +1,48 @@
-# https://www.trackingmore.com/api-class_python.html
-import urllib.request
-import urllib.parse
 import configparser
+import status
+import trackingmore
+import sys
 
+# https://www.trackingmore.com/api-index.html
 config = configparser.ConfigParser()
 config.sections()
 config.read('bot.conf')
 
-key = config['TRAKINGMORE']['key']
-
-headers = {
-    "Content-Type": "application/json",
-    "Trackingmore-Api-Key": key,
-    'X-Requested-With': 'XMLHttpRequest'
-}
-
+key = config['TRACKINGMORE']['key']
+trackingmore.set_api_key(key)
 
 def get(code, times):
-    print("chegando no trackingmore")
-    result = trackingmore(code, "", "get")
-    print("result :", result)
-    return result
+    try:
+        td = trackingmore.create_tracking_data('cainiao', code)
+        trackingmore.create_tracking_item(td)
+    except trackingmore.trackingmore.TrackingMoreAPIException as e:
+        if e.err_code == 4016: # Already exists
+            td = trackingmore.get_tracking_item('cainiao', code)
+    print(td)
+    if td['status'] == 'notfound':
+        return 3
+    if len(td) < 10:
+        return 0
+    return formato_obj(td)
 
 
-def trackingmore(requestData, urlStr, method):
-    if method == "get":
-        url = 'http://api.trackingmore.com/v2/trackings/get'
-        RelUrl = url + urlStr
-        req = urllib.request.Request(RelUrl, headers=headers)
-        result = urllib.request.urlopen(req).read()
-    elif method == "post":
-        url = 'http://api.trackingmore.com/v2/trackings/post'
-        RelUrl = url + urlStr
-        req = urllib.request.Request(RelUrl, requestData.encode('utf-8'), headers=headers, method="POST")
-        result = urllib.request.urlopen(req).read()
-    elif method == "batch":
-        url = 'http://api.trackingmore.com/v2/trackings/batch'
-        RelUrl = url + urlStr
-        req = urllib.request.Request(RelUrl, requestData.encode('utf-8'), headers=headers, method="POST")
-        result = urllib.request.urlopen(req).read()
-    elif method == "codeNumberGet":
-        url = 'http://api.trackingmore.com/v2/trackings'
-        RelUrl = url + urlStr
-        req = urllib.request.Request(RelUrl, requestData.encode('utf-8'), headers=headers, method="GET")
-        result = urllib.request.urlopen(req).read()
-    elif method == "codeNumberPut":
-        url = 'http://api.trackingmore.com/v2/trackings'
-        RelUrl = url + urlStr
-        req = urllib.request.Request(RelUrl, requestData.encode('utf-8'), headers=headers, method="PUT")
-        result = urllib.request.urlopen(req).read()
-    elif method == "codeNumberDel":
-        url = 'http://api.trackingmore.com/v2/trackings'
-        RelUrl = url + urlStr
-        req = urllib.request.Request(RelUrl, requestData.encode('utf-8'), headers=headers, method="DELETE")
-        result = urllib.request.urlopen(req).read()
-    elif method == "realtime":
-        url = 'http://api.trackingmore.com/v2/trackings/realtime'
-        RelUrl = url + urlStr
-        req = urllib.request.Request(RelUrl, requestData.encode('utf-8'), headers=headers, method="POST")
-        result = urllib.request.urlopen(req).read()
-    return result
+def formato_obj(json):
+    stats = []
+    stats.append(str(u'\U0001F4EE') + ' <b>' + json['tracking_number'] + '</b>') 
+    tabela = json['origin_info']['trackinfo']
+    mensagem = ''
+    for evento in reversed(tabela):
+        data = evento['Date']
+        situacao = evento['StatusDescription']
+        observacao = evento['checkpoint_status']
+        mensagem = ('Data: {}' +
+            '\nSituacao: <b>{}</b>' +
+            '\nObservação: {}'
+        ).format(data, situacao, observacao)
+        stats.append(mensagem)
+    return stats
+        
+
+if __name__ == '__main__':
+    print(get(sys.argv[1], 0))
+    #get(sys.argv[1], 0)

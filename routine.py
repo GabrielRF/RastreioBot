@@ -7,8 +7,9 @@ import configparser
 import logging
 import logging.handlers
 import requests
-import telebot
+import sentry_sdk
 import sys
+import telebot
 
 config = configparser.ConfigParser()
 config.sections()
@@ -19,12 +20,6 @@ int_check = int(config['RASTREIOBOT']['int_check'])
 LOG_ALERTS_FILE = config['RASTREIOBOT']['alerts_log']
 PATREON = config['RASTREIOBOT']['patreon']
 INTERVAL = 0.03
-
-logger_info = logging.getLogger('InfoLogger')
-logger_info.setLevel(logging.DEBUG)
-handler_info = logging.handlers.TimedRotatingFileHandler(LOG_ALERTS_FILE,
-    when='midnight', interval=1, backupCount=5, encoding='utf-8')
-logger_info.addHandler(handler_info)
 
 bot = telebot.TeleBot(TOKEN)
 client = MongoClient()
@@ -57,7 +52,7 @@ def check_system():
     except:
         logger_info.info(str(datetime.now()) + '\tCorreios indisponível')
         return False
-    print(str(response))
+    #print(str(response))
     if '200' in str(response):
         return True
     else:
@@ -66,6 +61,17 @@ def check_system():
 
 if __name__ == '__main__':
     sleep(60*int(multiple))
+    logger_info = logging.getLogger('InfoLogger')
+    handler_info = logging.FileHandler(LOG_ALERTS_FILE)
+    logger_info.setLevel(logging.DEBUG)
+#    handler_info = logging.handlers.TimedRotatingFileHandler(LOG_ALERTS_FILE,
+#        when='midnight', interval=1, backupCount=5, encoding='utf-8')
+    logger_info.addHandler(handler_info)
+
+    sentry_url = config['SENTRY']['url']
+    if sentry_url:
+        sentry_sdk.init(sentry_url)
+
     cursor1 = db.rastreiobot.find()
     start = time()
     sent = 1
@@ -103,6 +109,8 @@ if __name__ == '__main__':
                 continue
             elif 'objeto roubado' in old_state.lower():
                 continue
+            elif 'delivered' in old_state.lower():
+                continue
             stat = get_package(code)
             if stat == 0:
                 break
@@ -114,12 +122,13 @@ if __name__ == '__main__':
                 len_new_state = len(cursor2['stat'])
             except:
                 len_new_state = 1
-            if len_old_state != len_new_state:
+            if len_old_state < len_new_state:
+                len_diff = len_new_state - len_old_state
                 for user in elem['users']:
-                    logger_info.info(str(datetime.now()) + '\t' + multiple + '\t'
+                    logger_info.info(str(datetime.now()) + ' ' + multiple + ' '
                         + str(code) + ' \t' + str(user) + ' \t' + str(sent) + '\t'
-                        + str(timediff) + ' ' + str(len_old_state) + ' '
-                        + str(len_new_state))
+                        + str(timediff) + '\t' + str(len_old_state) + '\t'
+                        + str(len_new_state) + '\t' + str(len_diff))
                     try:
                         message = (str(u'\U0001F4EE') + '<b>' + code + '</b>\n')
                         #if elem[user] != code:
@@ -128,16 +137,19 @@ if __name__ == '__main__':
                                 message = message + elem[user] + '\n'
                         except:
                             pass
-                        message = (
-                            message + '\n'
-                            +  cursor2['stat'][len(cursor2['stat'])-1])
+                        for k in reversed(range(1,len_diff+1)):
+                            message = (
+                                message + '\n'
+                                +  cursor2['stat'][len(cursor2['stat'])-k] + '\n')
                         if 'objeto entregue' in message.lower():
-                            message = (message + '\n\n'
-                            + str(u'\U00002B50')
-                            + '<a href="https://telegram.me/storebot?start=rastreiobot">'
-                            + 'Avalie o bot</a> - '
+                            message = (message + '\n'
+                            #+  str(u'\U00002B50')
+                            #+ '<a href="https://telegram.me/storebot?start=rastreiobot">'
+                            #+ 'Avalie o bot</a> - '
+                            + str(u'\U0001F4B3')
+                            + ' <a href="http://grf.xyz/assine">Assine o bot</a> - '
                             + str(u'\U0001F4B5')
-                            + '<a href="http://grf.xyz/paypal">Colabore</a>')
+                            + ' <a href="http://grf.xyz/picpay">Colabore</a>')
                         bot.send_message(str(user), message, parse_mode='HTML',
                             disable_web_page_preview=True)
                         sent = sent + 1

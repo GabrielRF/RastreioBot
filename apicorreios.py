@@ -1,6 +1,7 @@
 import configparser
 import requests
 import status
+import sys
 
 config = configparser.ConfigParser()
 config.sections()
@@ -46,3 +47,6 @@ def get(code, retries):
     elif 'ERRO' in str(response):
         return status.NOT_FOUND
     return response
+
+if __name__ == '__main__':
+    print(get(sys.argv[1], 0))
