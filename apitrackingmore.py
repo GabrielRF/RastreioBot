@@ -21,7 +21,7 @@ def get(code, times):
     print(td)
     if td['status'] == 'notfound':
         return 3
-    if len(td) < 10:
+    elif len(td) < 10:
         return 0
     return formato_obj(td)
 

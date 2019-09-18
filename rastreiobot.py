@@ -157,13 +157,16 @@ def check_user(code, user):
 def add_package(code, user):
     print("add_package")
     stat = get_update(code)
-    if stat in [status.OFFLINE, status.TYPO, status.NOT_FOUND_TM]:
+    if stat in [status.OFFLINE, status.TYPO]:
         return stat
     else:
         stats = []
         stats.append(str(u'\U0001F4EE') + ' <b>' + code + '</b>')
         if stat == status.NOT_FOUND:
             stats.append('Aguardando recebimento pela ECT.')
+            stat = stats
+        elif stat == status.NOT_FOUND_TM:
+            stats.append('Aguardando recebimento pela transportadora.')
             stat = stats
         db.rastreiobot.insert_one({
                 "code": code.upper(),
