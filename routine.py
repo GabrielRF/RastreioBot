@@ -29,9 +29,12 @@ multiple = sys.argv[1]
 print(multiple)
 def get_package(code):
     stat = check_update(code)
+    print(stat)
     if stat == 0:
         stat = 'Sistema dos Correios fora do ar.'
     elif stat == 1:
+        stat = None
+    elif stat == 3:
         stat = None
     else:
         cursor = db.rastreiobot.update_one (

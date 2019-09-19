@@ -22,7 +22,11 @@ def check_update(code, max_retries=3):
         result = json.loads(response)
         tabela = result['objeto'][0]['evento']
     except Exception:
-        return status.NOT_FOUND
+        print(api_type)
+        if api_type is correios:
+            return status.NOT_FOUND
+        elif api_type is trackingmore:
+            return status.NOT_FOUND_TM
     if len(tabela) < 1:
         return status.NOT_FOUND
     stats.append(str(u'\U0001F4EE') + ' <b>' + code + '</b>')

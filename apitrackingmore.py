@@ -20,9 +20,9 @@ def get(code, times):
             td = trackingmore.get_tracking_item('cainiao', code)
     print(td)
     if td['status'] == 'notfound':
-        return 3
+        return status.NOT_FOUND_TM
     elif len(td) < 10:
-        return 0
+        return status.OFFLINE
     return formato_obj(td)
 
 
