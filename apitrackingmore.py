@@ -16,8 +16,14 @@ def get(code, times):
         td = trackingmore.create_tracking_data('cainiao', code)
         trackingmore.create_tracking_item(td)
     except trackingmore.trackingmore.TrackingMoreAPIException as e:
+        if e.err_code == 4019 or e.err_code == 4021:
+            return status.OFFLINE
         if e.err_code == 4016: # Already exists
-            td = trackingmore.get_tracking_item('cainiao', code)
+            try:
+                td = trackingmore.get_tracking_item('cainiao', code)
+            except trackingmore.trackingmore.TrackingMoreAPIException as e:
+                if e.err_code == 4019 or e.err_code == 4021:
+                    return status.OFFLINE
     print(td)
     if td['status'] == 'notfound':
         return status.NOT_FOUND_TM

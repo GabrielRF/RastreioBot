@@ -516,7 +516,7 @@ def cmd_magic(message):
         else:
             stat = add_package(str(code), str(user))
             if stat == status.OFFLINE:
-                bot.reply_to(message, 'Correios fora do ar')
+                bot.reply_to(message, 'Sistema fora do ar')
             elif stat == status.TYPO:
                 bot.reply_to(message, msgs.typo)
             elif stat == status.NOT_FOUND:
