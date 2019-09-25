@@ -53,7 +53,7 @@ def get_or_create_tracking_item(carrier, code):
     try:
         tracking_data = trackingmore.get_tracking_item(carrier, code)
     except trackingmore.trackingmore.TrackingMoreAPIException as e:
-        utils.log(logger_error, e.err_code, e.err_type, e)
+        utils.log(logger_error, "{e.err_code} \t{e.err_type} \t{e} \t({carrier}, {code})".format(e=e, carrier=carrier, code=code))
         if e.err_code == 4031 or e.err_code == 4017:
             tracking_data = trackingmore.create_tracking_data(carrier, code)
             trackingmore.create_tracking_item(tracking_data)
@@ -88,7 +88,7 @@ def get(code, retries=0):
     try:
         carriers = get_carriers(code)
     except trackingmore.trackingmore.TrackingMoreAPIException as e:
-        utils.log(logger_error, e.err_code, e.err_type, e)
+        utils.log(logger_error, "{e.err_code} \t{e.err_type} \t{e} \t({code})".format(e=e, code=code))
         return status.NOT_FOUND_TM
 
     response_status = status.NOT_FOUND
@@ -102,7 +102,7 @@ def get(code, retries=0):
         try:
             tracking_data = get_or_create_tracking_item(carrier['code'], code)
         except trackingmore.trackingmore.TrackingMoreAPIException as e:
-            utils.log(logger_error, e.err_code, e.err_type, e)
+            utils.log(logger_error, "{e.err_code} \t{e.err_type} \t{e} \t({carrier}, {code})".format(e=e, carrier=carrier, code=code))
             if e.err_code == 4019 or e.err_code == 4021:
                 response_status = status.OFFLINE
             elif e.err_code == 4031:

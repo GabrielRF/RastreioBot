@@ -235,10 +235,9 @@ def get_update(code):
 
 # Add to log
 def log_text(chatid, message_id, text):
-    logger_info.info(
-        str(datetime.now()) +
-        ' ' + str(chatid) + ' \t' +
-        str(message_id) + ' \t' + str(text)
+    utils.log(
+        logger_info,
+        "{} \t{} \t{}".format(chatid, message_id, text)
     )
 
 
@@ -265,7 +264,7 @@ def cmd_repetir(message):
 def cmd_pacotes(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
-         utils.log(logger_info, message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
          bot.send_message(message.chat.id, msgs.banned)
          return 0
     chatid = message.chat.id
@@ -294,7 +293,7 @@ def cmd_pacotes(message):
 def cmd_resumo(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
-         utils.log(logger_info, message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
          bot.send_message(message.chat.id, msgs.banned)
          return 0
     chatid = message.chat.id
@@ -314,7 +313,7 @@ def cmd_resumo(message):
 def cmd_concluidos(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
-         utils.log(logger_info, message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
          bot.send_message(message.chat.id, msgs.banned)
          return 0
     chatid = message.chat.id
@@ -335,11 +334,10 @@ def cmd_concluidos(message):
 def cmd_status(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
-         utils.log(logger_info, message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
          bot.send_message(message.chat.id, msgs.banned)
          return 0
-    utils.log(
-        logger_info,
+    log_text(
         message.chat.id,
         message.message_id,
         message.text + '\t' + str(message.from_user.first_name)
@@ -365,11 +363,10 @@ def cmd_status(message):
 def cmd_statusall(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
-         utils.log(logger_info, message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
          bot.send_message(message.chat.id, msgs.banned)
          return 0
-    utils.log(
-        logger_info,
+    log_text(
         message.chat.id,
         message.message_id,
         message.text + '\t' + str(message.from_user.first_name)
@@ -417,11 +414,10 @@ def cmd_statusall(message):
 def cmd_help(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
-         utils.log(logger_info, message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
          bot.send_message(message.chat.id, msgs.banned)
          return 0
-    utils.log(
-        logger_info,
+    log_text(
         message.chat.id,
         message.message_id,
         message.text + '\t' +
@@ -441,11 +437,10 @@ def cmd_help(message):
 def cmd_remove(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
-         utils.log(logger_info, message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
          bot.send_message(message.chat.id, msgs.banned)
          return 0
-    utils.log(
-        logger_info,
+    log_text(
         message.chat.id,
         message.message_id,
         message.text + '\t' + str(message.from_user.first_name)
@@ -466,7 +461,7 @@ def cmd_format(message):
     bot.reply_to(message, 'Formato inválido')
     # bot.reply_to(message, ('<a href="tg://user?id={}">{}</a>').format(message.from_user.id, message.from_user.first_name), parse_mode='HTML')
     send_clean_msg(bot, message.from_user.id, msgs.invalid.format(message.from_user.id))
-    utils.log(logger_info, message.chat.id, message.message_id, 'Formato inválido')
+    log_text(message.chat.id, message.message_id, 'Formato inválido')
     print(message)
 
 
@@ -475,10 +470,10 @@ def cmd_format(message):
 def cmd_magic(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
-         utils.log(logger_info, message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
          bot.send_message(message.chat.id, msgs.banned)
          return 0
-    utils.log(logger_info, message.chat.id, message.message_id, message.text)
+    log_text(message.chat.id, message.message_id, message.text)
     user = str(message.chat.id)
     message_text = (
         message.text
@@ -512,7 +507,7 @@ def cmd_magic(message):
     if code_type:
         if code_type != correios and user not in PATREON:
             bot.reply_to(message, msgs.premium, parse_mode='HTML')
-            utils.log(logger_info, message.chat.id, message.message_id, 'Pacote chines. Usuario nao assinante.')
+            log_text(message.chat.id, message.message_id, 'Pacote chines. Usuario nao assinante.')
             return 0
         exists = check_package(code)
         if exists:
