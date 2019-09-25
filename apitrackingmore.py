@@ -28,9 +28,17 @@ def get_or_create_tracking_item(carrier, code):
     return tracking_data
 
 
-def get(code, times):
+def get_carriers(code):
     carriers = trackingmore.detect_carrier_from_code(code)
     carriers.sort(key=lambda carrier: carrier['code'])
+    return carriers
+
+
+def get(code, times):
+    try:
+        carriers = get_carriers(code)
+    except trackingmore.trackingmore.TrackingMoreAPIException as e:
+        return status.NOT_FOUND_TM
 
     for carrier in carriers:
         try:
