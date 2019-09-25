@@ -47,6 +47,8 @@ Create a file `bot.conf` following `bot.conf_sample`.
 
 `int_check` Minimum interval between checks for the same package (3600 means 1 hour)
 
+`int_del` Minimum interval between checks for the routine to remove stagnant packages from tracking (2592000 means 30 days)
+
 `*_log` Log files
 
 `patreon` List of people that donate to the bot
@@ -62,6 +64,7 @@ Create a file `bot.conf` following `bot.conf_sample`.
 `key` Key provided by TrackingMore
 
 `url` Sentry URL
+
 
 __Run MongoDB!__
 
