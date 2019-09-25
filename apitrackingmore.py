@@ -17,8 +17,10 @@ import utils
 config = configparser.ConfigParser()
 config.read('bot.conf')
 
+LOG_ERROR_FILE = config['RASTREIOBOT']['error_log']
+
 logger_error = logging.getLogger('ErrorLogger')
-logger_error.setLevel(logging.ERROR)
+logger_error.setLevel(logging.DEBUG)
 handler_info = logging.handlers.TimedRotatingFileHandler(
     LOG_ERROR_FILE, when='midnight', interval=1, backupCount=10, encoding='utf-8'
 )
