@@ -1,0 +1,22 @@
+[RASTREIOBOT]
+TOKEN = 
+int_check = 4200
+int_del = 2592000
+text_log = /var/log/RastreioBot/text.log
+alerts_log = /var/log/RastreioBot/alerts.log
+status_log = /var/log/RastreioBot/status.log
+routine_log = /var/log/RastreioBot/routine.log
+delete_log = /var/log/RastreioBot/delete.log
+patreon =
+banned =
+
+[CORREIOS]
+usuario =
+senha =
+token =
+
+[TRACKINGMORE]
+key =
+
+[SENTRY]
+url =
