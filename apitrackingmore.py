@@ -34,7 +34,7 @@ def get_carriers(code):
     return carriers
 
 
-def get(code, times):
+def get(code, **kwargs):
     try:
         carriers = get_carriers(code)
     except trackingmore.trackingmore.TrackingMoreAPIException as e:
