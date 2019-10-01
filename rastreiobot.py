@@ -235,7 +235,7 @@ def get_update(code):
 def log_text(chatid, message_id, text):
     logger_info.info(
         str(datetime.now()) +
-        '\t' + str(chatid) + ' \t' +
+        ' ' + str(chatid) + ' \t' +
         str(message_id) + ' \t' + str(text)
     )
 
