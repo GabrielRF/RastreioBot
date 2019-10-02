@@ -2,6 +2,7 @@ import configparser
 import status
 import trackingmore
 import sys
+from datetime import datetime
 
 import apigeartrack as geartrack
 
@@ -67,7 +68,7 @@ def formato_obj(json, carrier, code):
     tabela = json['origin_info']['trackinfo']
     mensagem = ''
     for evento in reversed(tabela):
-        data = evento['Date']
+        data = datetime.strptime(evento['Date'], '%Y-%m-%d %H:%M:%S').strftime("%d/%m/%Y %H:%M")
         situacao = evento['StatusDescription']
         observacao = evento['checkpoint_status']
         if 'Import clearance success' in situacao:
