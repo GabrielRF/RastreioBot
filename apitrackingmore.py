@@ -13,32 +13,57 @@ config.read('bot.conf')
 key = config['TRACKINGMORE']['key']
 trackingmore.set_api_key(key)
 
-def get(code, times):
-    carrier = 'cainiao'
+
+def get_or_create_tracking_item(carrier, code):
     try:
-        td = trackingmore.create_tracking_data(carrier, code)
-        trackingmore.create_tracking_item(td)
-        td = trackingmore.get_tracking_item(carrier, code)
+        tracking_data = trackingmore.create_tracking_data(carrier, code)
+        trackingmore.create_tracking_item(tracking_data)
+        tracking_data = trackingmore.get_tracking_item(carrier, code)
     except trackingmore.trackingmore.TrackingMoreAPIException as e:
-        if e.err_code == 4019 or e.err_code == 4021:
-            return status.OFFLINE
         if e.err_code == 4016: # Already exists
-            try:
-                td = trackingmore.get_tracking_item(carrier, code)
-            except trackingmore.trackingmore.TrackingMoreAPIException as e:
-                if e.err_code == 4019 or e.err_code == 4021:
-                    return status.OFFLINE
-    #print(td)
-    if td['status'] == 'notfound':
+            tracking_data = trackingmore.get_tracking_item(carrier, code)
+        else:
+            raise e
+
+    return tracking_data
+
+
+def get_carriers(code):
+    carriers = trackingmore.detect_carrier_from_code(code)
+    carriers.sort(key=lambda carrier: carrier['code'])
+    return carriers
+
+
+def get(code, *args, **kwargs):
+    try:
+        carriers = get_carriers(code)
+    except trackingmore.trackingmore.TrackingMoreAPIException as e:
         return status.NOT_FOUND_TM
-    elif len(td) < 10:
-        return status.OFFLINE
-    return formato_obj(td, carrier, code)
+
+    response_status = status.NOT_FOUND
+    for carrier in carriers:
+        try:
+            tracking_data = get_or_create_tracking_item(carrier['code'], code)
+        except trackingmore.trackingmore.TrackingMoreAPIException as e:
+            if e.err_code == 4019 or e.err_code == 4021:
+                response_status = status.OFFLINE
+            elif e.err_code == 4031:
+                response_status = status.NOT_FOUND_TM
+        else:
+            print(carrier, tracking_data)
+            if not tracking_data or 'status' not in tracking_data:
+                response_status = status.OFFLINE
+            elif tracking_data['status'] == 'notfound':
+                response_status = status.NOT_FOUND_TM
+            elif len(tracking_data) >= 10:
+                return formato_obj(tracking_data, carrier, code)
+
+    return response_status
 
 
 def formato_obj(json, carrier, code):
     stats = []
-    stats.append(str(u'\U0001F4EE') + ' <b>' + json['tracking_number'] + '</b>') 
+    stats.append(str(u'\U0001F4EE') + ' <b>' + json['tracking_number'] + '</b>')
     tabela = json['origin_info']['trackinfo']
     mensagem = ''
     for evento in reversed(tabela):
@@ -56,7 +81,7 @@ def formato_obj(json, carrier, code):
         ).format(data, situacao, observacao)
         stats.append(mensagem)
     return stats
-        
+
 
 if __name__ == '__main__':
     print(get(sys.argv[1], 0))
