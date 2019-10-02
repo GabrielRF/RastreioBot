@@ -40,25 +40,25 @@ def get(code, *args, **kwargs):
     except trackingmore.trackingmore.TrackingMoreAPIException as e:
         return status.NOT_FOUND_TM
 
+    response_status = status.NOT_FOUND
     for carrier in carriers:
         try:
             tracking_data = get_or_create_tracking_item(carrier['code'], code)
         except trackingmore.trackingmore.TrackingMoreAPIException as e:
             if e.err_code == 4019 or e.err_code == 4021:
-                return status.OFFLINE
-            if e.err_code == 4031:
-                return status.NOT_FOUND_TM
+                response_status = status.OFFLINE
+            elif e.err_code == 4031:
+                response_status = status.NOT_FOUND_TM
         else:
             print(carrier, tracking_data)
             if not tracking_data or 'status' not in tracking_data:
-                return status.OFFLINE
-            if tracking_data['status'] == 'notfound':
-                return status.NOT_FOUND_TM
-            if len(tracking_data) >= 10:
+                response_status = status.OFFLINE
+            elif tracking_data['status'] == 'notfound':
+                response_status = status.NOT_FOUND_TM
+            elif len(tracking_data) >= 10:
                 return formato_obj(tracking_data, carrier, code)
-                return formato_obj(tracking_data)
 
-    return status.NOT_FOUND
+    return response_status
 
 
 def formato_obj(json, carrier, code):
