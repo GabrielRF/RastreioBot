@@ -49,8 +49,8 @@ def get_carriers(code):
     })
     try:
         carriers.append(cursor['carrier'])
-        return(carriers)
-    except:
+        return carriers
+    except KeyError:
         carriers = trackingmore.detect_carrier_from_code(code)
         carriers.sort(key=lambda carrier: carrier['code'])
     return carriers
