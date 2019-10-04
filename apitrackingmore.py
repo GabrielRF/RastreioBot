@@ -68,7 +68,10 @@ def formato_obj(json, carrier, code):
     tabela = json['origin_info']['trackinfo']
     mensagem = ''
     for evento in reversed(tabela):
-        data = datetime.strptime(evento['Date'], '%Y-%m-%d %H:%M:%S').strftime("%d/%m/%Y %H:%M")
+        try:
+            data = datetime.strptime(evento['Date'], '%Y-%m-%d %H:%M:%S').strftime("%d/%m/%Y %H:%M")
+        except ValueError:
+            data = datetime.strptime(evento['Date'], '%Y-%m-%d %H:%M').strftime("%d/%m/%Y %H:%M")
         situacao = evento['StatusDescription']
         observacao = evento['checkpoint_status']
         if 'Import clearance success' in situacao:
