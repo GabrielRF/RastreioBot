@@ -50,7 +50,7 @@ def get_carriers(code):
     try:
         carriers.append(cursor['carrier'])
         return carriers
-    except KeyError:
+    except:
         carriers = trackingmore.detect_carrier_from_code(code)
         carriers.sort(key=lambda carrier: carrier['code'])
     return carriers
@@ -60,7 +60,7 @@ def get(code, *args, **kwargs):
     try:
         carriers = get_carriers(code)
     except trackingmore.trackingmore.TrackingMoreAPIException as e:
-        return status.NOT_FOUND_TM
+        return status.TYPO
 
     response_status = status.NOT_FOUND
     for carrier in carriers:
@@ -70,12 +70,12 @@ def get(code, *args, **kwargs):
             if e.err_code == 4019 or e.err_code == 4021:
                 response_status = status.OFFLINE
             elif e.err_code == 4031:
-                response_status = status.NOT_FOUND_TM
+                response_status = status.TYPO
         else:
             if not tracking_data or 'status' not in tracking_data:
                 response_status = status.OFFLINE
             elif tracking_data['status'] == 'notfound':
-                response_status = status.NOT_FOUND_TM
+                response_status = status.TYPO
             elif len(tracking_data) >= 10:
                 set_carrier_db(code, carrier)
                 return formato_obj(tracking_data, carrier, code)
