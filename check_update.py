@@ -1,13 +1,11 @@
 import json
 from datetime import date
 import status
-from misc import check_type
-from carreirs import correios
-from carreirs import trackingmore
+from carreirs import correios, get_carrier_by_code, trackingmore
 
 def check_update(code, max_retries=3):
     # print('check_update')
-    api_type = check_type(code)
+    api_type = get_carrier_by_code(code)
     # TODO: add suport to more api's
     if api_type is trackingmore:
         return trackingmore.get(code, max_retries)
