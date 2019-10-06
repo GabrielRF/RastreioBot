@@ -1,8 +1,9 @@
 import re
-import apicorreios as correios
-import apitrackingmore as trackingmore
+from carreirs import apicorreios as correios
+from carreirs import apitrackingmore as trackingmore
 from pymongo import MongoClient
 from telebot import types
+
 
 client = MongoClient()
 db = client.rastreiobot

@@ -5,7 +5,7 @@ import sys
 from datetime import datetime
 from pymongo import ASCENDING, MongoClient
 
-import apigeartrack as geartrack
+from carriers import geartrack
 
 # https://www.trackingmore.com/api-index.html - Codigos de retorno da API
 config = configparser.ConfigParser()
