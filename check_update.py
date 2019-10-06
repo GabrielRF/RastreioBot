@@ -2,8 +2,8 @@ import json
 from datetime import date
 import status
 from misc import check_type
-import apicorreios as correios
-import apitrackingmore as trackingmore
+from carreirs import correios
+from carreirs import trackingmore
 
 def check_update(code, max_retries=3):
     # print('check_update')

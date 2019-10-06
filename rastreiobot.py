@@ -10,7 +10,7 @@ import requests
 import sentry_sdk
 import status
 import telebot
-import apicorreios as correios
+from carreirs import correios
 from check_update import check_update
 from math import ceil
 from misc import check_type, send_clean_msg, check_package
