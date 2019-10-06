@@ -50,7 +50,7 @@ def get_carriers(code):
         if type(cursor['carrier']) is dict:
             return [cursor['carrier']]
         return cursor['carrier']
-    except:
+    except KeyError:
         carriers = trackingmore.detect_carrier_from_code(code)
         carriers.sort(key=lambda carrier: carrier['code'])
         set_carrier_db(code, carriers)
