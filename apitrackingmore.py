@@ -43,17 +43,17 @@ def get_or_create_tracking_item(carrier, code):
 
 
 def get_carriers(code):
-    cursor = db.rastreiobot.find_one({
+    package = db.rastreiobot.find_one({
         "code": code
     })
-    try:
-        if type(cursor['carrier']) is dict:
-            return [cursor['carrier']]
-        return cursor['carrier']
-    except:
-        carriers = trackingmore.detect_carrier_from_code(code)
-        carriers.sort(key=lambda carrier: carrier['code'])
-        set_carrier_db(code, carriers)
+    
+    if package:
+        carriers = package['carrier']
+        return carriers if isisntance(carriers, list) else list(carriers)    
+
+    carriers = trackingmore.detect_carrier_from_code(code)
+    carriers.sort(key=lambda carrier: carrier['code'])
+    set_carrier_db(code, carriers)
     return carriers
 
 
