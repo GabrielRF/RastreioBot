@@ -9,9 +9,7 @@ ipython==5.2.1
 ipython-genutils==0.1.0
 Jinja2==2.9.5
 MarkupSafe==0.23
-numpy==1.12.0
 packaging==16.8
-pandas==0.19.2
 pexpect==4.2.1
 pickleshare==0.7.4
 prompt-toolkit==1.0.13
