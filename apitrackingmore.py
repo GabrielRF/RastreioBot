@@ -32,7 +32,7 @@ def get_or_create_tracking_item(carrier, code):
     try:
         tracking_data = trackingmore.get_tracking_item(carrier, code)
     except trackingmore.trackingmore.TrackingMoreAPIException as e:
-        if e.err_code == 4031:
+        if e.err_code == 4031 or e.err_code == 4017:
             tracking_data = trackingmore.create_tracking_data(carrier, code)
             trackingmore.create_tracking_item(tracking_data)
             tracking_data = trackingmore.get_tracking_item(carrier, code)
@@ -50,7 +50,7 @@ def get_carriers(code):
         if type(cursor['carrier']) is dict:
             return [cursor['carrier']]
         return cursor['carrier']
-    except KeyError:
+    except:
         carriers = trackingmore.detect_carrier_from_code(code)
         carriers.sort(key=lambda carrier: carrier['code'])
         set_carrier_db(code, carriers)
@@ -117,4 +117,4 @@ def formato_obj(json, carrier, code, retries):
 if __name__ == '__main__':
     print(get(sys.argv[1], retries=3))
     #get(sys.argv[1], 0)
-    #print(get_or_set_carrier_db(sys.argv[1]))
+    #print(get_carriers(sys.argv[1]))
