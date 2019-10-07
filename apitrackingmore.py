@@ -5,7 +5,7 @@ import sys
 from datetime import datetime
 from pymongo import ASCENDING, MongoClient
 
-from carriers import geartrack
+import apigeartrack as geartrack
 
 # https://www.trackingmore.com/api-index.html - Codigos de retorno da API
 config = configparser.ConfigParser()
@@ -57,7 +57,7 @@ def get_carriers(code):
     return carriers
 
 
-def get(code, *args, **kwargs):
+def get(code, retries=0):
     try:
         carriers = get_carriers(code)
     except trackingmore.trackingmore.TrackingMoreAPIException as e:
@@ -79,15 +79,21 @@ def get(code, *args, **kwargs):
                 response_status = status.NOT_FOUND_TM
             elif len(tracking_data) >= 10:
                 set_carrier_db(code, carrier)
-                return formato_obj(tracking_data, carrier, code)
+                return formato_obj(tracking_data, carrier, code, retries)
 
     return response_status
 
 
-def formato_obj(json, carrier, code):
+def formato_obj(json, carrier, code, retries):
     stats = []
     stats.append(str(u'\U0001F4EE') + ' <b>' + json['tracking_number'] + '</b>')
-    tabela = json['origin_info']['trackinfo']
+    try:
+        tabela = json['origin_info']['trackinfo']
+    except KeyError:
+        if retries < 0:
+            return get(sys.argv[1], retries-1)
+        else:
+            return status.NOT_FOUND_TM
     mensagem = ''
     for evento in reversed(tabela):
         try:
@@ -96,11 +102,10 @@ def formato_obj(json, carrier, code):
             data = datetime.strptime(evento['Date'], '%Y-%m-%d %H:%M').strftime("%d/%m/%Y %H:%M")
         situacao = evento['StatusDescription']
         observacao = evento['checkpoint_status']
-        if 'Import clearance success' in situacao:
-            try:
-                observacao = '<code>' + geartrack.getcorreioscode(carrier, code) + '</code>'
-            except:
-                pass
+        try:
+            observacao = 'Código novo: <code>' + geartrack.getcorreioscode(carrier, code) + '</code>'
+        except:
+            pass
         mensagem = ('Data: {}' +
             '\nSituacao: <b>{}</b>' +
             '\nObservação: {}'
@@ -110,6 +115,6 @@ def formato_obj(json, carrier, code):
 
 
 if __name__ == '__main__':
-    print(get(sys.argv[1], 0))
+    print(get(sys.argv[1], retries=3))
     #get(sys.argv[1], 0)
     #print(get_or_set_carrier_db(sys.argv[1]))

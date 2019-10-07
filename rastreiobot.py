@@ -10,7 +10,7 @@ import requests
 import sentry_sdk
 import status
 import telebot
-from carreirs import correios
+import apicorreios as correios
 from check_update import check_update
 from math import ceil
 from misc import check_type, send_clean_msg, check_package
@@ -324,7 +324,7 @@ def cmd_concluidos(message):
     else:
         message = '<b>Pacotes concluídos nos últimos 30 dias:</b>\n' + message
         msg_split = message.split('\n')
-        for elem in range(0, len(msg_split), 10):
+        for elem in range(0, len(msg_split)-1, 10):
             s = '\n'
             bot.send_message(chatid,
                 s.join(msg_split[elem:elem+10]), parse_mode='HTML',
