@@ -49,7 +49,7 @@ def get_carriers(code):
     
     if package:
         carriers = package['carrier']
-        return carriers if isisntance(carriers, list) else list(carriers)    
+        return carriers if isinstance(carriers, list) else list(carriers)    
 
     carriers = trackingmore.detect_carrier_from_code(code)
     carriers.sort(key=lambda carrier: carrier['code'])
