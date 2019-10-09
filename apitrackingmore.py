@@ -49,6 +49,8 @@ def get_carriers(code):
     carrier = package.get('carrier')
     
     if package and carrier:
+        # We need to check the carrier instance type because we can have it
+        # as strings and lists in the database level.
         return carrier if isinstance(carrier, list) else [carriers]
 
     carriers = trackingmore.detect_carrier_from_code(code)
