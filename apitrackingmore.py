@@ -95,6 +95,7 @@ def formato_obj(json, carrier, code, retries):
         else:
             return status.NOT_FOUND_TM
     mensagem = ''
+    msg_codigo_novo = False
     for evento in reversed(tabela):
         try:
             data = datetime.strptime(evento['Date'], '%Y-%m-%d %H:%M:%S').strftime("%d/%m/%Y %H:%M")
@@ -103,7 +104,11 @@ def formato_obj(json, carrier, code, retries):
         situacao = evento['StatusDescription']
         observacao = evento['checkpoint_status']
         try:
-            observacao = 'Código novo: <code>' + geartrack.getcorreioscode(carrier, code) + '</code>'
+            codigo_novo = geartrack.getcorreioscode(carrier['code'], code)
+            if codigo_novo not in str(stats):
+                msg_codigo_novo = ('Data: {}' +
+                    '\nNovo código do pacote: <code>{}</code>'
+                ).format(data, codigo_novo)
         except:
             pass
         mensagem = ('Data: {}' +
@@ -111,6 +116,8 @@ def formato_obj(json, carrier, code, retries):
             '\nObservação: {}'
         ).format(data, situacao, observacao)
         stats.append(mensagem)
+    if msg_codigo_novo != False:
+        stats.append(msg_codigo_novo)
     return stats
 
 
