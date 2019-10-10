@@ -116,8 +116,8 @@ def formato_obj(json, carrier, code, retries):
             '\nObservação: {}'
         ).format(data, situacao, observacao)
         stats.append(mensagem)
-    if msg_codigo_novo != False:
-        stats.append(msg_codigo_novo)
+        if msg_codigo_novo != False:
+            stats.append(msg_codigo_novo)
     return stats
 
 
