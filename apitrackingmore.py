@@ -105,7 +105,7 @@ def formato_obj(json, carrier, code, retries):
         observacao = evento['checkpoint_status']
         try:
             codigo_novo = geartrack.getcorreioscode(carrier['code'], code)
-            if codigo_novo not in str(stats):
+            if codigo_novo not in str(mensagem):
                 msg_codigo_novo = ('Data: {}' +
                     '\nNovo código do pacote: <code>{}</code>'
                 ).format(data, codigo_novo)
