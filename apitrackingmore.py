@@ -1,6 +1,4 @@
 import configparser
-import logging
-import logging.handlers
 import sys
 import apicorreios as correios
 from datetime import datetime
@@ -9,22 +7,15 @@ import trackingmore
 from pymongo import MongoClient
 
 import apigeartrack as geartrack
+import logger
 import status
 import trackingmore
-import utils
 
 # https://www.trackingmore.com/api-index.html - Codigos de retorno da API
 config = configparser.ConfigParser()
 config.read('bot.conf')
 
-LOG_ERROR_FILE = config['RASTREIOBOT']['error_log']
-
-logger_error = logging.getLogger('ErrorLogger')
-logger_error.setLevel(logging.DEBUG)
-handler_info = logging.handlers.TimedRotatingFileHandler(
-    LOG_ERROR_FILE, when='midnight', interval=1, backupCount=10, encoding='utf-8'
-)
-logger_error.addHandler(handler_info)
+logger = logger.get_logger(__name__)
 
 key = config['TRACKINGMORE']['key']
 trackingmore.set_api_key(key)
@@ -53,7 +44,7 @@ def get_or_create_tracking_item(carrier, code):
     try:
         tracking_data = trackingmore.get_tracking_item(carrier, code)
     except trackingmore.trackingmore.TrackingMoreAPIException as e:
-        utils.log(logger_error, "{e.err_code} \t{e.err_type} \t{e} \t({carrier}, {code})".format(e=e, carrier=carrier, code=code))
+        logger.exception("%s \t%s \t%s \t(%s, %s)", e.err_code, e.err_type, e, carrier, code)
         if e.err_code == 4031 or e.err_code == 4017:
             tracking_data = trackingmore.create_tracking_data(carrier, code)
             trackingmore.create_tracking_item(tracking_data)
@@ -88,7 +79,7 @@ def get(code, retries=0):
     try:
         carriers = get_carriers(code)
     except trackingmore.trackingmore.TrackingMoreAPIException as e:
-        utils.log(logger_error, "{e.err_code} \t{e.err_type} \t{e} \t({code})".format(e=e, code=code))
+        logger.exception("%s \t%s \t%s \t(%s)", e.err_code, e.err_type, e, code)
         return status.NOT_FOUND_TM
 
     response_status = status.NOT_FOUND
@@ -102,7 +93,7 @@ def get(code, retries=0):
         try:
             tracking_data = get_or_create_tracking_item(carrier['code'], code)
         except trackingmore.trackingmore.TrackingMoreAPIException as e:
-            utils.log(logger_error, "{e.err_code} \t{e.err_type} \t{e} \t({carrier}, {code})".format(e=e, carrier=carrier, code=code))
+            logger.exception("%s \t%s \t%s \t(%s, %s)", e.err_code, e.err_type, e, carrier, code)
             if e.err_code == 4019 or e.err_code == 4021:
                 response_status = status.OFFLINE
             elif e.err_code == 4031:

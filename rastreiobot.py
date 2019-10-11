@@ -1,5 +1,4 @@
 import configparser
-import logging.handlers
 import random
 from datetime import datetime, timedelta
 from time import time
@@ -16,23 +15,24 @@ import status
 import utils
 from misc import check_type, send_clean_msg, check_package, check_update
 
+import apicorreios as correios
+import logger
+import status
+from check_update import check_update
+from misc import check_type, send_clean_msg, check_package
+
+
 config = configparser.ConfigParser()
 config.read('bot.conf')
 
 TOKEN = config['RASTREIOBOT']['TOKEN']
 int_check = int(config['RASTREIOBOT']['int_check'])
 LOG_INFO_FILE = config['RASTREIOBOT']['text_log']
-LOG_ROUTINE_FILE = config['RASTREIOBOT']['routine_log']
 LOG_ALERTS_FILE = config['RASTREIOBOT']['alerts_log']
 PATREON = config['RASTREIOBOT']['patreon']
 BANNED = config['RASTREIOBOT']['banned']
 
-logger_info = logging.getLogger('InfoLogger')
-logger_info.setLevel(logging.DEBUG)
-handler_info = logging.handlers.TimedRotatingFileHandler(
-    LOG_INFO_FILE, when='midnight', interval=1, backupCount=7, encoding='utf-8'
-)
-logger_info.addHandler(handler_info)
+logger = logger.get_logger(__name__)
 
 bot = telebot.TeleBot(TOKEN)
 client = MongoClient()
@@ -235,10 +235,7 @@ def get_update(code):
 
 # Add to log
 def log_text(chatid, message_id, text):
-    utils.log(
-        logger_info,
-        "{} \t{} \t{}".format(chatid, message_id, text)
-    )
+    logger.info("%s \t%s \t%s", chatid, message_id, text)
 
 
 @bot.message_handler(commands=['gif'])
