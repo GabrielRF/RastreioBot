@@ -125,7 +125,7 @@ if __name__ == '__main__':
                 len_new_state = len(cursor2['stat'])
             except:
                 len_new_state = 1
-            if len_old_state < len_new_state:
+            if len_old_state != len_new_state:
                 len_diff = len_new_state - len_old_state
                 for user in elem['users']:
                     logger_info.info(str(datetime.now()) + ' ' + multiple + ' '
@@ -153,9 +153,10 @@ if __name__ == '__main__':
                             + ' <a href="http://grf.xyz/assine">Assine o bot</a> - '
                             + str(u'\U0001F4B5')
                             + ' <a href="http://grf.xyz/picpay">Colabore</a>')
-                        bot.send_message(str(user), message, parse_mode='HTML',
-                            disable_web_page_preview=True)
-                        sent = sent + 1
+                        if len_old_state < len_new_state:
+                            bot.send_message(str(user), message, parse_mode='HTML',
+                                disable_web_page_preview=True)
+                            sent = sent + 1
                     except Exception as e:
                         logger_info.info(str(datetime.now())
                              + '\tEXCEPT: ' + str(user) + ' ' + code + ' ' + str(e))

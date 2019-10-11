@@ -95,8 +95,9 @@ def formato_obj(json, carrier, code, retries):
         else:
             return status.NOT_FOUND_TM
     mensagem = ''
-    msg_codigo_novo = False
     for evento in reversed(tabela):
+        codigo_novo = None
+        msg_codigo_novo = None
         try:
             data = datetime.strptime(evento['Date'], '%Y-%m-%d %H:%M:%S').strftime("%d/%m/%Y %H:%M")
         except ValueError:
@@ -105,10 +106,9 @@ def formato_obj(json, carrier, code, retries):
         observacao = evento['checkpoint_status']
         try:
             codigo_novo = geartrack.getcorreioscode(carrier['code'], code)
-            if codigo_novo not in str(mensagem):
-                msg_codigo_novo = ('Data: {}' +
-                    '\nNovo código do pacote: <code>{}</code>'
-                ).format(data, codigo_novo)
+            msg_codigo_novo = ('Data: {}' +
+                '\nNovo código do pacote: <code>{}</code>'
+            ).format(data, codigo_novo)
         except:
             pass
         mensagem = ('Data: {}' +
@@ -116,10 +116,9 @@ def formato_obj(json, carrier, code, retries):
             '\nObservação: {}'
         ).format(data, situacao, observacao)
         stats.append(mensagem)
-        if msg_codigo_novo != False:
+        if codigo_novo and str(codigo_novo) not in str(stats) and msg_codigo_novo != None:
             stats.append(msg_codigo_novo)
     return stats
-
 
 if __name__ == '__main__':
     print(get(sys.argv[1], retries=3))
