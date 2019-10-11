@@ -13,7 +13,7 @@ import telebot
 import apicorreios as correios
 from check_update import check_update
 from math import ceil
-from misc import check_type, send_clean_msg, check_package
+from misc import check_type, send_clean_msg, check_package, check_update
 from pymongo import ASCENDING, MongoClient
 from telebot import types
 

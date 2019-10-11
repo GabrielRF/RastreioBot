@@ -2,6 +2,7 @@ import configparser
 import status
 import trackingmore
 import sys
+import apicorreios as correios
 from datetime import datetime
 from pymongo import ASCENDING, MongoClient
 
@@ -106,9 +107,7 @@ def formato_obj(json, carrier, code, retries):
         observacao = evento['checkpoint_status']
         try:
             codigo_novo = geartrack.getcorreioscode(carrier['code'], code)
-            msg_codigo_novo = ('Data: {}' +
-                '\nNovo código do pacote: <code>{}</code>'
-            ).format(data, codigo_novo)
+            msg_codigo_novo = 'Novo código: <code>' + code + '</code>'
         except:
             pass
         mensagem = ('Data: {}' +
@@ -117,7 +116,7 @@ def formato_obj(json, carrier, code, retries):
         ).format(data, situacao, observacao)
         stats.append(mensagem)
         if codigo_novo and str(codigo_novo) not in str(stats) and msg_codigo_novo != None:
-            stats.append(msg_codigo_novo)
+            return correios.get(codigo_novo, 3)
     return stats
 
 if __name__ == '__main__':

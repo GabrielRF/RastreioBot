@@ -1,7 +1,7 @@
-from check_update import check_update
 from datetime import datetime
 from pymongo import MongoClient
 from time import time, sleep
+from misc import check_update
 
 import configparser
 import logging

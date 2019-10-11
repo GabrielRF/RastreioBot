@@ -1,4 +1,3 @@
-from check_update import check_update
 from datetime import datetime
 from pymongo import MongoClient
 from time import time, sleep

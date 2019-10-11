@@ -1,6 +1,8 @@
 import re
+import sys
 import apicorreios as correios
 import apitrackingmore as trackingmore
+import status
 from pymongo import MongoClient
 from telebot import types
 
@@ -13,10 +15,13 @@ def check_type(code):
     ali = (r"^([A-Za-z]{2}\d{14}|[A-Za-z]{4}\d{9}|\d{10}|[A-Za-z]{5}\d{10}[A-Za-z]{2})$")
 
     if re.search(s10, str(code)):
+        print('correios')
         return correios
     elif re.search(ali, str(code)):
+        print('trackingmore')
         return trackingmore
     else:
+        print('none')
         return None
 
 
@@ -30,3 +35,22 @@ def check_package(code):
     if cursor:
         return True
     return False
+
+def check_update(code, max_retries=3):
+    api_type = check_type(code)
+    if api_type is trackingmore:
+        return trackingmore.get(code, max_retries)
+    if api_type is correios:
+        return correios.get(code, max_retries)
+    if api_type is not (correios or trackingmore):
+        return status.TYPO
+    try:
+        return api_type.get(code, max_retries)
+    except Exception:
+        if api_type is correios:
+            return status.NOT_FOUND
+        elif api_type is trackingmore:
+            return status.NOT_FOUND_TM
+
+if __name__ == '__main__':
+   print(check_update(sys.argv[1], 1))
