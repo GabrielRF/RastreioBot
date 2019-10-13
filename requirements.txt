@@ -1,5 +1,5 @@
-beautifulsoup4==4.5.3
-pymongo==3.4.0
-pytest==5.2.0
-requests==2.20.0
-sentry-sdk==0.7.14
+beautifulsoup4==4.*
+pymongo==3.*
+pytest==5.*
+requests==2.*
+sentry-sdk==0.*
