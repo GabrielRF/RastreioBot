@@ -275,7 +275,7 @@ def cmd_pacotes(message):
     else:
         message = '<b>Clique para ver o histórico:</b>\n' + message
         msg_split = message.split('\n')
-        for elem in range(0, len(msg_split), 10):
+        for elem in range(0, len(msg_split)-1, 10):
              s = '\n'
              bot.send_message(chatid,
                  s.join(msg_split[elem:elem+10]), parse_mode='HTML',
@@ -323,7 +323,7 @@ def cmd_concluidos(message):
     else:
         message = '<b>Pacotes concluídos nos últimos 30 dias:</b>\n' + message
         msg_split = message.split('\n')
-        for elem in range(0, len(msg_split), 10):
+        for elem in range(0, len(msg_split)-1, 10):
             s = '\n'
             bot.send_message(chatid,
                 s.join(msg_split[elem:elem+10]), parse_mode='HTML',
