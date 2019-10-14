@@ -104,9 +104,12 @@ def formato_obj(json, carrier, code, retries):
             data = datetime.strptime(evento['Date'], '%Y-%m-%d %H:%M').strftime("%d/%m/%Y %H:%M")
         situacao = evento['StatusDescription']
         observacao = evento['checkpoint_status']
-        codigo_novo = geartrack.getcorreioscode(carrier['code'], code)
-        if codigo_novo:
-            return correios.get(codigo_novo, 3)
+        try:
+            codigo_novo = geartrack.getcorreioscode(carrier['code'], code)
+            if codigo_novo:
+                return correios.get(codigo_novo, 3)
+        except:
+            pass
         mensagem = ('Data: {}'
             '\nSituacao: <b>{}</b>'
             '\nObservação: {}'
