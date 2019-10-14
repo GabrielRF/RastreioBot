@@ -130,7 +130,6 @@ def get(code, retries):
         response = requests.post(
             url, data=request_xml, headers=headers, timeout=3
         ).text
-        print(response)
     except Exception:
         if retries > 0:
             return get(code, retries - 1)

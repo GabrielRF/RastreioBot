@@ -40,17 +40,10 @@ def check_update(code, max_retries=3):
     api_type = check_type(code)
     if api_type is trackingmore:
         return trackingmore.get(code, max_retries)
-    if api_type is correios:
+    elif api_type is correios:
         return correios.get(code, max_retries)
-    if api_type is not (correios or trackingmore):
+    else:
         return status.TYPO
-    try:
-        return api_type.get(code, max_retries)
-    except Exception:
-        if api_type is correios:
-            return status.NOT_FOUND
-        elif api_type is trackingmore:
-            return status.NOT_FOUND_TM
 
 if __name__ == '__main__':
    print(check_update(sys.argv[1], 1))
