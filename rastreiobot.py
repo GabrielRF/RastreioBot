@@ -3,7 +3,7 @@ import logging
 import logging.handlers
 import random
 from datetime import datetime, timedelta
-from time import time, sleep
+from time import time
 
 import msgs
 import requests
@@ -51,6 +51,7 @@ def count_packages():
     cursor = db.rastreiobot.find()
     qtd = 0
     wait = 0
+    extraviado = 0
     despacho = 0
     sem_imposto = 0
     importado = 0
@@ -71,7 +72,9 @@ def count_packages():
             importado = importado + 1
         if 'Fiscalização Aduaneira finalizada' in str(elem):
             tributado = tributado + 1
-    return qtd, wait, despacho, sem_imposto, importado, tributado, trackingmore
+        if 'Objeto roubado' in str(elem):
+            extraviado = extraviado + 1
+    return qtd, wait, despacho, sem_imposto, importado, tributado, trackingmore, extraviado
 
 
 ## List packages of a user
@@ -343,12 +346,13 @@ def cmd_status(message):
         message.text + '\t' + str(message.from_user.first_name)
     )
 
-    qtd, wait, despacho, sem_imposto, importado, tributado, trackingmore = count_packages()
+    qtd, wait, despacho, sem_imposto, importado, tributado, trackingmore, extraviado = count_packages()
     chatid = message.chat.id
     bot.send_message(
         chatid, str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n' +
         'Pacotes em andamento: ' + str(qtd) + '\n' +
-        'Pacotes em espera: ' + str(wait) + '\n\n' +
+        'Pacotes em espera: ' + str(wait) + '\n' +
+        'Pacotes roubados: ' + str(extraviado) + '\n\n' +
         'Pacotes importados: ' + str(importado) + '\n' +
         'Taxados em R$15: ' + str(round(100*despacho/importado, 2)) + '%\n' +
         #'Pacotes sem tributação: ' + str(round(100*sem_imposto/importado, 2)) + '%\n' +
@@ -389,12 +393,13 @@ def cmd_statusall(message):
             yesterday = (sum(1 for _ in f))
     except Exception:
         yesterday = ''
-    qtd, wait, despacho, sem_imposto, importado, tributado, trackingmore = count_packages()
+    qtd, wait, despacho, sem_imposto, importado, tributado, trackingmore, extraviado = count_packages()
     chatid = message.chat.id
     bot.send_message(
         chatid, str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n' +
         'Pacotes em andamento: ' + str(qtd) + '\n' +
-        'Pacotes em espera: ' + str(wait) + '\n\n' +
+        'Pacotes em espera: ' + str(wait) + '\n' +
+        'Pacotes roubados: ' + str(extraviado) + '\n\n' +
         'Pacotes importados: ' + str(importado) + '\n' +
         'TrackingMore: ' + str(trackingmore) + '\n' +
         'Taxados em R$15: ' + str(round(100*despacho/importado, 2)) + '%\n' +
@@ -488,7 +493,6 @@ def cmd_magic(message):
             bot.reply_to(message, msgs.premium, parse_mode='HTML') 
             log_text(message.chat.id, message.message_id, 'Pacote chines. Usuario nao assinante.')
             return 0
-        sleep(random.randrange(500,2000,100)/1000)
         exists = check_package(code)
         if exists:
             exists = check_user(code, user)
