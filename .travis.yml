@@ -7,4 +7,4 @@ install:
 script:
   - pytest
   - coverage run tests/test_helloworld.py
-  - coverage report --fail-under=110
+  - coverage report --fail-under=80
