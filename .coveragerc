@@ -1,5 +1,4 @@
 [run]
 branch = True
 source = .
-omit =
-/home/travis/*       # directory skip
+omit = */travis/*       # directory skip
