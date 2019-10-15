@@ -1,4 +1,4 @@
 [run]
 branch = True
-source = tests
+source = .
 omit = */travis/*, *venv/*
