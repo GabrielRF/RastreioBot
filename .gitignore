@@ -1,3 +1,6 @@
+.coverage
+.idea/
+venv/
 bot.conf
 *.db
 ad.txt
