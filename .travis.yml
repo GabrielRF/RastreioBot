@@ -1,9 +1,12 @@
 language: python
+dist: xenial
+sudo: true
+
 python:
-  - "3.7"
+  - 3.7
 install:
   - pip install -r requirements.txt
 script:
   - pytest
   - coverage run tests/test_helloworld.py
-  - coverage report --fail-under=80
+  - coverage report --fail-under=60
