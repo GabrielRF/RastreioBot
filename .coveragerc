@@ -1,4 +1,4 @@
 [run]
 branch = True
-source = .
-omit = */travis/*       # directory skip
+source = tests
+omit = */travis/*, *venv/*
