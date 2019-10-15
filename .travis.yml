@@ -6,4 +6,4 @@ install:
   - pip install -r requirements.txt
 script:
   - pytest
-
+  - coverage run tests/test_helloworld.py
