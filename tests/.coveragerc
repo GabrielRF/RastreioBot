@@ -1,0 +1,11 @@
+[run]
+branch = True
+omit =
+    */travis/*
+source = RastreioBot
+
+[report]
+ignore_errors = True
+omit =
+    */travis/*
+    */tests/*
