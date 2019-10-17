@@ -4,7 +4,6 @@ import status
 from misc import check_type
 import apicorreios as correios
 import apitrackingmore as trackingmore
-from numpy import busday_count
 import holidays
 
 
@@ -44,14 +43,21 @@ def check_update(code, max_retries=3):
             ano1 = int(evento['data'].split('/')[2])
             data1 = date(ano1, mes1, dia1)
             delta = data1 - data0
-            dias_uteis = busday_count(data0, data1)
+
+            dia_da_semana_inicial = data0.weekday()
+            dias_uteis = 0
+            for dia_da_semana in range(dia_da_semana_inicial, dia_da_semana_inicial + delta.days + 1):
+                if dia_da_semana % 7 < 5:
+                    dias_uteis += 1
+
             todos_feriados = holidays.BR()
             # todos_feriados.state TODO: adicionar feriados estaduais
             feriados_entre_datas = todos_feriados[data0:data1]
-            feriados_uteis = 0
-            for f in feriados_entre_datas:
-                feriados_uteis += 1 if f.weekday() < 5 else 0
-            dias_uteis -= feriados_uteis
+            feriados_em_dias_uteis = 0
+            for feriado in feriados_entre_datas:
+                feriados_em_dias_uteis += 1 if feriado.weekday() < 5 else 0
+            dias_uteis -= feriados_em_dias_uteis
+
         except Exception:
             delta = 0
             dias_uteis = 0
