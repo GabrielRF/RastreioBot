@@ -4,6 +4,9 @@ import status
 from misc import check_type
 import apicorreios as correios
 import apitrackingmore as trackingmore
+from numpy import busday_count
+import holidays
+
 
 def check_update(code, max_retries=3):
     # print('check_update')
@@ -41,14 +44,23 @@ def check_update(code, max_retries=3):
             ano1 = int(evento['data'].split('/')[2])
             data1 = date(ano1, mes1, dia1)
             delta = data1 - data0
+            dias_uteis = busday_count(data0, data1)
+            todos_feriados = holidays.BR()
+            # feriados TODO: adicionar feriados estaduais
+            feriados_entre_datas = todos_feriados[data0:data1]
+            feriados_uteis = 0
+            for f in feriados_entre_datas:
+                feriados_uteis += 1 if f.weekday() < 5 else 0
+            dias_uteis -= feriados_uteis
         except Exception:
             delta = 0
+            dias_uteis = 0
             pass
-        data = evento['data'] + ' ' + evento['hora']
+        data = f'{evento["data"]} {evento["hora"]}'
         if delta.days == 1:
-            data = data + ' (' + str(delta.days) + ' dia)'
+            data += f' ({delta.days} dia - {dias_uteis} útil)'
         elif delta.days > 1:
-            data = data + ' (' + str(delta.days) + ' dias)'
+            data += f' ({delta.days} dias - {dias_uteis} úteis)'
         try:
             local = evento['unidade']['local']
         except Exception:
@@ -57,10 +69,10 @@ def check_update(code, max_retries=3):
         if 'endereço indicado' in evento['descricao']:
             try:
                 situacao = (
-                    situacao + '\n</b>' +
-                    evento['unidade']['endereco']['numero'] + ' ' +
-                    evento['unidade']['endereco']['logradouro'] + '\n' +
-                    evento['unidade']['endereco']['bairro'] + '<b>'
+                        situacao + '\n</b>' +
+                        evento['unidade']['endereco']['numero'] + ' ' +
+                        evento['unidade']['endereco']['logradouro'] + '\n' +
+                        evento['unidade']['endereco']['bairro'] + '<b>'
                 )
             except Exception:
                 pass
@@ -73,8 +85,8 @@ def check_update(code, max_retries=3):
             mensagem = mensagem + '\nLocal: ' + local.strip().title()
         if situacao:
             mensagem = (
-                mensagem + '\nSituação: <b>' +
-                situacao.strip() + '</b>'
+                    mensagem + '\nSituação: <b>' +
+                    situacao.strip() + '</b>'
             )
             if 'objeto entregue ao' in situacao.lower():
                 mensagem = mensagem + ' ' + str(u'\U0001F381')
@@ -96,12 +108,12 @@ def check_update(code, max_retries=3):
                 mensagem = mensagem + ' ' + str(u'\U0001F4B8')
             elif 'aduaneira finalizada' in situacao.lower():
                 mensagem = (mensagem + '\n<i>Acesse o ambiente </i>' +
-                '<a href="https://apps.correios.com.br/cas/login?service=https%3A%2F%2Fapps.correios.com.br%2Fportalimportador%2Fpages%2FpesquisarRemessaImportador%2FpesquisarRemessaImportador.jsf">Minhas Importações</a>')
+                            '<a href="https://apps.correios.com.br/cas/login?service=https%3A%2F%2Fapps.correios.com.br%2Fportalimportador%2Fpages%2FpesquisarRemessaImportador%2FpesquisarRemessaImportador.jsf">Minhas Importações</a>')
             elif 'aguardando pagamento' in situacao.lower():
-                mensagem = (mensagem + ' ' + str(u'\U0001F52B') + 
-                '\n<i>Links para efetuar pagamentos aos Correios:</i>' + 
-                '\n<a href="https://www2.correios.com.br/sistemas/rastreamento/">Rastreamento</a>' +
-                '\n<a href="https://apps.correios.com.br/portalimportador/">Portal Importador</a>')
+                mensagem = (mensagem + ' ' + str(u'\U0001F52B') +
+                            '\n<i>Links para efetuar pagamentos aos Correios:</i>' +
+                            '\n<a href="https://www2.correios.com.br/sistemas/rastreamento/">Rastreamento</a>' +
+                            '\n<a href="https://apps.correios.com.br/portalimportador/">Portal Importador</a>')
             elif 'liberado sem' in situacao.lower():
                 mensagem = mensagem + ' ' + str(u'\U0001F389')
         if observacao:
@@ -109,7 +121,7 @@ def check_update(code, max_retries=3):
             if 'liberado sem' in observacao.lower():
                 mensagem = mensagem + ' ' + str(u'\U0001F389')
             elif 'pagamento' in observacao.lower():
-                mensagem = (mensagem + 
-                '\nhttps://www2.correios.com.br/sistemas/rastreamento/')
+                mensagem = (mensagem +
+                            '\nhttps://www2.correios.com.br/sistemas/rastreamento/')
         stats.append(mensagem)
     return stats

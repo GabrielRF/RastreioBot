@@ -4,3 +4,4 @@ pyTelegramBotAPI==3.*
 pytest==5.*
 requests==2.*
 sentry-sdk==0.*
+holidays==0.*
