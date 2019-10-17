@@ -46,7 +46,7 @@ def check_update(code, max_retries=3):
             delta = data1 - data0
             dias_uteis = busday_count(data0, data1)
             todos_feriados = holidays.BR()
-            # feriados TODO: adicionar feriados estaduais
+            # todos_feriados.state TODO: adicionar feriados estaduais
             feriados_entre_datas = todos_feriados[data0:data1]
             feriados_uteis = 0
             for f in feriados_entre_datas:
@@ -56,11 +56,11 @@ def check_update(code, max_retries=3):
             delta = 0
             dias_uteis = 0
             pass
-        data = f'{evento["data"]} {evento["hora"]}'
+        data = {evento["data"]} + ' ' + {evento["hora"]}
         if delta.days == 1:
-            data += f' ({delta.days} dia - {dias_uteis} útil)'
+            data += ' (' + str({delta.days}) + ' dia - ' + str({dias_uteis}) + ' útil)'
         elif delta.days > 1:
-            data += f' ({delta.days} dias - {dias_uteis} úteis)'
+            data += ' (' + str({delta.days}) + ' dias - ' + str({dias_uteis}) + ' úteis)'
         try:
             local = evento['unidade']['local']
         except Exception:
