@@ -9,7 +9,6 @@ import apigeartrack as geartrack
 
 # https://www.trackingmore.com/api-index.html - Codigos de retorno da API
 config = configparser.ConfigParser()
-config.sections()
 config.read('bot.conf')
 
 key = config['TRACKINGMORE']['key']
@@ -46,7 +45,7 @@ def get_carriers(code):
     package = db.rastreiobot.find_one({
         "code": code
     })
-    
+
     if package:
         carriers = package['carrier']
         return carriers if isinstance(carriers, list) else [carriers]

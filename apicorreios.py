@@ -4,7 +4,6 @@ import status
 import sys
 
 config = configparser.ConfigParser()
-config.sections()
 config.read('bot.conf')
 
 usuario = config['CORREIOS']['usuario']

@@ -6,7 +6,6 @@ import logging
 import logging.handlers
 
 config = configparser.ConfigParser()
-config.sections()
 config.read('bot.conf')
 
 LOG_ALERTS_FILE = config['RASTREIOBOT']['alerts_log']

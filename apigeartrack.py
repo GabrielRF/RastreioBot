@@ -6,7 +6,6 @@ import trackingmore
 import sys
 
 config = configparser.ConfigParser()
-config.sections()
 config.read('bot.conf')
 
 def getcorreioscode(carrier, code):
@@ -16,7 +15,7 @@ def getcorreioscode(carrier, code):
     a = json.loads(conteudo)
     if a['destinyId']:
         return(a['destinyId'])
-    
+
 
 def getstatus(code, retries):
     carrier = 'cainiao'
@@ -30,7 +29,7 @@ def getstatus(code, retries):
 
 def formato_obj(json):
     stats = []
-    stats.append(str(u'\U0001F4EE') + ' <b>' + json['id'] + '</b>') 
+    stats.append(str(u'\U0001F4EE') + ' <b>' + json['id'] + '</b>')
     tabela = json['states']
     mensagem = ''
     for evento in reversed(tabela):
@@ -44,7 +43,7 @@ def formato_obj(json):
     if json['destinyId']:
         stats.append('Pacote recebido nos Correios.\nCódigo: /' + json['destinyId'])
     return stats
-        
+
 
 if __name__ == '__main__':
     getstatus(sys.argv[1], 0)
