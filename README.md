@@ -1,4 +1,4 @@
-# [RastreioBot](http://telegram.me/RastreioBot) 
+# [RastreioBot](http://telegram.me/RastreioBot)
 
 [![Donate](https://img.shields.io/static/v1?label=Assine&message=PicPay&color=green)](https://grf.xyz/assine)
 [![Donate](https://img.shields.io/static/v1?label=Colabore&message=PicPay&color=brightgreen)](https://grf.xyz/picpay)
@@ -23,7 +23,7 @@ This is a [Telegram](http://telegram.org) Bot that tracks packages from the [Bra
 After cloning/downloading the repository, install required packages:
 
 ```
-pip install -r requirements.txt
+make requirements-dev
 ```
 
 Create a file `bot.conf` following `bot.conf_sample`.
@@ -57,10 +57,10 @@ For RaspberryPi: https://github.com/GabrielRF/Docker-MongoDB-RPi
 To receive messages:
 
 ```
-python rastreiobot.py
+make run
 ```
 
-To check for updates, I recommend a cronjob that runs every 15 min. 
+To check for updates, I recommend a cronjob that runs every 15 min.
 
 Type `crontab -e` and add to the end of the file:
 
