@@ -1,6 +1,5 @@
 language: python
 
-
 python:
   - 3.5
   - 3.7
@@ -8,5 +7,5 @@ install:
   - pip install -r requirements.txt
 script:
   - pytest
-  - coverage run tests/test_helloworld.py
+  - coverage run tests/
   - coverage report --fail-under=60
