@@ -1,9 +1,11 @@
 import json
 from datetime import date
-import status
-from misc import check_type
+
 import apicorreios as correios
 import apitrackingmore as trackingmore
+import status
+from misc import check_type
+
 
 def check_update(code, max_retries=3):
     # print('check_update')

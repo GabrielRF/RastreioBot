@@ -1,9 +1,8 @@
 import configparser
 import json
-import requests
-import status
-import trackingmore
 import sys
+
+import requests
 
 config = configparser.ConfigParser()
 config.sections()

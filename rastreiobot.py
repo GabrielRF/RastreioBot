@@ -1,21 +1,20 @@
 import configparser
-import logging
 import logging.handlers
 import random
 from datetime import datetime, timedelta
 from time import time, sleep
 
-import msgs
 import requests
 import sentry_sdk
-import status
 import telebot
-import apicorreios as correios
-from check_update import check_update
-from math import ceil
-from misc import check_type, send_clean_msg, check_package
 from pymongo import ASCENDING, MongoClient
 from telebot import types
+
+import apicorreios as correios
+import msgs
+import status
+from check_update import check_update
+from misc import check_type, send_clean_msg, check_package
 
 config = configparser.ConfigParser()
 config.sections()

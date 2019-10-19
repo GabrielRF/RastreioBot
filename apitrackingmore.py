@@ -1,11 +1,12 @@
 import configparser
-import status
-import trackingmore
 import sys
 from datetime import datetime
-from pymongo import ASCENDING, MongoClient
+
+import trackingmore
+from pymongo import MongoClient
 
 import apigeartrack as geartrack
+import status
 
 # https://www.trackingmore.com/api-index.html - Codigos de retorno da API
 config = configparser.ConfigParser()

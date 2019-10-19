@@ -1,7 +1,9 @@
 import configparser
-import requests
-import status
 import sys
+
+import requests
+
+import status
 
 config = configparser.ConfigParser()
 config.sections()

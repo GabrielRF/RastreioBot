@@ -1,13 +1,10 @@
-from check_update import check_update
-from datetime import datetime
-from pymongo import MongoClient
-from time import time, sleep
-
 import configparser
-import logging
 import logging.handlers
+from datetime import datetime
+from time import time
+
 import telebot
-import sys
+from pymongo import MongoClient
 
 config = configparser.ConfigParser()
 config.sections()
