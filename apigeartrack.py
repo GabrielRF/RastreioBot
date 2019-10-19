@@ -24,18 +24,15 @@ def getstatus(code, retries):
     r = requests.get(url)
     conteudo = str(r.content.decode('UTF-8'))
     a = json.loads(conteudo)
-    #print(a)
     print(formato_obj(a))
 
 def formato_obj(json):
     stats = []
     stats.append(str(u'\U0001F4EE') + ' <b>' + json['id'] + '</b>') 
     tabela = json['states']
-    mensagem = ''
     for evento in reversed(tabela):
         data = evento['date']
         situacao = evento['state']
-        observacao = ''
         mensagem = ('Data: {}' +
             '\nSituacao: <b>{}</b>'
         ).format(data, situacao)

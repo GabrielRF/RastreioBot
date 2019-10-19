@@ -24,11 +24,13 @@ bot = telebot.TeleBot(TOKEN)
 client = MongoClient()
 db = client.rastreiobot
 
+
 def del_user(code, msg):
     logger_info.info(str(datetime.now()) + '\t' + code + '\t' + msg.replace('\n',' '))
-    cursor = db.rastreiobot.delete_one (
+    db.rastreiobot.delete_one (
     { "code" : code.upper() }
     )
+
 
 if __name__ == '__main__':
     cursor1 = db.rastreiobot.find()
@@ -37,14 +39,11 @@ if __name__ == '__main__':
         code = elem['code']
         time_dif = int(time() - float(elem['time']))
         old_state = elem['stat'][len(elem['stat'])-1]
-        # print(str(elem['code']) + ' ' + str(time_dif))
         if 'Entrega Efetuada' in old_state:
             if time_dif > int_del:
-                # print(elem['code'])
                 del_user(elem['code'], old_state)
         elif 'Objeto entregue ao destinatário' in old_state:
             if time_dif > int_del:
-                # print(elem['code'])
                 del_user(elem['code'], old_state)
         elif 'Objeto apreendido por órgão de fiscalização' in old_state:
             if time_dif > int_del:

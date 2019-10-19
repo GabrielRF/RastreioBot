@@ -16,7 +16,7 @@ client = MongoClient()
 db = client.rastreiobot
 
 def del_code(code):
-    cursor = db.rastreiobot.delete_one (
+    db.rastreiobot.delete_one (
     { "code" : code.upper() }
     )
 

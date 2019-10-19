@@ -50,5 +50,6 @@ def get(code, retries):
         return status.NOT_FOUND
     return response
 
+
 if __name__ == '__main__':
     print(get(sys.argv[1], 0))
