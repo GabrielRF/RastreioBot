@@ -7,5 +7,5 @@ install:
   - pip install -r requirements.txt
 script:
   - pytest
-  - coverage run tests/
+  - coverage run tests/*
   - coverage report --fail-under=60
