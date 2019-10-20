@@ -20,7 +20,7 @@ This is a [Telegram](http://telegram.org) Bot that tracks packages from the [Bra
 
 ## Setup
 
-First, create a virtual environment for your project:
+First, create a virtual environment for your project (so it don't mixup with your other libraries versions):
 
 ```
 python3 -m venv rastreiobotenv
