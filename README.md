@@ -20,6 +20,20 @@ This is a [Telegram](http://telegram.org) Bot that tracks packages from the [Bra
 
 ## Setup
 
+First, create a virtual environment for your project:
+
+```
+python3 -m venv rastreiobotenv
+```
+
+If you don't have it installed, check [here](https://docs.python.org/3/library/venv.html)
+
+and activate your environment:
+
+```
+. rastreiobotenv/bin/activate
+```
+
 After cloning/downloading the repository, install required packages:
 
 ```
