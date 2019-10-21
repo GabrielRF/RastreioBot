@@ -1,0 +1,4 @@
+*/15 * * * * cd /bot; python /bot/routine.py 0
+*/15 * * * * cd /bot; python /bot/routine.py 1
+*/15 * * * * cd /bot; python /bot/routine.py 2
+*/15 * * * * cd /bot; python /bot/routine.py 3

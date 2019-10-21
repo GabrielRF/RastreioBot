@@ -1,0 +1,24 @@
+version: "3"
+
+services:
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rastreio-bot
+    volumes:
+      - ./cron:/etc/crontabs/root
+    networks:
+     - rastreio-bot
+
+  db:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    container_name: rastreio-bot-mongo
+    networks:
+      - rastreio-bot
+
+networks:
+  rastreio-bot:
