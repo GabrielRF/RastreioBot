@@ -12,7 +12,6 @@ from pymongo import MongoClient
 from check_update import check_update
 
 config = configparser.ConfigParser()
-config.sections()
 config.read('bot.conf')
 
 TOKEN = config['RASTREIOBOT']['TOKEN']

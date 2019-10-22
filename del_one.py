@@ -5,7 +5,6 @@ import telebot
 from pymongo import MongoClient
 
 config = configparser.ConfigParser()
-config.sections()
 config.read('bot.conf')
 
 TOKEN = config['RASTREIOBOT']['TOKEN']

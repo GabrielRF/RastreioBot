@@ -17,7 +17,6 @@ from check_update import check_update
 from misc import check_type, send_clean_msg, check_package
 
 config = configparser.ConfigParser()
-config.sections()
 config.read('bot.conf')
 
 TOKEN = config['RASTREIOBOT']['TOKEN']
@@ -263,7 +262,7 @@ def cmd_pacotes(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned) 
+         bot.send_message(message.chat.id, msgs.banned)
          return 0
     chatid = message.chat.id
     message, qtd = list_packages(chatid, False, False)
@@ -292,7 +291,7 @@ def cmd_resumo(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned) 
+         bot.send_message(message.chat.id, msgs.banned)
          return 0
     chatid = message.chat.id
     message, qtd = list_packages(chatid, False, True)
@@ -312,7 +311,7 @@ def cmd_concluidos(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned) 
+         bot.send_message(message.chat.id, msgs.banned)
          return 0
     chatid = message.chat.id
     message, qtd = list_packages(chatid, True, False)
@@ -333,7 +332,7 @@ def cmd_status(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned) 
+         bot.send_message(message.chat.id, msgs.banned)
          return 0
     log_text(
         message.chat.id,
@@ -361,11 +360,11 @@ def cmd_statusall(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned) 
+         bot.send_message(message.chat.id, msgs.banned)
          return 0
     log_text(
         message.chat.id,
-        message.message_id, 
+        message.message_id,
         message.text + '\t' + str(message.from_user.first_name)
     )
 
@@ -411,7 +410,7 @@ def cmd_help(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned) 
+         bot.send_message(message.chat.id, msgs.banned)
          return 0
     log_text(
         message.chat.id,
@@ -434,7 +433,7 @@ def cmd_remove(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned) 
+         bot.send_message(message.chat.id, msgs.banned)
          return 0
     log_text(
         message.chat.id,
@@ -467,7 +466,7 @@ def cmd_magic(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned) 
+         bot.send_message(message.chat.id, msgs.banned)
          return 0
     log_text(message.chat.id, message.message_id, message.text)
     user = str(message.chat.id)
@@ -482,8 +481,8 @@ def cmd_magic(message):
     except Exception:
         desc = code
     if check_type(code) is not None:
-        if check_type(code) is not correios and user not in PATREON: 
-            bot.reply_to(message, msgs.premium, parse_mode='HTML') 
+        if check_type(code) is not correios and user not in PATREON:
+            bot.reply_to(message, msgs.premium, parse_mode='HTML')
             log_text(message.chat.id, message.message_id, 'Pacote chines. Usuario nao assinante.')
             return 0
         sleep(random.randrange(500,2000,100)/1000)

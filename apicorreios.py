@@ -6,7 +6,6 @@ import requests
 import status
 
 config = configparser.ConfigParser()
-config.sections()
 config.read('bot.conf')
 
 usuario = config['CORREIOS']['usuario']
