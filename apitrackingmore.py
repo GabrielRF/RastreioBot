@@ -9,7 +9,6 @@ from pymongo import MongoClient
 import apigeartrack as geartrack
 import logger
 import status
-import trackingmore
 
 # https://www.trackingmore.com/api-index.html - Codigos de retorno da API
 config = configparser.ConfigParser()
