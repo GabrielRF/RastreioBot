@@ -1,15 +1,5 @@
-from bs4 import BeautifulSoup
-from check_update import check_update
-from datetime import datetime
-from time import time
-from pymongo import MongoClient
-from telebot import types
-
 import configparser
-import logging
-import logging.handlers
-import requests
-import sys
+
 import telebot
 
 config = configparser.ConfigParser()

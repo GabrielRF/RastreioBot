@@ -5,3 +5,4 @@ __pycache__
 bot.log*
 *.pyc
 *.lock
+.idea

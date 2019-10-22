@@ -1,13 +1,8 @@
-from check_update import check_update
-from datetime import datetime
-from pymongo import MongoClient
-from time import time, sleep
-
 import configparser
-import logging
-import logging.handlers
-import telebot
 import sys
+
+import telebot
+from pymongo import MongoClient
 
 config = configparser.ConfigParser()
 config.sections()
@@ -21,7 +16,7 @@ client = MongoClient()
 db = client.rastreiobot
 
 def del_code(code):
-    cursor = db.rastreiobot.delete_one (
+    db.rastreiobot.delete_one (
     { "code" : code.upper() }
     )
 
