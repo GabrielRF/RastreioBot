@@ -1,11 +1,12 @@
 import configparser
-import status
-import trackingmore
 import sys
 from datetime import datetime
-from pymongo import ASCENDING, MongoClient
+
+import trackingmore
+from pymongo import MongoClient
 
 import apigeartrack as geartrack
+import status
 
 # https://www.trackingmore.com/api-index.html - Codigos de retorno da API
 config = configparser.ConfigParser()
@@ -94,7 +95,6 @@ def formato_obj(json, carrier, code, retries):
             return get(sys.argv[1], retries-1)
         else:
             return status.NOT_FOUND_TM
-    mensagem = ''
     for evento in reversed(tabela):
         try:
             data = datetime.strptime(evento['Date'], '%Y-%m-%d %H:%M:%S').strftime("%d/%m/%Y %H:%M")
@@ -116,5 +116,3 @@ def formato_obj(json, carrier, code, retries):
 
 if __name__ == '__main__':
     print(get(sys.argv[1], retries=3))
-    #get(sys.argv[1], 0)
-    #print(get_carriers(sys.argv[1]))
