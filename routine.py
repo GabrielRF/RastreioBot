@@ -133,7 +133,10 @@ if __name__ == '__main__':
                         + str(timediff) + '\t' + str(len_old_state) + '\t'
                         + str(len_new_state) + '\t' + str(len_diff))
                     try:
-                        message = (str(u'\U0001F4EE') + '<b>' + code + '</b>\n')
+                        try:
+                            message = (str(u'\U0001F4EE') + '<b>' + code + '</b> (' + elem['code_br']  +  ')\n')
+                        except:
+                            message = (str(u'\U0001F4EE') + '<b>' + code + '</b>\n')
                         #if elem[user] != code:
                         try:
                             if code not in elem[user]:
