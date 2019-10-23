@@ -470,18 +470,29 @@ def cmd_magic(message):
          return 0
     log_text(message.chat.id, message.message_id, message.text)
     user = str(message.chat.id)
-    code = (
-        str(message.text.strip().replace('/start ', '').replace('\n', ' ')
+    message_text = (
+        message.text.strip().replace('/start ', '').replace('\n', ' ')
         .replace('/', '').upper().replace('@RASTREIOBOT', '')
-        .replace('📮 ', '').replace('📮', '').split(' ')[0])
+        .replace('📮 ', '').replace('📮', '').split(' ')
     )
+
+    code = code_type = None
+    for word in message_text:
+        code_type = check_type(word)
+        if code_type is not None:
+            code = word
+            message_text.remove(word)
+            break
+
+    message_text = ' '.join(message_text)
+
     try:
-        desc = (str(message.text.replace('\n',' ')
-            .split(' ', 1)[1].split('Data:')[0].replace('  ','')))
+        desc = message_text.split('Data:')[0].replace('  ','')
     except Exception:
         desc = code
-    if check_type(code) is not None:
-        if check_type(code) is not correios and user not in PATREON:
+
+    if code is not None:
+        if code_type is not correios and user not in PATREON:
             bot.reply_to(message, msgs.premium, parse_mode='HTML')
             log_text(message.chat.id, message.message_id, 'Pacote chines. Usuario nao assinante.')
             return 0
