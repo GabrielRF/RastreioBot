@@ -1,12 +1,8 @@
-from datetime import datetime
-from time import time, sleep
-
 import configparser
-import logging
 import logging.handlers
+from datetime import datetime
 
 config = configparser.ConfigParser()
-config.sections()
 config.read('bot.conf')
 
 LOG_ALERTS_FILE = config['RASTREIOBOT']['alerts_log']

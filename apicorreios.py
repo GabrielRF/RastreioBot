@@ -2,12 +2,12 @@ from datetime import date
 
 import configparser
 import json
-import requests
-import status
 import sys
+import requests
+
+import status
 
 config = configparser.ConfigParser()
-config.sections()
 config.read('bot.conf')
 
 usuario = config['CORREIOS']['usuario']
@@ -139,6 +139,7 @@ def get(code, retries):
     elif 'ERRO' in str(response):
         return status.NOT_FOUND
     return format_obj(code, response)
+
 
 if __name__ == '__main__':
     print(get(sys.argv[1], 0))

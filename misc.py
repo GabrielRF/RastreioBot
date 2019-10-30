@@ -1,11 +1,11 @@
 import re
 import sys
-import apicorreios as correios
-import apitrackingmore as trackingmore
-import status
+
 from pymongo import MongoClient
 from telebot import types
 
+import apicorreios as correios
+import apitrackingmore as trackingmore
 
 client = MongoClient()
 db = client.rastreiobot

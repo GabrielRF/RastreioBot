@@ -1,16 +1,16 @@
 import configparser
-import status
-import trackingmore
 import sys
 import apicorreios as correios
 from datetime import datetime
-from pymongo import ASCENDING, MongoClient
+
+import trackingmore
+from pymongo import MongoClient
 
 import apigeartrack as geartrack
+import status
 
 # https://www.trackingmore.com/api-index.html - Codigos de retorno da API
 config = configparser.ConfigParser()
-config.sections()
 config.read('bot.conf')
 
 key = config['TRACKINGMORE']['key']
@@ -56,17 +56,17 @@ def get_new_code(code):
     return cursor['code_br']
 
 def get_carriers(code):
-    cursor = db.rastreiobot.find_one({
+    package = db.rastreiobot.find_one({
         "code": code
     })
-    try:
-        if type(cursor['carrier']) is dict:
-            return [cursor['carrier']]
-        return cursor['carrier']
-    except:
-        carriers = trackingmore.detect_carrier_from_code(code)
-        carriers.sort(key=lambda carrier: carrier['code'])
-        set_carrier_db(code, carriers)
+
+    if package:
+        carriers = package['carrier']
+        return carriers if isinstance(carriers, list) else [carriers]
+
+    carriers = trackingmore.detect_carrier_from_code(code)
+    carriers.sort(key=lambda carrier: carrier['code'])
+    set_carrier_db(code, carriers)
     return carriers
 
 
@@ -113,7 +113,6 @@ def formato_obj(json, carrier, code, retries):
             return get(sys.argv[1], retries-1)
         else:
             return status.NOT_FOUND_TM
-    mensagem = ''
     for evento in reversed(tabela):
         codigo_novo = None
         try:
@@ -140,5 +139,3 @@ def formato_obj(json, carrier, code, retries):
 
 if __name__ == '__main__':
     print(get(sys.argv[1], retries=3))
-    #get(sys.argv[1], 0)
-    #print(get_carriers(sys.argv[1]))

@@ -1,23 +1,21 @@
 import configparser
-import logging
 import logging.handlers
 import random
 from datetime import datetime, timedelta
 from time import time
 
-import msgs
 import requests
 import sentry_sdk
-import status
 import telebot
+
 import apicorreios as correios
-from math import ceil
 from misc import check_type, send_clean_msg, check_package, check_update
 from pymongo import ASCENDING, MongoClient
 from telebot import types
+import msgs
+import status
 
 config = configparser.ConfigParser()
-config.sections()
 config.read('bot.conf')
 
 TOKEN = config['RASTREIOBOT']['TOKEN']
@@ -97,7 +95,7 @@ def list_packages(chatid, done, status):
                             'delivered' not in status_elem(elem)): # and
                             #'objeto devolvido' not in status_elem(elem)):
                         if status:
-                            aux = aux +  str(u'\U0001F4EE') + '<code>' + elem['code'] + '</code>'
+                            aux = aux + str(u'\U0001F4EE') + '<code>' + elem['code'] + '</code>'
                         else:
                             aux = aux + '/' + elem['code']
                         try:
@@ -266,7 +264,7 @@ def cmd_pacotes(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned) 
+         bot.send_message(message.chat.id, msgs.banned)
          return 0
     chatid = message.chat.id
     message, qtd = list_packages(chatid, False, False)
@@ -295,7 +293,7 @@ def cmd_resumo(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned) 
+         bot.send_message(message.chat.id, msgs.banned)
          return 0
     chatid = message.chat.id
     message, qtd = list_packages(chatid, False, True)
@@ -305,7 +303,6 @@ def cmd_resumo(message):
         message = msgs.error_bot
     else:
         message = '<b>Resumo dos pacotes:</b>\n\n' + message
-        msg = message
         if len(message) > 3000:
             message = 'Muitos pacotes cadastrados para utilizar tal função.\nPor favor, envie /Pacotes.'
     bot.send_message(chatid, message, parse_mode='HTML', reply_markup=markup_clean, disable_web_page_preview=True)
@@ -316,7 +313,7 @@ def cmd_concluidos(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned) 
+         bot.send_message(message.chat.id, msgs.banned)
          return 0
     chatid = message.chat.id
     message, qtd = list_packages(chatid, True, False)
@@ -337,7 +334,7 @@ def cmd_status(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned) 
+         bot.send_message(message.chat.id, msgs.banned)
          return 0
     log_text(
         message.chat.id,
@@ -366,11 +363,11 @@ def cmd_statusall(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned) 
+         bot.send_message(message.chat.id, msgs.banned)
          return 0
     log_text(
         message.chat.id,
-        message.message_id, 
+        message.message_id,
         message.text + '\t' + str(message.from_user.first_name)
     )
 
@@ -417,7 +414,7 @@ def cmd_help(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned) 
+         bot.send_message(message.chat.id, msgs.banned)
          return 0
     log_text(
         message.chat.id,
@@ -440,7 +437,7 @@ def cmd_remove(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned) 
+         bot.send_message(message.chat.id, msgs.banned)
          return 0
     log_text(
         message.chat.id,
@@ -473,14 +470,14 @@ def cmd_magic(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned) 
+         bot.send_message(message.chat.id, msgs.banned)
          return 0
     log_text(message.chat.id, message.message_id, message.text)
     user = str(message.chat.id)
     code = (
-        str(message.text.strip().replace('/start ', '').replace('\n',' ')
+        str(message.text.strip().replace('/start ', '').replace('\n', ' ')
         .replace('/', '').upper().replace('@RASTREIOBOT', '')
-        .replace('📮 ','').replace('📮','').split(' ')[0])
+        .replace('📮 ', '').replace('📮', '').split(' ')[0])
     )
     try:
         desc = (str(message.text.replace('\n',' ')
@@ -488,8 +485,8 @@ def cmd_magic(message):
     except Exception:
         desc = code
     if check_type(code) is not None:
-        if check_type(code) is not correios and user not in PATREON: 
-            bot.reply_to(message, msgs.premium, parse_mode='HTML') 
+        if check_type(code) is not correios and user not in PATREON:
+            bot.reply_to(message, msgs.premium, parse_mode='HTML')
             log_text(message.chat.id, message.message_id, 'Pacote chines. Usuario nao assinante.')
             return 0
         exists = check_package(code)
@@ -497,10 +494,10 @@ def cmd_magic(message):
             exists = check_user(code, user)
             if not exists:
                 add_user(code, user)
-            statts = status_package(code)
+            stats = status_package(code)
             message = ''
             system = check_system_correios()
-            for stat in statts:
+            for stat in stats:
                 message = message + '\n\n' + stat
             if not system:
                 message = (message + msgs.error_sys)

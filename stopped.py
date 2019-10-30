@@ -1,14 +1,8 @@
-from telebot import types
-
 import configparser
-import logging
-import logging.handlers
-import requests
-import sys
+
 import telebot
 
 config = configparser.ConfigParser()
-config.sections()
 config.read('bot.conf')
 
 TOKEN = config['RASTREIOBOT']['TOKEN']

@@ -1,18 +1,18 @@
+import configparser
+import logging.handlers
+import sys
 from datetime import datetime
-from pymongo import MongoClient
 from time import time, sleep
 from misc import check_update
 
-import configparser
-import logging
-import logging.handlers
 import requests
 import sentry_sdk
-import sys
 import telebot
+from pymongo import MongoClient
+
+from check_update import check_update
 
 config = configparser.ConfigParser()
-config.sections()
 config.read('bot.conf')
 
 TOKEN = config['RASTREIOBOT']['TOKEN']
@@ -55,7 +55,6 @@ def check_system():
     except:
         logger_info.info(str(datetime.now()) + '\tCorreios indisponível')
         return False
-    #print(str(response))
     if '200' in str(response):
         return True
     else:
@@ -67,8 +66,6 @@ if __name__ == '__main__':
     logger_info = logging.getLogger('InfoLogger')
     handler_info = logging.FileHandler(LOG_ALERTS_FILE)
     logger_info.setLevel(logging.DEBUG)
-#    handler_info = logging.handlers.TimedRotatingFileHandler(LOG_ALERTS_FILE,
-#        when='midnight', interval=1, backupCount=5, encoding='utf-8')
     logger_info.addHandler(handler_info)
 
     sentry_url = config['SENTRY']['url']
@@ -137,7 +134,6 @@ if __name__ == '__main__':
                             message = (str(u'\U0001F4EE') + '<b>' + code + '</b> (' + elem['code_br']  +  ')\n')
                         except:
                             message = (str(u'\U0001F4EE') + '<b>' + code + '</b>\n')
-                        #if elem[user] != code:
                         try:
                             if code not in elem[user]:
                                 message = message + elem[user] + '\n'
@@ -146,7 +142,7 @@ if __name__ == '__main__':
                         for k in reversed(range(1,len_diff+1)):
                             message = (
                                 message + '\n'
-                                +  cursor2['stat'][len(cursor2['stat'])-k] + '\n')
+                                + cursor2['stat'][len(cursor2['stat'])-k] + '\n')
                         if 'objeto entregue' in message.lower() and user not in PATREON:
                             message = (message + '\n'
                             + str(u'\U0001F4B3')
