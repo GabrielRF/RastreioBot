@@ -147,11 +147,8 @@ if __name__ == '__main__':
                             message = (
                                 message + '\n'
                                 +  cursor2['stat'][len(cursor2['stat'])-k] + '\n')
-                        if 'objeto entregue' in message.lower():
+                        if 'objeto entregue' in message.lower() and user not in PATREON:
                             message = (message + '\n'
-                            #+  str(u'\U00002B50')
-                            #+ '<a href="https://telegram.me/storebot?start=rastreiobot">'
-                            #+ 'Avalie o bot</a> - '
                             + str(u'\U0001F4B3')
                             + ' <a href="http://grf.xyz/assine">Assine o bot</a> - '
                             + str(u'\U0001F4B5')
@@ -163,15 +160,7 @@ if __name__ == '__main__':
                     except Exception as e:
                         logger_info.info(str(datetime.now())
                              + '\tEXCEPT: ' + str(user) + ' ' + code + ' ' + str(e))
-                        # bot.send_message(str(user), message, parse_mode='HTML',
-                        #     disable_web_page_preview=True)
-                        # sent = sent + 1
                         continue
-                    #else:
-                    #    logger_info.info(str(datetime.now())
-                    #         + '\tELSE:\t' + str(user) + ' ' + code)
-                    #    continue
-                    #sleep(INTERVAL)
         except Exception as e:
             logger_info.info(str(datetime.now()) + '\t' + multiple + '\tEXCEPT: ' + str(e)
                 + '\t' + str(code) + ' \t' + str(user))
