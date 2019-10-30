@@ -6,8 +6,6 @@ config = configparser.ConfigParser()
 config.read('bot.conf')
 
 TOKEN = config['RASTREIOBOT']['TOKEN']
-int_check = int(config['RASTREIOBOT']['int_check'])
-LOG_INFO_FILE = config['RASTREIOBOT']['text_log']
 
 bot = telebot.TeleBot(TOKEN)
 

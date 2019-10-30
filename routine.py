@@ -3,6 +3,7 @@ import logging.handlers
 import sys
 from datetime import datetime
 from time import time, sleep
+from misc import check_update
 
 import requests
 import sentry_sdk
@@ -121,7 +122,7 @@ if __name__ == '__main__':
                 len_new_state = len(cursor2['stat'])
             except:
                 len_new_state = 1
-            if len_old_state < len_new_state:
+            if len_old_state != len_new_state:
                 len_diff = len_new_state - len_old_state
                 for user in elem['users']:
                     logger_info.info(str(datetime.now()) + ' ' + multiple + ' '
@@ -129,7 +130,10 @@ if __name__ == '__main__':
                         + str(timediff) + '\t' + str(len_old_state) + '\t'
                         + str(len_new_state) + '\t' + str(len_diff))
                     try:
-                        message = (str(u'\U0001F4EE') + '<b>' + code + '</b>\n')
+                        try:
+                            message = (str(u'\U0001F4EE') + '<b>' + code + '</b> (' + elem['code_br']  +  ')\n')
+                        except:
+                            message = (str(u'\U0001F4EE') + '<b>' + code + '</b>\n')
                         try:
                             if code not in elem[user]:
                                 message = message + elem[user] + '\n'
@@ -139,15 +143,16 @@ if __name__ == '__main__':
                             message = (
                                 message + '\n'
                                 + cursor2['stat'][len(cursor2['stat'])-k] + '\n')
-                        if 'objeto entregue' in message.lower():
+                        if 'objeto entregue' in message.lower() and user not in PATREON:
                             message = (message + '\n'
                             + str(u'\U0001F4B3')
                             + ' <a href="http://grf.xyz/assine">Assine o bot</a> - '
                             + str(u'\U0001F4B5')
                             + ' <a href="http://grf.xyz/picpay">Colabore</a>')
-                        bot.send_message(str(user), message, parse_mode='HTML',
-                            disable_web_page_preview=True)
-                        sent = sent + 1
+                        if len_old_state < len_new_state:
+                            bot.send_message(str(user), message, parse_mode='HTML',
+                                disable_web_page_preview=True)
+                            sent = sent + 1
                     except Exception as e:
                         logger_info.info(str(datetime.now())
                              + '\tEXCEPT: ' + str(user) + ' ' + code + ' ' + str(e))

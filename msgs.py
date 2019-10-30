@@ -59,10 +59,12 @@ howto = (
 error_bot = 'Ops!\nHouve um problema com o bot.\nTente novamente mais tarde.'
 
 premium = (
-    'Usuário não autorizado a rastrear pacotes com este formato.\n'
-    'Para ter acesso a esta funcionalidade é necessário assinar o bot.\n'
-    '<a href="https://grf.xyz/assine">Clique aqui para assinar</a>.\n\n'
-    'Caso já tenha assinado, por favor, fale com @GabrielRF'
+    'O @RastreioBot é grátis e a idéia é que permaneça assim.'
+    '\nPorém, para rastrear pacotes internacionais é necessário pagamento.'
+    '\nPor isso, para rastrear este pacote é necessário fazer uma assinatura do bot.'
+    '\nA assinatura custa R$ 1 por mês e pode ser cancelada a qualquer momento.'
+    '\n<a href="https://grf.xyz/assine">Clique aqui para assinar</a>.'
+    '\n\nCaso já tenha assinado, por favor, fale com @GabrielRF'
 )
 
 patreon = (

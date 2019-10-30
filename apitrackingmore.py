@@ -1,5 +1,6 @@
 import configparser
 import sys
+import apicorreios as correios
 from datetime import datetime
 
 import trackingmore
@@ -26,6 +27,13 @@ def set_carrier_db(code, carrier):
         }
     })
 
+def set_correios_code(code, code_new):
+    db.rastreiobot.update_one({
+        "code": code.upper()}, {
+        "$set": {
+            "code_br": code_new
+        }
+    })
 
 def get_or_create_tracking_item(carrier, code):
 
@@ -41,6 +49,11 @@ def get_or_create_tracking_item(carrier, code):
 
     return tracking_data
 
+def get_new_code(code):
+    cursor = db.rastreiobot.find_one({
+        "code": code
+    })
+    return cursor['code_br']
 
 def get_carriers(code):
     package = db.rastreiobot.find_one({
@@ -66,6 +79,12 @@ def get(code, retries=0):
     response_status = status.NOT_FOUND
     for carrier in carriers:
         try:
+            if carrier['code'] == 'correios':
+                codigo_novo = get_new_code(code)
+                return correios.get(codigo_novo, 3)
+        except TypeError:
+            pass
+        try:
             tracking_data = get_or_create_tracking_item(carrier['code'], code)
         except trackingmore.trackingmore.TrackingMoreAPIException as e:
             if e.err_code == 4019 or e.err_code == 4021:
@@ -90,11 +109,12 @@ def formato_obj(json, carrier, code, retries):
     try:
         tabela = json['origin_info']['trackinfo']
     except KeyError:
-        if retries < 0:
+        if retries > 0:
             return get(sys.argv[1], retries-1)
         else:
             return status.NOT_FOUND_TM
     for evento in reversed(tabela):
+        codigo_novo = None
         try:
             data = datetime.strptime(evento['Date'], '%Y-%m-%d %H:%M:%S').strftime("%d/%m/%Y %H:%M")
         except ValueError:
@@ -102,16 +122,20 @@ def formato_obj(json, carrier, code, retries):
         situacao = evento['StatusDescription']
         observacao = evento['checkpoint_status']
         try:
-            observacao = 'Código novo: <code>' + geartrack.getcorreioscode(carrier, code) + '</code>'
+            codigo_novo = geartrack.getcorreioscode(carrier['code'], code)
+            if codigo_novo:
+                carrier = {'code': 'correios', 'name': 'Correios'}
+                set_carrier_db(code, carrier)
+                set_correios_code(code, codigo_novo)
+                return correios.get(codigo_novo, 3)
         except:
             pass
-        mensagem = ('Data: {}' +
-            '\nSituacao: <b>{}</b>' +
+        mensagem = ('Data: {}'
+            '\nSituacao: <b>{}</b>'
             '\nObservação: {}'
         ).format(data, situacao, observacao)
         stats.append(mensagem)
     return stats
-
 
 if __name__ == '__main__':
     print(get(sys.argv[1], retries=3))
