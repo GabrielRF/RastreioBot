@@ -6,3 +6,4 @@ bot.log*
 *.pyc
 *.lock
 .idea
+rastreiobotenv/*

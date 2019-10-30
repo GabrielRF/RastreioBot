@@ -1,4 +1,4 @@
-# [RastreioBot](http://telegram.me/RastreioBot) 
+# [RastreioBot](http://telegram.me/RastreioBot)
 
 [![Build Status](https://travis-ci.org/GabrielRF/RastreioBot.svg?branch=master)](https://travis-ci.org/GabrielRF/RastreioBot)
 [![Donate](https://img.shields.io/static/v1?label=Assine&message=PicPay&color=green)](https://grf.xyz/assine)
@@ -20,6 +20,20 @@ This is a [Telegram](http://telegram.org) Bot that tracks packages from the [Bra
 [Try it!](http://telegram.me/RastreioBot)
 
 ## Setup
+
+First, create a virtual environment for your project (so it don't mixup with your other libraries versions):
+
+```
+python3 -m venv rastreiobotenv
+```
+
+If you don't have it installed, check [here](https://docs.python.org/3/library/venv.html)
+
+and activate your environment:
+
+```
+. rastreiobotenv/bin/activate
+```
 
 After cloning/downloading the repository, install required packages:
 
@@ -61,7 +75,7 @@ To receive messages:
 python rastreiobot.py
 ```
 
-To check for updates, I recommend a cronjob that runs every 15 min. 
+To check for updates, I recommend a cronjob that runs every 15 min.
 
 Type `crontab -e` and add to the end of the file:
 
@@ -71,6 +85,14 @@ Type `crontab -e` and add to the end of the file:
 */15 * * * * cd /usr/local/bin/RastreioBot; /usr/bin/python3 /usr/local/bin/RastreioBot/routine.py 2
 */15 * * * * cd /usr/local/bin/RastreioBot; /usr/bin/python3 /usr/local/bin/RastreioBot/routine.py 3
 ...
+```
+
+## Running tests
+
+The tests are running on `pytest`, so, in order to run them, just do
+
+```
+pytest
 ```
 
 ## Contribute

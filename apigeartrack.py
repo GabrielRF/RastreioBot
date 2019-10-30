@@ -1,12 +1,10 @@
 import configparser
 import json
-import requests
-import status
-import trackingmore
 import sys
 
+import requests
+
 config = configparser.ConfigParser()
-config.sections()
 config.read('bot.conf')
 
 def getcorreioscode(carrier, code):
@@ -16,7 +14,7 @@ def getcorreioscode(carrier, code):
     a = json.loads(conteudo)
     if a['destinyId']:
         return(a['destinyId'])
-    
+
 
 def getstatus(code, retries):
     carrier = 'cainiao'
@@ -25,18 +23,15 @@ def getstatus(code, retries):
     r = requests.get(url)
     conteudo = str(r.content.decode('UTF-8'))
     a = json.loads(conteudo)
-    #print(a)
     print(formato_obj(a))
 
 def formato_obj(json):
     stats = []
-    stats.append(str(u'\U0001F4EE') + ' <b>' + json['id'] + '</b>') 
+    stats.append(str(u'\U0001F4EE') + ' <b>' + json['id'] + '</b>')
     tabela = json['states']
-    mensagem = ''
     for evento in reversed(tabela):
         data = evento['date']
         situacao = evento['state']
-        observacao = ''
         mensagem = ('Data: {}' +
             '\nSituacao: <b>{}</b>'
         ).format(data, situacao)
@@ -44,7 +39,7 @@ def formato_obj(json):
     if json['destinyId']:
         stats.append('Pacote recebido nos Correios.\nCódigo: /' + json['destinyId'])
     return stats
-        
+
 
 if __name__ == '__main__':
     getstatus(sys.argv[1], 0)

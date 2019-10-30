@@ -1,10 +1,11 @@
 import configparser
-import requests
-import status
 import sys
 
+import requests
+
+import status
+
 config = configparser.ConfigParser()
-config.sections()
 config.read('bot.conf')
 
 usuario = config['CORREIOS']['usuario']
@@ -47,6 +48,7 @@ def get(code, retries):
     elif 'ERRO' in str(response):
         return status.NOT_FOUND
     return response
+
 
 if __name__ == '__main__':
     print(get(sys.argv[1], 0))
