@@ -12,7 +12,6 @@ from telebot import types
 import apicorreios as correios
 import msgs
 import status
-import utils
 from misc import check_type, send_clean_msg, check_package, check_update
 
 import apicorreios as correios
