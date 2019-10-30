@@ -29,7 +29,7 @@ def get_logger(logger_name):
         LOG_INFO_FILE, when='midnight', interval=1, backupCount=10, encoding='utf-8'
     )
     alerts_handler.setLevel(logging.WARNING)
-    error_handler.setLevel(logging.ERRO)
+    error_handler.setLevel(logging.ERROR)
     info_handler.setLevel(logging.INFO)
 
     # create formatters and add them to handlers
@@ -43,4 +43,3 @@ def get_logger(logger_name):
     logger.addHandler(error_handler)
 
     return logger
-

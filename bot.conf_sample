@@ -2,12 +2,12 @@
 TOKEN =
 int_check = 4200
 int_del = 2592000
-text_log = /var/log/RastreioBot/text.log
-alerts_log = /var/log/RastreioBot/alerts.log
-error_log = /var/log/RastreioBot/error.log
-status_log = /var/log/RastreioBot/status.log
-routine_log = /var/log/RastreioBot/routine.log
-delete_log = /var/log/RastreioBot/delete.log
+text_log = logs/text.log
+alerts_log = logs/alerts.log
+error_log = logs/error.log
+status_log = logs/status.log
+routine_log = logs/routine.log
+delete_log = logs/delete.log
 patreon =
 banned =
 
