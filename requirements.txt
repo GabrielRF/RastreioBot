@@ -4,3 +4,4 @@ pytest==5.*
 requests==2.*
 sentry-sdk==0.*
 trackingmore==0.*
+coverage==4.*
