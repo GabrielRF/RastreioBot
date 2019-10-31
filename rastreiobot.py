@@ -38,13 +38,26 @@ client = MongoClient()
 db = client.rastreiobot
 
 markup_btn = types.ReplyKeyboardMarkup(resize_keyboard=True)
-markup_btn.row('/Pacotes','/Resumo')
-markup_btn.row('/Info','/Concluidos')
+markup_btn.row('/Pacotes', '/Resumo')
+markup_btn.row('/Info', '/Concluidos')
 markup_clean = types.ReplyKeyboardRemove(selective=False)
 
 
+<<<<<<< HEAD
+# Check if package exists in DB
+def check_package(code):
+    print("check_package")
+    cursor = db.rastreiobot.find_one({"code": code.upper()})
+    if cursor:
+        return True
+    return False
+
+
+=======
+>>>>>>> upstream/master
 # Count packages
 def count_packages():
+    print("count_packages")
     cursor = db.rastreiobot.find()
     qtd = 0
     wait = 0
@@ -74,8 +87,18 @@ def count_packages():
     return qtd, wait, despacho, sem_imposto, importado, tributado, trackingmore, extraviado
 
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+# List packages of a user
+=======
 ## List packages of a user
+>>>>>>> upstream/master
+=======
+## List packages of a user
+>>>>>>> 55dad8b66c954e7024a4b83ac857bf507321b12e
 def list_packages(chatid, done, status):
+    print("list_packages")
     aux = ''
     try:
         cursor = db.rastreiobot.find(
@@ -144,6 +167,7 @@ def status_package(code):
 
 # Check if user exists on a specific tracking code
 def check_user(code, user):
+    print("check_user")
     cursor = db.rastreiobot.find_one({
         "code": code.upper(),
         "users": user
@@ -181,6 +205,7 @@ def add_package(code, user):
 
 # Add a user to a package that exists on DB
 def add_user(code, user):
+    print("add_user")
     db.rastreiobot.update_one({
         "code": code.upper()}, {
         "$push": {
@@ -203,6 +228,7 @@ def del_user(chatid, code):
 
 # Set a description to a package
 def set_desc(code, user, desc):
+    print("set_desc")
     if not desc:
         desc = code
     db.rastreiobot.update_one({
@@ -211,7 +237,12 @@ def set_desc(code, user, desc):
     })
 
 
+<<<<<<< HEAD
+def check_system():
+    print("check_system")
+=======
 def check_system_correios():
+>>>>>>> upstream/master
     try:
         url = ('http://webservice.correios.com.br/')
         response = requests.get(url, timeout=3)
@@ -253,6 +284,7 @@ def cmd_repetir(message):
 
 @bot.message_handler(commands=['Repetir', 'Historico'])
 def cmd_repetir(message):
+    print("cmd_repetir")
     bot.send_chat_action(message.chat.id, 'typing')
     if int(message.chat.id) > 0:
         send_clean_msg(bot, message.chat.id, msgs.user)
@@ -262,6 +294,7 @@ def cmd_repetir(message):
 
 @bot.message_handler(commands=['pacotes', 'Pacotes'])
 def cmd_pacotes(message):
+    print("cmd_pacotes")
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
@@ -291,6 +324,7 @@ def cmd_pacotes(message):
 
 @bot.message_handler(commands=['resumo', 'Resumo'])
 def cmd_resumo(message):
+    print("cmd_resumo")
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
@@ -311,6 +345,7 @@ def cmd_resumo(message):
 
 @bot.message_handler(commands=['concluidos', 'Concluidos'])
 def cmd_concluidos(message):
+    print("concluidos")
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
@@ -332,11 +367,21 @@ def cmd_concluidos(message):
 
 @bot.message_handler(commands=['status', 'Status'])
 def cmd_status(message):
+<<<<<<< HEAD
+<<<<<<< HEAD
+    print("status")
+=======
+=======
+>>>>>>> 55dad8b66c954e7024a4b83ac857bf507321b12e
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
          bot.send_message(message.chat.id, msgs.banned)
          return 0
+<<<<<<< HEAD
+>>>>>>> upstream/master
+=======
+>>>>>>> 55dad8b66c954e7024a4b83ac857bf507321b12e
     log_text(
         message.chat.id,
         message.message_id,
@@ -412,6 +457,7 @@ def cmd_statusall(message):
 
 @bot.message_handler(commands=['info', 'Info', 'help', 'Help'])
 def cmd_help(message):
+    print("help")
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
@@ -435,6 +481,7 @@ def cmd_help(message):
 
 @bot.message_handler(commands=['del', 'Del', 'remover', 'apagar'])
 def cmd_remove(message):
+    print("remove")
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
@@ -458,6 +505,7 @@ def cmd_remove(message):
 
 @bot.message_handler(content_types=['document', 'audio', 'photo'])
 def cmd_format(message):
+    print("format")
     bot.reply_to(message, 'Formato inválido')
     # bot.reply_to(message, ('<a href="tg://user?id={}">{}</a>').format(message.from_user.id, message.from_user.first_name), parse_mode='HTML')
     send_clean_msg(bot, message.from_user.id, msgs.invalid.format(message.from_user.id))
@@ -468,6 +516,7 @@ def cmd_format(message):
 # entry point for adding a tracking number
 @bot.message_handler(func=lambda m: True)
 def cmd_magic(message):
+    print("magic")
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
@@ -579,11 +628,22 @@ def cmd_magic(message):
         else:
             send_clean_msg(bot, message.chat.id, msgs.group)
     else:
+<<<<<<< HEAD
+<<<<<<< HEAD
+        # if int(user) > 0: // aqui falta um else...
+        bot.reply_to(message, msgs.typo)
+=======
+=======
+>>>>>>> 55dad8b66c954e7024a4b83ac857bf507321b12e
         if int(user) > 0:
             bot.reply_to(message, msgs.typo)
         if int(user) > 0 and len(message.text) > 25:
             send_clean_msg(bot, message.from_user.id, msgs.invalid.format(message.from_user.id))
 
+<<<<<<< HEAD
+>>>>>>> upstream/master
+=======
+>>>>>>> 55dad8b66c954e7024a4b83ac857bf507321b12e
 
 sentry_url = config['SENTRY']['url']
 if sentry_url:
