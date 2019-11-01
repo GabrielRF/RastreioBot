@@ -499,10 +499,12 @@ def cmd_magic(message):
 
     try:
         desc = message_text.split('Data:')[0].replace('  ','')
+        if desc == '':
+            desc = code
     except Exception:
         desc = code
 
-    if code:
+    if code_type:
         if code_type != correios and user not in PATREON:
             bot.reply_to(message, msgs.premium, parse_mode='HTML')
             log_text(message.chat.id, message.message_id, 'Pacote chines. Usuario nao assinante.')
@@ -569,7 +571,7 @@ def cmd_magic(message):
                     )
                 else:
                     send_clean_msg(bot, user, status_package(code)[last])
-    elif code == 'START':
+    elif message.text.upper() == '/START':
         if int(message.chat.id) > 0:
             send_clean_msg(bot, message.chat.id, msgs.user)
             # bot.send_document(message.chat.id, 'CgADAQADhgAD45bBRvd9d-3ACM-cAg')

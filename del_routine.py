@@ -15,8 +15,8 @@ LOG_DEL_FILE = config['RASTREIOBOT']['delete_log']
 
 logger_info = logging.getLogger('InfoLogger')
 logger_info.setLevel(logging.DEBUG)
-handler_info = logging.handlers.RotatingFileHandler(LOG_DEL_FILE,
-    maxBytes=10240, backupCount=5, encoding='utf-8')
+handler_info = logging.handlers.TimedRotatingFileHandler(LOG_DEL_FILE,
+    when='midnight', interval=1, backupCount=5, encoding='utf-8')
 logger_info.addHandler(handler_info)
 
 bot = telebot.TeleBot(TOKEN)
