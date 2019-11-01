@@ -569,7 +569,7 @@ def cmd_magic(message):
                     )
                 else:
                     send_clean_msg(bot, user, status_package(code)[last])
-    elif code == 'START':
+    elif message_text.startswith("/start")::
         if int(message.chat.id) > 0:
             send_clean_msg(bot, message.chat.id, msgs.user)
             # bot.send_document(message.chat.id, 'CgADAQADhgAD45bBRvd9d-3ACM-cAg')
