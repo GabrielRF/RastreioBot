@@ -110,7 +110,7 @@ def formato_obj(json, carrier, code, retries):
         tabela = json['origin_info']['trackinfo']
     except KeyError:
         if retries > 0:
-            return get(sys.argv[1], retries-1)
+            return get(code, retries-1)
         else:
             return status.NOT_FOUND_TM
     for evento in reversed(tabela):
