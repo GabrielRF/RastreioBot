@@ -156,6 +156,6 @@ if __name__ == '__main__':
                              + '\tEXCEPT: ' + str(user) + ' ' + code + ' ' + str(e))
                         continue
         except Exception as e:
-            logger_info.info(str(datetime.now()) + '\t' + multiple + '\tEXCEPT: ' + str(e)
+            logger_info.info(str(datetime.now()) + ' ' + multiple + ' EXCEPT: ' + str(e)
                 + '\t' + str(code) + ' \t' + str(user))
             sys.exit()
