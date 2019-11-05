@@ -42,4 +42,6 @@ def get_logger(logger_name):
     logger.addHandler(alerts_handler)
     logger.addHandler(error_handler)
 
+    logger.setLevel(logging.INFO)
+
     return logger

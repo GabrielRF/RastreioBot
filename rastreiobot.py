@@ -10,15 +10,10 @@ from pymongo import ASCENDING, MongoClient
 from telebot import types
 
 import apicorreios as correios
+import logger
 import msgs
 import status
 from misc import check_type, send_clean_msg, check_package, check_update
-
-import apicorreios as correios
-import logger
-import status
-from check_update import check_update
-from misc import check_type, send_clean_msg, check_package
 
 
 config = configparser.ConfigParser()
