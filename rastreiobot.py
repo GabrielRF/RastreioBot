@@ -587,8 +587,8 @@ def cmd_magic(message):
             send_clean_msg(bot, message.from_user.id, msgs.invalid.format(message.from_user.id))
 
 
-sentry_url = config['SENTRY']['url']
-if sentry_url:
-    sentry_sdk.init(sentry_url)
+# sentry_url = config['SENTRY']['url']
+# if sentry_url:
+#     sentry_sdk.init(sentry_url)
 
 bot.polling()
