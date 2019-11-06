@@ -170,9 +170,10 @@ async def async_get(code, retries):
         # response = requests.post(
         #     url, data=request_xml, headers=headers, timeout=3
         # ).text
-    except Exception:
+    except Exception as e:
         if retries > 0:
-            return get(code, retries - 1)
+            print("exception", e)
+            return await async_get(code, retries - 1)
         return status.OFFLINE
     if len(str(response)) < 10:
         return status.OFFLINE
