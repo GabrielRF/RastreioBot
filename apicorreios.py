@@ -1,11 +1,12 @@
-from datetime import date
-
+import asyncio
+import traceback
 import configparser
 import json
 import sys
-import requests
+from datetime import date
 
 import aiohttp
+import requests
 
 import status
 
@@ -15,6 +16,8 @@ config.read('bot.conf')
 usuario = config['CORREIOS']['usuario']
 senha = config['CORREIOS']['senha']
 token = config['CORREIOS']['token']
+
+semaphore = asyncio.Semaphore(10)
 
 def format_obj(code, response):
     stats = []
@@ -165,21 +168,22 @@ async def async_get(code, retries):
             'http://webservice.correios.com.br/service/rest/rastro/rastroMobile'
         )
         async with aiohttp.ClientSession() as session:
-            async with session.post(url, data=request_xml, headers=headers, timeout=3) as response:
+            async with semaphore, session.post(url, data=request_xml, headers=headers, timeout=10) as response:
                 response = await response.text()
-        # response = requests.post(
-        #     url, data=request_xml, headers=headers, timeout=3
-        # ).text
     except Exception as e:
         if retries > 0:
-            print("exception", e)
+            await asyncio.sleep(2)
             return await async_get(code, retries - 1)
         return status.OFFLINE
     if len(str(response)) < 10:
         return status.OFFLINE
     elif 'ERRO' in str(response):
         return status.NOT_FOUND
-    return format_obj(code, response)
+    try:
+        return format_obj(code, response)
+    except json.decoder.JSONDecodeError as e:
+        print("Error", e, response)
+        return 3
 
 
 if __name__ == '__main__':
