@@ -4,11 +4,9 @@ import sys
 from pymongo import MongoClient
 from telebot import types
 
+import db
 import apicorreios as correios
 import apitrackingmore as trackingmore
-
-client = MongoClient()
-db = client.rastreiobot
 
 def check_type(code):
     s10 = (r"^[A-Za-z]{2}\d{9}[A-Za-z]{2}$")
@@ -31,7 +29,7 @@ def send_clean_msg(bot, id, txt):
 
 
 def check_package(code):
-    cursor = db.rastreiobot.find_one({"code": code.upper()})
+    cursor = db.search_package(code)
     if cursor:
         return True
     return False
