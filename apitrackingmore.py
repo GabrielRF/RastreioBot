@@ -36,7 +36,7 @@ def set_correios_code(code, code_new):
     })
 
 def get_or_create_tracking_item(carrier, code):
-
+    print(carrier)
     try:
         tracking_data = trackingmore.get_tracking_item(carrier, code)
     except trackingmore.trackingmore.TrackingMoreAPIException as e:
@@ -56,27 +56,32 @@ def get_new_code(code):
     return cursor['code_br']
 
 def get_carriers(code):
-    package = db.rastreiobot.find_one({
+    cursor = db.rastreiobot.find_one({
         "code": code
     })
-
-    if package:
-        carriers = package['carrier']
-        return carriers if isinstance(carriers, list) else [carriers]
-
-    carriers = trackingmore.detect_carrier_from_code(code)
-    carriers.sort(key=lambda carrier: carrier['code'])
-    set_carrier_db(code, carriers)
+    try:
+        if type(cursor['carrier']) is dict:
+            return [cursor['carrier']]
+        return cursor['carrier']
+    except:
+        try:
+            carriers = trackingmore.detect_carrier_from_code(code)
+        except Exception as e:
+            print(e)
+            raise IndexError
+        carriers.sort(key=lambda carrier: carrier['code'])
+        set_carrier_db(code, carriers)
     return carriers
-
 
 def get(code, retries=0):
     try:
         carriers = get_carriers(code)
+    except IndexError:
+        return status.TYPO
     except trackingmore.trackingmore.TrackingMoreAPIException as e:
         return status.NOT_FOUND_TM
 
-    response_status = status.NOT_FOUND
+    response_status = status.NOT_FOUND_TM
     for carrier in carriers:
         try:
             if carrier['code'] == 'correios':
@@ -96,7 +101,15 @@ def get(code, retries=0):
                 response_status = status.OFFLINE
             elif tracking_data['status'] == 'notfound':
                 response_status = status.NOT_FOUND_TM
-            elif len(tracking_data) >= 10:
+                print(tracking_data)
+            #elif len(tracking_data) >= 10:
+            elif tracking_data['status'] == 'transit':
+                set_carrier_db(code, carrier)
+                return formato_obj(tracking_data, carrier, code, retries)
+            elif tracking_data['status'] == 'expired':
+                set_carrier_db(code, carrier)
+                return formato_obj(tracking_data, carrier, code, retries)
+            elif tracking_data['status'] == 'delivered':
                 set_carrier_db(code, carrier)
                 return formato_obj(tracking_data, carrier, code, retries)
 

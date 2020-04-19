@@ -17,6 +17,7 @@ TOKEN = config['RASTREIOBOT']['TOKEN']
 int_check = int(config['RASTREIOBOT']['int_check'])
 LOG_ALERTS_FILE = config['RASTREIOBOT']['alerts_log']
 PATREON = config['RASTREIOBOT']['patreon']
+BANNED = config['RASTREIOBOT']['banned']
 INTERVAL = 0.03
 
 bot = telebot.TeleBot(TOKEN)
@@ -60,7 +61,7 @@ def check_system():
         return False
 
 if __name__ == '__main__':
-    sleep(60*int(multiple))
+    #sleep(60*int(multiple))
     logger_info = logging.getLogger('InfoLogger')
     handler_info = logging.FileHandler(LOG_ALERTS_FILE)
     logger_info.setLevel(logging.DEBUG)
@@ -83,9 +84,9 @@ if __name__ == '__main__':
                 continue
             now = time()
             timediff = int(now) - int(start)
-            if timediff > 800:
-                logger_info.info(str(datetime.now()) + '\t' + multiple + '\tRoutine too long')
-                break
+            #if timediff > 800:
+            #    logger_info.info(str(datetime.now()) + '\t' + multiple + '\tRoutine too long')
+            #    break
             code = elem['code']
             time_dif = int(time() - float(elem['time']))
             for user in elem['users']:
@@ -109,7 +110,11 @@ if __name__ == '__main__':
                 continue
             elif 'delivered' in old_state.lower():
                 continue
-            stat = get_package(code)
+            try:
+                stat = get_package(code)
+            except:
+                sleep(3000)
+                stat = get_package(code)
             if stat == 0:
                 break
             cursor2 = db.rastreiobot.find_one(
@@ -148,8 +153,9 @@ if __name__ == '__main__':
                             + str(u'\U0001F4B5')
                             + ' <a href="http://grf.xyz/picpay">Colabore</a>')
                         if len_old_state < len_new_state:
-                            bot.send_message(str(user), message, parse_mode='HTML',
-                                disable_web_page_preview=True)
+                            if user not in BANNED:
+                                bot.send_message(str(user), message, parse_mode='HTML',
+                                    disable_web_page_preview=True)
                             sent = sent + 1
                     except Exception as e:
                         logger_info.info(str(datetime.now())

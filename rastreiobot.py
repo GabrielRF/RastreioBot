@@ -167,7 +167,7 @@ def add_package(code, user):
             stats.append('Aguardando recebimento pela ECT.')
             stat = stats
         elif stat == status.NOT_FOUND_TM:
-            stats.append('Aguardando recebimento pela transportadora.')
+            stats.append('Verificando com as possíveis transportadoras. Por favor, aguarde.')
             stat = stats
         db.rastreiobot.insert_one({
                 "code": code.upper(),
