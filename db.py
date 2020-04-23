@@ -47,14 +47,19 @@ def add_user_to_package(code, user):
     })
 
 
+def update_package(code, **kwargs):
+    code = str(code).upper()
+    return db.rastreiobot.update_one({
+        "code": code,
+        "$set": kwargs,
+    })
+
+
 def remove_user_from_package(code, user_id):
     package = search_package(code)
     users = package["users"]
     users.remove(str(user_id))
-    return db.rastreiobot.update_one({
-        "code": code.upper(),
-        "$set": {"users": users},
-    })
+    return update_package(code, users=users)
 
 
 def set_package_description(code, user_id, description=None):
@@ -65,3 +70,7 @@ def set_package_description(code, user_id, description=None):
         "code": code,
         "$set": {user_id: description},
     })
+
+
+def delete_package(code):
+    return db.rastreiobot.delete_one({"code": code})
