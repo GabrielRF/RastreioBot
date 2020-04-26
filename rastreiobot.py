@@ -72,6 +72,17 @@ def count_packages():
     return qtd, wait, despacho, sem_imposto, importado, tributado, trackingmore, extraviado
 
 
+def package_status_can_change(package):
+    current_status = package['stat'][-1].lower()
+    return all([
+        'objeto entregue ao' not in current_status,
+        'objeto apreendido' not in current_status,
+        'objeto roubado' not in current_status,
+        'delivered' not in current_status,
+        'objeto devolvido ao remet' not in current_status,
+    ])
+
+
 ## List packages of a user
 def list_packages(chatid, done, status):
     aux = ''
@@ -85,12 +96,7 @@ def list_packages(chatid, done, status):
                 except Exception:
                     elem['stat'] = ['Sistema fora do ar']
                 if not done:
-                    if (
-                            'objeto entregue ao' not in status_elem(elem) and
-                            'objeto apreendido' not in status_elem(elem) and
-                            'objeto roubado' not in status_elem(elem) and
-                            'delivered' not in status_elem(elem) and
-                            'objeto devolvido ao remet' not in status_elem(elem)):
+                    if package_status_can_change(elem):
                         if status:
                             aux = aux + str(u'\U0001F4EE') + '<code>' + elem['code'] + '</code>'
                         else:
@@ -105,12 +111,7 @@ def list_packages(chatid, done, status):
                         aux = aux + '\n'
                         qtd = qtd + 1
                 else:
-                    if (
-                            'objeto entregue ao' in status_elem(elem) or
-                            'objeto apreendido' in status_elem(elem) or
-                            'delivered' in status_elem(elem) or
-                            'objeto roubado' in status_elem(elem) or
-                            'objeto devolvido ao remet' in status_elem(elem)):
+                    if package_status_can_change(elem):
                         aux = aux + elem['code']
                         try:
                             if elem[str(chatid)] != elem['code']:
