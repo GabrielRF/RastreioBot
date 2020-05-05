@@ -72,6 +72,17 @@ def count_packages():
     return qtd, wait, despacho, sem_imposto, importado, tributado, trackingmore, extraviado
 
 
+def package_status_can_change(package):
+    current_status = package['stat'][-1].lower()
+    return all([
+        'objeto entregue ao' not in current_status,
+        'objeto apreendido' not in current_status,
+        'objeto roubado' not in current_status,
+        'delivered' not in current_status,
+        'objeto devolvido ao remet' not in current_status,
+    ])
+
+
 ## List packages of a user
 def list_packages(chatid, done, status):
     aux = ''
@@ -85,12 +96,7 @@ def list_packages(chatid, done, status):
                 except Exception:
                     elem['stat'] = ['Sistema fora do ar']
                 if not done:
-                    if (
-                            'objeto entregue ao' not in status_elem(elem) and
-                            'objeto apreendido' not in status_elem(elem) and
-                            'objeto roubado' not in status_elem(elem) and
-                            'delivered' not in status_elem(elem) and
-                            'objeto devolvido ao remet' not in status_elem(elem)):
+                    if package_status_can_change(elem):
                         if status:
                             aux = aux + str(u'\U0001F4EE') + '<code>' + elem['code'] + '</code>'
                         else:
@@ -105,12 +111,7 @@ def list_packages(chatid, done, status):
                         aux = aux + '\n'
                         qtd = qtd + 1
                 else:
-                    if (
-                            'objeto entregue ao' in status_elem(elem) or
-                            'objeto apreendido' in status_elem(elem) or
-                            'delivered' in status_elem(elem) or
-                            'objeto roubado' in status_elem(elem) or
-                            'objeto devolvido ao remet' in status_elem(elem)):
+                    if package_status_can_change(elem):
                         aux = aux + elem['code']
                         try:
                             if elem[str(chatid)] != elem['code']:
@@ -217,10 +218,10 @@ def cmd_pacotes(message):
         message = '<b>Clique para ver o histórico:</b>\n' + message
         msg_split = message.split('\n')
         for elem in range(0, len(msg_split)-1, 10):
-             s = '\n'
-             bot.send_message(chatid,
-                 s.join(msg_split[elem:elem+10]), parse_mode='HTML',
-                 reply_markup=markup_clean, disable_web_page_preview=True)
+            s = '\n'
+            bot.send_message(chatid,
+                s.join(msg_split[elem:elem+10]), parse_mode='HTML',
+                reply_markup=markup_clean, disable_web_page_preview=True)
         if qtd > 7 and chatid > 0 and str(chatid) not in PATREON:
             bot.send_message(chatid,
                 str(u'\U0001F4B5') + '<b>Colabore!</b>'
@@ -233,9 +234,9 @@ def cmd_pacotes(message):
 def cmd_resumo(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
-         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned)
-         return 0
+        log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+        bot.send_message(message.chat.id, msgs.banned)
+        return 0
     chatid = message.chat.id
     message, qtd = list_packages(chatid, False, True)
     if qtd == 0:
@@ -253,9 +254,9 @@ def cmd_resumo(message):
 def cmd_concluidos(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
-         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned)
-         return 0
+        log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+        bot.send_message(message.chat.id, msgs.banned)
+        return 0
     chatid = message.chat.id
     message, qtd = list_packages(chatid, True, False)
     if len(message) < 1:
@@ -274,9 +275,9 @@ def cmd_concluidos(message):
 def cmd_status(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
-         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned)
-         return 0
+        log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+        bot.send_message(message.chat.id, msgs.banned)
+        return 0
     log_text(
         message.chat.id,
         message.message_id,
@@ -303,9 +304,9 @@ def cmd_status(message):
 def cmd_statusall(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
-         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned)
-         return 0
+        log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+        bot.send_message(message.chat.id, msgs.banned)
+        return 0
     log_text(
         message.chat.id,
         message.message_id,
@@ -354,9 +355,9 @@ def cmd_statusall(message):
 def cmd_help(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
-         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned)
-         return 0
+        log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+        bot.send_message(message.chat.id, msgs.banned)
+        return 0
     log_text(
         message.chat.id,
         message.message_id,
@@ -377,9 +378,9 @@ def cmd_help(message):
 def cmd_remove(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
-         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned)
-         return 0
+        log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+        bot.send_message(message.chat.id, msgs.banned)
+        return 0
     log_text(
         message.chat.id,
         message.message_id,
@@ -410,9 +411,9 @@ def cmd_format(message):
 def cmd_magic(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
-         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned)
-         return 0
+        log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+        bot.send_message(message.chat.id, msgs.banned)
+        return 0
     log_text(message.chat.id, message.message_id, message.text)
     user = str(message.chat.id)
     message_text = (
