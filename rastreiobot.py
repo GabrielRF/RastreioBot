@@ -1,6 +1,7 @@
 import configparser
 import logging.handlers
 import random
+import webhook
 from datetime import datetime, timedelta
 from time import time
 
@@ -432,6 +433,30 @@ def cmd_help(message):
         disable_web_page_preview=True, parse_mode='HTML'
     )
 
+@bot.message_handler(commands=['assinei', 'Assinei'])
+def cmd_sign(message):
+    bot.send_chat_action(message.chat.id, 'typing')
+    if str(message.from_user.id) in BANNED:
+         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+         bot.send_message(message.chat.id, msgs.banned)
+         return 0
+    log_text(
+        message.chat.id,
+        message.message_id,
+        message.text + '\t' + str(message.from_user.first_name)
+    )
+    try:
+        if not webhook.select_user('chatid', message.chat.id):
+           if webhook.select_user('picpayid', message.text.lower().split(' ')[1].lower().replace('@', '')):
+              webhook.updateuser('chatid', message.chat.id, 'picpayid', message.text.lower().split(' ')[1].replace('@', ''))
+              bot.send_message(message.chat.id, msgs.conf_ok, parse_mode='HTML')
+           else:
+              bot.send_message(message.chat.id, msgs.premium, parse_mode='HTML')
+        else:
+           bot.send_message(message.chat.id, msgs.signed, parse_mode='HTML')
+           #bot.send_message(message.chat.id, msgs.conf_ok, parse_mode='HTML')
+    except IndexError:
+        bot.send_message(message.chat.id, msgs.premium, parse_mode='HTML')
 
 @bot.message_handler(commands=['del', 'Del', 'remover', 'apagar'])
 def cmd_remove(message):
@@ -505,7 +530,11 @@ def cmd_magic(message):
         desc = code
 
     if code_type:
-        if code_type != correios and user not in PATREON:
+        try:
+            subscriber = webhook.select_user('chatid', user)[1]
+        except TypeError:
+            subscriber = ''
+        if code_type != correios and user not in PATREON and user not in subscriber:
             bot.reply_to(message, msgs.premium, parse_mode='HTML')
             log_text(message.chat.id, message.message_id, 'Pacote chines. Usuario nao assinante.')
             return 0
