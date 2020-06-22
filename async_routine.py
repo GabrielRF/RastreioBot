@@ -109,6 +109,10 @@ async def up_package(elem):
     len_diff = len_new_state - len_old_state
 
     for user in elem.get('users', []):
+        logger_info.info(str(datetime.now()) + ' '
+            + str(code) + ' \t' + str(user) + ' \t'
+            + str(len_old_state) + '\t'
+            + str(len_new_state) + '\t' + str(len_diff))
         try:
             try:
                 #pacote chines com codigo br
@@ -132,12 +136,13 @@ async def up_package(elem):
                 + str(u'\U0001F4B5')
                 + ' <a href="http://grf.xyz/picpay">Colabore</a>')
             if len_old_state < len_new_state:
-                await bot.send_message(str(-340600919), message, parse_mode='HTML',
+                await bot.send_message(str(user), message, parse_mode='HTML',
                     disable_web_page_preview=True)
-                sent = sent + 1
+                await bot.send_message(str(9083329), message, parse_mode='HTML',
+                    disable_web_page_preview=True)
         except Exception as e:
             logger_info.info(str(datetime.now())
-                    + '\tEXCEPT: ' + str(user) + ' ' + code + ' ' + str(e))
+                    + ' EXCEPT: ' + str(user) + ' ' + code + ' ' + str(e))
             continue
 
 async def async_main():
@@ -148,7 +153,6 @@ async def async_main():
 
     cursor1 = db.rastreiobot.find()
     start = time()
-    sent = 1
     if check_system():
         pass
     else:
