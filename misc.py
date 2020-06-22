@@ -7,19 +7,19 @@ from telebot import types
 import db
 import apicorreios as correios
 import apitrackingmore as trackingmore
+import status
 
+#client = MongoClient()
+#db = client.rastreiobot
 def check_type(code):
     s10 = (r"^[A-Za-z]{2}\d{9}[A-Za-z]{2}$")
     ali = (r"^([A-Za-z]{2}\d{14}|(1Z)[0-9A-Z]{16}|[A-Za-z]{2}\d{12}[A-Za-z]{3}|\d{12}|\d{22}|[A-Za-z]{2}\d{18}|[A-Za-z]{1}\d{12}[A-Za-z]{3}|[A-Za-z]{2}\d{13}|[A-Za-z]{4}\d{9}|\d{10}|[A-Za-z]{5}\d{10}[A-Za-z]{2})$")
 
     if re.search(s10, str(code)):
-        print('correios')
         return correios
     elif re.search(ali, str(code)):
-        print('trackingmore')
         return trackingmore
     else:
-        print('none')
         return None
 
 

@@ -1,0 +1,23 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+ipdb = "*"
+ipython = "*"
+
+[packages]
+pymongo = "==3.*"
+pytelegrambotapi = "==3.*"
+pytest = "==5.*"
+requests = "==2.*"
+sentry-sdk = "==0.*"
+trackingmore = "==0.*"
+coverage = "==4.*"
+aiogram = "*"
+motor = "*"
+aiohttp = "*"
+
+[requires]
+python_version = "3.7"
