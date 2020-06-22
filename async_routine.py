@@ -138,8 +138,6 @@ async def up_package(elem):
             if len_old_state < len_new_state:
                 await bot.send_message(str(user), message, parse_mode='HTML',
                     disable_web_page_preview=True)
-                await bot.send_message(str(9083329), message, parse_mode='HTML',
-                    disable_web_page_preview=True)
         except Exception as e:
             logger_info.info(str(datetime.now())
                     + ' EXCEPT: ' + str(user) + ' ' + code + ' ' + str(e))
