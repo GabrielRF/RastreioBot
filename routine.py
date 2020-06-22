@@ -5,6 +5,7 @@ from datetime import datetime
 from time import time, sleep
 from misc import check_update
 
+import db
 import requests
 import sentry_sdk
 import telebot
@@ -17,11 +18,10 @@ TOKEN = config['RASTREIOBOT']['TOKEN']
 int_check = int(config['RASTREIOBOT']['int_check'])
 LOG_ALERTS_FILE = config['RASTREIOBOT']['alerts_log']
 PATREON = config['RASTREIOBOT']['patreon']
+BANNED = config['RASTREIOBOT']['banned']
 INTERVAL = 0.03
 
 bot = telebot.TeleBot(TOKEN)
-client = MongoClient()
-db = client.rastreiobot
 
 multiple = sys.argv[1]
 print(multiple)
@@ -35,14 +35,7 @@ def get_package(code):
     elif stat == 3:
         stat = None
     else:
-        cursor = db.rastreiobot.update_one (
-        { "code" : code.upper() },
-        {
-            "$set": {
-                "stat" : stat,
-                "time" : str(time())
-            }
-        })
+        db.update_package(code, stat=stat, time=str(time()))
         stat = 10
     return stat
 
@@ -60,7 +53,7 @@ def check_system():
         return False
 
 if __name__ == '__main__':
-    sleep(60*int(multiple))
+    #sleep(60*int(multiple))
     logger_info = logging.getLogger('InfoLogger')
     handler_info = logging.FileHandler(LOG_ALERTS_FILE)
     logger_info.setLevel(logging.DEBUG)
@@ -70,7 +63,7 @@ if __name__ == '__main__':
     if sentry_url:
         sentry_sdk.init(sentry_url)
 
-    cursor1 = db.rastreiobot.find()
+    cursor1 = db.all_packages()
     start = time()
     sent = 1
     if check_system():
@@ -83,9 +76,9 @@ if __name__ == '__main__':
                 continue
             now = time()
             timediff = int(now) - int(start)
-            if timediff > 800:
-                logger_info.info(str(datetime.now()) + '\t' + multiple + '\tRoutine too long')
-                break
+            #if timediff > 800:
+            #    logger_info.info(str(datetime.now()) + '\t' + multiple + '\tRoutine too long')
+            #    break
             code = elem['code']
             time_dif = int(time() - float(elem['time']))
             for user in elem['users']:
@@ -109,13 +102,14 @@ if __name__ == '__main__':
                 continue
             elif 'delivered' in old_state.lower():
                 continue
-            stat = get_package(code)
+            try:
+                stat = get_package(code)
+            except:
+                sleep(3000)
+                stat = get_package(code)
             if stat == 0:
                 break
-            cursor2 = db.rastreiobot.find_one(
-            {
-                "code": code
-            })
+            cursor2 = db.search_package(code)
             try:
                 len_new_state = len(cursor2['stat'])
             except:
@@ -148,8 +142,9 @@ if __name__ == '__main__':
                             + str(u'\U0001F4B5')
                             + ' <a href="http://grf.xyz/picpay">Colabore</a>')
                         if len_old_state < len_new_state:
-                            bot.send_message(str(user), message, parse_mode='HTML',
-                                disable_web_page_preview=True)
+                            if user not in BANNED:
+                                bot.send_message(str(user), message, parse_mode='HTML',
+                                    disable_web_page_preview=True)
                             sent = sent + 1
                     except Exception as e:
                         logger_info.info(str(datetime.now())

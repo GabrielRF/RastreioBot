@@ -48,7 +48,7 @@ howto = (
     '\U0001F4D6<b>Bot open source:</b>\n'
     'https://github.com/GabrielRF/RastreioBot\n\n'
     '\U0001F680<b>Conheça meus outros projetos:</b>\n'
-    'http://grf.xyz/telegrambr\n\n'
+    'http://grf.xyz/\n\n'
     '\U0001F4B5 <b>Colabore!</b>\n'
     'PicPay: http://grf.xyz/picpay\n\n'
     '\U0001F4B3 <b>Envie R$ 1 por mês e ajude o bot!</b>\n'
@@ -61,10 +61,12 @@ error_bot = 'Ops!\nHouve um problema com o bot.\nTente novamente mais tarde.'
 premium = (
     'O @RastreioBot é grátis e a idéia é que permaneça assim.'
     '\nPorém, para rastrear pacotes internacionais é necessário pagamento.'
-    '\nPor isso, para rastrear este pacote é necessário fazer uma assinatura do bot.'
-    '\nA assinatura custa R$ 1 por mês e pode ser cancelada a qualquer momento.'
-    '\n<a href="https://grf.xyz/assine">Clique aqui para assinar</a>.'
-    '\n\nCaso já tenha assinado, por favor, fale com @GabrielRF'
+    '\nPor isso, para rastrear este pacote é necessário fazer a assinatura do bot,'
+    '\nque pode ser cancelada a qualquer momento.'
+    '\n\n<a href="https://grf.xyz/assine">Clique aqui para assinar</a>'
+    '\nou busque por <code>@GabRF</code> no PicPay.'
+    '\n\nCaso já tenha assinado, por favor, envie <code>/assinei seu_usuario_picpay</code>'
+    '\n\nExemplo: <code>/assinei GabRF</code>'
 )
 
 patreon = (
@@ -93,4 +95,10 @@ invalid = (
     'Esta é a forma mais fácil e segura de armazenar os seus dados.\n\n'
     '<a href="tg://user?id={}">Mensagens Salvas</a>\n\n'
     'Dúvidas? @GabrielRF'
+)
+
+conf_ok  = ('Muito obrigado pela assinatura!\nA configuração já está ok.')
+
+signed = ('Configuração concluída.\n\n'
+    'Para alterações, dúvidas ou problemas, fale com @GabrielRF'
 )

@@ -7,6 +7,7 @@ import trackingmore
 from pymongo import MongoClient
 
 import apigeartrack as geartrack
+import db
 import status
 
 # https://www.trackingmore.com/api-index.html - Codigos de retorno da API
@@ -16,27 +17,9 @@ config.read('bot.conf')
 key = config['TRACKINGMORE']['key']
 trackingmore.set_api_key(key)
 
-client = MongoClient()
-db = client.rastreiobot
-
-def set_carrier_db(code, carrier):
-    db.rastreiobot.update_one({
-        "code": code.upper()}, {
-        "$set": {
-            "carrier": carrier
-        }
-    })
-
-def set_correios_code(code, code_new):
-    db.rastreiobot.update_one({
-        "code": code.upper()}, {
-        "$set": {
-            "code_br": code_new
-        }
-    })
 
 def get_or_create_tracking_item(carrier, code):
-
+    print(carrier)
     try:
         tracking_data = trackingmore.get_tracking_item(carrier, code)
     except trackingmore.trackingmore.TrackingMoreAPIException as e:
@@ -49,38 +32,35 @@ def get_or_create_tracking_item(carrier, code):
 
     return tracking_data
 
-def get_new_code(code):
-    cursor = db.rastreiobot.find_one({
-        "code": code
-    })
-    return cursor['code_br']
-
 def get_carriers(code):
-    package = db.rastreiobot.find_one({
-        "code": code
-    })
-
-    if package:
-        carriers = package['carrier']
-        return carriers if isinstance(carriers, list) else [carriers]
-
-    carriers = trackingmore.detect_carrier_from_code(code)
-    carriers.sort(key=lambda carrier: carrier['code'])
-    set_carrier_db(code, carriers)
+    cursor = db.search_package(code)
+    try:
+        if type(cursor['carrier']) is dict:
+            return [cursor['carrier']]
+        return cursor['carrier']
+    except:
+        try:
+            carriers = trackingmore.detect_carrier_from_code(code)
+        except Exception as e:
+            print(e)
+            raise IndexError
+        carriers.sort(key=lambda carrier: carrier['code'])
+        db.update_package(code, carrier=carriers)
     return carriers
-
 
 def get(code, retries=0):
     try:
         carriers = get_carriers(code)
+    except IndexError:
+        return status.TYPO
     except trackingmore.trackingmore.TrackingMoreAPIException as e:
         return status.NOT_FOUND_TM
 
-    response_status = status.NOT_FOUND
+    response_status = status.NOT_FOUND_TM
     for carrier in carriers:
         try:
             if carrier['code'] == 'correios':
-                codigo_novo = get_new_code(code)
+                codigo_novo = db.search_package(code)["code_br"]
                 return correios.get(codigo_novo, 3)
         except TypeError:
             pass
@@ -96,8 +76,16 @@ def get(code, retries=0):
                 response_status = status.OFFLINE
             elif tracking_data['status'] == 'notfound':
                 response_status = status.NOT_FOUND_TM
-            elif len(tracking_data) >= 10:
-                set_carrier_db(code, carrier)
+                print(tracking_data)
+            #elif len(tracking_data) >= 10:
+            elif tracking_data['status'] == 'transit':
+                db.update_package(code, carrier=carrier)
+                return formato_obj(tracking_data, carrier, code, retries)
+            elif tracking_data['status'] == 'expired':
+                db.update_package(code, carrier=carrier)
+                return formato_obj(tracking_data, carrier, code, retries)
+            elif tracking_data['status'] == 'delivered':
+                db.update_package(code, carrier=carrier)
                 return formato_obj(tracking_data, carrier, code, retries)
 
     return response_status
@@ -125,8 +113,7 @@ def formato_obj(json, carrier, code, retries):
             codigo_novo = geartrack.getcorreioscode(carrier['code'], code)
             if codigo_novo:
                 carrier = {'code': 'correios', 'name': 'Correios'}
-                set_carrier_db(code, carrier)
-                set_correios_code(code, codigo_novo)
+                db.update_package(code, carrier=carrier, code_br=codigo_novo)
                 return correios.get(codigo_novo, 3)
         except:
             pass
