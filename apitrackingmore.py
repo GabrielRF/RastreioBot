@@ -66,6 +66,7 @@ def get(code, retries=0):
             pass
         try:
             tracking_data = get_or_create_tracking_item(carrier['code'], code)
+            print(tracking_data)
         except trackingmore.trackingmore.TrackingMoreAPIException as e:
             if e.err_code == 4019 or e.err_code == 4021:
                 response_status = status.OFFLINE
@@ -85,6 +86,8 @@ def get(code, retries=0):
                 db.update_package(code, carrier=carrier)
                 return formato_obj(tracking_data, carrier, code, retries)
             elif tracking_data['status'] == 'delivered':
+                db.update_package(code, carrier=carrier)
+            elif tracking_data['status'] == 'pickup':
                 db.update_package(code, carrier=carrier)
                 return formato_obj(tracking_data, carrier, code, retries)
 

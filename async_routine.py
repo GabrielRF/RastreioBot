@@ -144,11 +144,6 @@ async def up_package(elem):
             continue
 
 async def async_main():
-    logger_info = logging.getLogger('InfoLogger')
-    handler_info = logging.FileHandler(LOG_ALERTS_FILE)
-    logger_info.setLevel(logging.DEBUG)
-    logger_info.addHandler(handler_info)
-
     cursor1 = db.rastreiobot.find()
     start = time()
     if check_system():
