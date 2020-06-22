@@ -4,7 +4,7 @@ from datetime import datetime
 from time import time
 
 import telebot
-from pymongo import MongoClient
+import db
 
 config = configparser.ConfigParser()
 config.read('bot.conf')
@@ -19,20 +19,14 @@ handler_info = logging.handlers.TimedRotatingFileHandler(LOG_DEL_FILE,
     when='midnight', interval=1, backupCount=5, encoding='utf-8')
 logger_info.addHandler(handler_info)
 
-bot = telebot.TeleBot(TOKEN)
-client = MongoClient()
-db = client.rastreiobot
-
 
 def del_user(code, msg):
     logger_info.info(str(datetime.now()) + '\t' + code + '\t' + msg.replace('\n',' '))
-    db.rastreiobot.delete_one (
-    { "code" : code.upper() }
-    )
+    db.delete_package(code)
 
 
 if __name__ == '__main__':
-    cursor1 = db.rastreiobot.find()
+    cursor1 = db.all_packages()
     logger_info.info(str(datetime.now()) + '\t' + '--- DELETE running! ---' )
     for elem in cursor1:
         code = elem['code']

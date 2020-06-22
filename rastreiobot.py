@@ -11,10 +11,10 @@ import telebot
 
 import apicorreios as correios
 from misc import check_type, send_clean_msg, check_package, check_update
-from pymongo import ASCENDING, MongoClient
 from telebot import types
 import msgs
 import status
+import db
 
 config = configparser.ConfigParser()
 config.read('bot.conf')
@@ -35,8 +35,6 @@ handler_info = logging.handlers.TimedRotatingFileHandler(
 logger_info.addHandler(handler_info)
 
 bot = telebot.TeleBot(TOKEN)
-client = MongoClient()
-db = client.rastreiobot
 
 markup_btn = types.ReplyKeyboardMarkup(resize_keyboard=True)
 markup_btn.row('/Pacotes','/Resumo')
@@ -46,7 +44,7 @@ markup_clean = types.ReplyKeyboardRemove(selective=False)
 
 # Count packages
 def count_packages():
-    cursor = db.rastreiobot.find()
+    cursor = db.all_packages()
     qtd = 0
     wait = 0
     extraviado = 0
@@ -75,12 +73,22 @@ def count_packages():
     return qtd, wait, despacho, sem_imposto, importado, tributado, trackingmore, extraviado
 
 
+def package_status_can_change(package):
+    current_status = package['stat'][-1].lower()
+    return all([
+        'objeto entregue ao' not in current_status,
+        'objeto apreendido' not in current_status,
+        'objeto roubado' not in current_status,
+        'delivered' not in current_status,
+        'objeto devolvido ao remet' not in current_status,
+    ])
+
+
 ## List packages of a user
 def list_packages(chatid, done, status):
     aux = ''
     try:
-        cursor = db.rastreiobot.find(
-            {'users': str(chatid)}).sort(str(chatid), ASCENDING)
+        cursor = db.search_packages_per_user(chatid)
         qtd = 0
         for elem in cursor:
             if str(chatid) in elem['users']:
@@ -89,12 +97,7 @@ def list_packages(chatid, done, status):
                 except Exception:
                     elem['stat'] = ['Sistema fora do ar']
                 if not done:
-                    if (
-                            'objeto entregue ao' not in status_elem(elem) and
-                            'objeto apreendido' not in status_elem(elem) and
-                            'objeto roubado' not in status_elem(elem) and
-                            'delivered' not in status_elem(elem) and
-                            'objeto devolvido ao remet' not in status_elem(elem)):
+                    if package_status_can_change(elem):
                         if status:
                             aux = aux + str(u'\U0001F4EE') + '<code>' + elem['code'] + '</code>'
                         else:
@@ -109,12 +112,7 @@ def list_packages(chatid, done, status):
                         aux = aux + '\n'
                         qtd = qtd + 1
                 else:
-                    if (
-                            'objeto entregue ao' in status_elem(elem) or
-                            'objeto apreendido' in status_elem(elem) or
-                            'delivered' in status_elem(elem) or
-                            'objeto roubado' in status_elem(elem) or
-                            'objeto devolvido ao remet' in status_elem(elem)):
+                    if package_status_can_change(elem):
                         aux = aux + elem['code']
                         try:
                             if elem[str(chatid)] != elem['code']:
@@ -134,26 +132,6 @@ def status_elem(elem):
     return elem['stat'][len(elem['stat']) - 1].lower()
 
 
-# Get last state of a package from DB
-def status_package(code):
-    print("status_package")
-    cursor = db.rastreiobot.find_one({
-        "code": code
-    })
-    return cursor['stat']
-
-
-# Check if user exists on a specific tracking code
-def check_user(code, user):
-    cursor = db.rastreiobot.find_one({
-        "code": code.upper(),
-        "users": user
-    })
-    if cursor:
-        return True
-    return False
-
-
 # Insert package on DB
 def add_package(code, user):
     code = code.upper()
@@ -170,46 +148,9 @@ def add_package(code, user):
         elif stat == status.NOT_FOUND_TM:
             stats.append('Verificando com as possíveis transportadoras. Por favor, aguarde.')
             stat = stats
-        db.rastreiobot.insert_one({
-                "code": code.upper(),
-                "users": [user],
-                "stat": stat,
-                "time": str(time())
-        })
+        db.add_package(code, user, stat)
         stat = status.OK
     return stat
-
-
-# Add a user to a package that exists on DB
-def add_user(code, user):
-    db.rastreiobot.update_one({
-        "code": code.upper()}, {
-        "$push": {
-            "users": user
-        }
-    })
-
-
-def del_user(chatid, code):
-    cursor = db.rastreiobot.find()
-    for elem in cursor:
-        if str(chatid) in elem['users']:
-            array = elem['users']
-            array.remove(str(chatid))
-    db.rastreiobot.update_one({
-        "code": code.upper()}, {
-        "$set": {"users": array}
-    })
-
-
-# Set a description to a package
-def set_desc(code, user, desc):
-    if not desc:
-        desc = code
-    db.rastreiobot.update_one({
-        "code": code.upper()}, {
-        "$set": {user: desc}
-    })
 
 
 def check_system_correios():
@@ -299,9 +240,9 @@ def cmd_pacotes(message):
 def cmd_resumo(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
-         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned)
-         return 0
+        log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+        bot.send_message(message.chat.id, msgs.banned)
+        return 0
     chatid = message.chat.id
     message, qtd = list_packages(chatid, False, True)
     if qtd == 0:
@@ -319,9 +260,9 @@ def cmd_resumo(message):
 def cmd_concluidos(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
-         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned)
-         return 0
+        log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+        bot.send_message(message.chat.id, msgs.banned)
+        return 0
     chatid = message.chat.id
     message, qtd = list_packages(chatid, True, False)
     if len(message) < 1:
@@ -340,9 +281,9 @@ def cmd_concluidos(message):
 def cmd_status(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
-         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned)
-         return 0
+        log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+        bot.send_message(message.chat.id, msgs.banned)
+        return 0
     log_text(
         message.chat.id,
         message.message_id,
@@ -369,9 +310,9 @@ def cmd_status(message):
 def cmd_statusall(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
-         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned)
-         return 0
+        log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+        bot.send_message(message.chat.id, msgs.banned)
+        return 0
     log_text(
         message.chat.id,
         message.message_id,
@@ -420,9 +361,9 @@ def cmd_statusall(message):
 def cmd_help(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
-         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned)
-         return 0
+        log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+        bot.send_message(message.chat.id, msgs.banned)
+        return 0
     log_text(
         message.chat.id,
         message.message_id,
@@ -467,9 +408,9 @@ def cmd_sign(message):
 def cmd_remove(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
-         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned)
-         return 0
+        log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+        bot.send_message(message.chat.id, msgs.banned)
+        return 0
     log_text(
         message.chat.id,
         message.message_id,
@@ -478,7 +419,7 @@ def cmd_remove(message):
     try:
         code = message.text.split(' ')[1]
         code = code.replace('@', ' ')
-        del_user(message.chat.id, code)
+        db.remove_user_from_package(message.chat.id, code)
         bot.send_message(message.chat.id, 'Pacote removido.')
     except Exception:
         bot.send_message(message.chat.id, msgs.remove, parse_mode='HTML')
@@ -500,9 +441,9 @@ def cmd_format(message):
 def cmd_magic(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
-         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned)
-         return 0
+        log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+        bot.send_message(message.chat.id, msgs.banned)
+        return 0
     log_text(message.chat.id, message.message_id, message.text)
     user = str(message.chat.id)
     message_text = (
@@ -545,10 +486,9 @@ def cmd_magic(message):
             return 0
         exists = check_package(code)
         if exists:
-            exists = check_user(code, user)
-            if not exists:
-                add_user(code, user)
-            stats = status_package(code)
+            if not db.package_has_user(code, user):
+                db.add_user_to_package(code, user)
+            stats = db.package_status(code)
             message = ''
             system = check_system_correios()
             for stat in stats:
@@ -566,7 +506,7 @@ def cmd_magic(message):
             else:
                 send_clean_msg(bot, user, message)
             if desc != code:
-                set_desc(str(code), str(user), desc)
+                db.set_package_description(code, user, desc)
         else:
             stat = add_package(str(code), str(user))
             if stat == status.OFFLINE:
@@ -578,7 +518,7 @@ def cmd_magic(message):
             elif stat == status.NOT_FOUND_TM:
                 bot.reply_to(message, msgs.not_found_tm)
             elif stat == status.OK:
-                set_desc(str(code), str(user), desc)
+                db.set_package_description(code, user, desc)
                 if int(message.chat.id) > 0:
                     bot.reply_to(
                         message,
@@ -593,18 +533,18 @@ def cmd_magic(message):
                         'Pacote cadastrado.',
                         reply_markup=markup_clean
                     )
-                sttus = status_package(code)
+                sttus = db.package_status(code)
                 last = len(sttus) - 1
                 if int(user) > 0:
                     bot.send_message(
                         user,
-                        status_package(code)[last],
+                        db.package_status(code)[last],
                         parse_mode='HTML',
                         reply_markup=markup_btn,
                         disable_web_page_preview=True
                     )
                 else:
-                    send_clean_msg(bot, user, status_package(code)[last])
+                    send_clean_msg(bot, user, db.package_status(code)[last])
     elif message.text.upper() == '/START':
         if int(message.chat.id) > 0:
             send_clean_msg(bot, message.chat.id, msgs.user)

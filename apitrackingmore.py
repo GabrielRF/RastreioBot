@@ -7,6 +7,7 @@ import trackingmore
 from pymongo import MongoClient
 
 import apigeartrack as geartrack
+import db
 import status
 
 # https://www.trackingmore.com/api-index.html - Codigos de retorno da API
@@ -16,24 +17,6 @@ config.read('bot.conf')
 key = config['TRACKINGMORE']['key']
 trackingmore.set_api_key(key)
 
-client = MongoClient()
-db = client.rastreiobot
-
-def set_carrier_db(code, carrier):
-    db.rastreiobot.update_one({
-        "code": code.upper()}, {
-        "$set": {
-            "carrier": carrier
-        }
-    })
-
-def set_correios_code(code, code_new):
-    db.rastreiobot.update_one({
-        "code": code.upper()}, {
-        "$set": {
-            "code_br": code_new
-        }
-    })
 
 def get_or_create_tracking_item(carrier, code):
     print(carrier)
@@ -49,16 +32,8 @@ def get_or_create_tracking_item(carrier, code):
 
     return tracking_data
 
-def get_new_code(code):
-    cursor = db.rastreiobot.find_one({
-        "code": code
-    })
-    return cursor['code_br']
-
 def get_carriers(code):
-    cursor = db.rastreiobot.find_one({
-        "code": code
-    })
+    cursor = db.search_package(code)
     try:
         if type(cursor['carrier']) is dict:
             return [cursor['carrier']]
@@ -70,7 +45,7 @@ def get_carriers(code):
             print(e)
             raise IndexError
         carriers.sort(key=lambda carrier: carrier['code'])
-        set_carrier_db(code, carriers)
+        db.update_package(code, carrier=carriers)
     return carriers
 
 def get(code, retries=0):
@@ -85,7 +60,7 @@ def get(code, retries=0):
     for carrier in carriers:
         try:
             if carrier['code'] == 'correios':
-                codigo_novo = get_new_code(code)
+                codigo_novo = db.search_package(code)["code_br"]
                 return correios.get(codigo_novo, 3)
         except TypeError:
             pass
@@ -104,13 +79,13 @@ def get(code, retries=0):
                 print(tracking_data)
             #elif len(tracking_data) >= 10:
             elif tracking_data['status'] == 'transit':
-                set_carrier_db(code, carrier)
+                db.update_package(code, carrier=carrier)
                 return formato_obj(tracking_data, carrier, code, retries)
             elif tracking_data['status'] == 'expired':
-                set_carrier_db(code, carrier)
+                db.update_package(code, carrier=carrier)
                 return formato_obj(tracking_data, carrier, code, retries)
             elif tracking_data['status'] == 'delivered':
-                set_carrier_db(code, carrier)
+                db.update_package(code, carrier=carrier)
                 return formato_obj(tracking_data, carrier, code, retries)
 
     return response_status
@@ -138,8 +113,7 @@ def formato_obj(json, carrier, code, retries):
             codigo_novo = geartrack.getcorreioscode(carrier['code'], code)
             if codigo_novo:
                 carrier = {'code': 'correios', 'name': 'Correios'}
-                set_carrier_db(code, carrier)
-                set_correios_code(code, codigo_novo)
+                db.update_package(code, carrier=carrier, code_br=codigo_novo)
                 return correios.get(codigo_novo, 3)
         except:
             pass

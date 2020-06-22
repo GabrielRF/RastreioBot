@@ -5,6 +5,7 @@ from datetime import datetime
 from time import time, sleep
 from misc import check_update
 
+import db
 import requests
 import sentry_sdk
 import telebot
@@ -21,8 +22,6 @@ BANNED = config['RASTREIOBOT']['banned']
 INTERVAL = 0.03
 
 bot = telebot.TeleBot(TOKEN)
-client = MongoClient()
-db = client.rastreiobot
 
 multiple = sys.argv[1]
 print(multiple)
@@ -36,14 +35,7 @@ def get_package(code):
     elif stat == 3:
         stat = None
     else:
-        cursor = db.rastreiobot.update_one (
-        { "code" : code.upper() },
-        {
-            "$set": {
-                "stat" : stat,
-                "time" : str(time())
-            }
-        })
+        db.update_package(code, stat=stat, time=str(time()))
         stat = 10
     return stat
 
@@ -71,7 +63,7 @@ if __name__ == '__main__':
     if sentry_url:
         sentry_sdk.init(sentry_url)
 
-    cursor1 = db.rastreiobot.find()
+    cursor1 = db.all_packages()
     start = time()
     sent = 1
     if check_system():
@@ -117,10 +109,7 @@ if __name__ == '__main__':
                 stat = get_package(code)
             if stat == 0:
                 break
-            cursor2 = db.rastreiobot.find_one(
-            {
-                "code": code
-            })
+            cursor2 = db.search_package(code)
             try:
                 len_new_state = len(cursor2['stat'])
             except:
