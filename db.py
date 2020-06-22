@@ -11,7 +11,7 @@ def all_packages():
 
 
 def search_package(code):
-    return db.rastreiobot.find({"code": code})
+    return db.rastreiobot.find_one({"code": code})
 
 
 def search_packages_per_user(user_id):
@@ -20,7 +20,7 @@ def search_packages_per_user(user_id):
 
 
 def package_status(code):
-    return db.rastreiobot.find({"code": code})["stat"]
+    return db.rastreiobot.find_one({"code": code})["stat"]
 
 
 def package_has_user(code, user_id):
@@ -41,22 +41,25 @@ def add_package(code, users, stat):
 
 
 def add_user_to_package(code, user):
-    return db.rastreiobot.update_one({
-        "code": code.upper(),
-        "$push": {"users": user,},
-    })
+    return db.rastreiobot.update_one(
+        {"code": code.upper()},
+        {"$push": {"users": user}},
+    )
 
 
 def update_package(code, **kwargs):
     code = str(code).upper()
-    return db.rastreiobot.update_one({
-        "code": code,
-        "$set": kwargs,
-    })
+    return db.rastreiobot.update_one(
+        {"code": code},
+        {"$set": kwargs},
+    )
 
 
 def remove_user_from_package(code, user_id):
+    print(code)
+    print(user_id)
     package = search_package(code)
+    print(package)
     users = package["users"]
     users.remove(str(user_id))
     return update_package(code, users=users)
@@ -66,10 +69,10 @@ def set_package_description(code, user_id, description=None):
     user_id = str(user_id)
     code = str(code).upper()
     description = description or code
-    return db.rastreiobot.update_one({
-        "code": code,
-        "$set": {user_id: description},
-    })
+    return db.rastreiobot.update_one(
+        {"code": code},
+        {"$set": {user_id: description}},
+    )
 
 
 def delete_package(code):

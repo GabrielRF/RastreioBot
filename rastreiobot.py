@@ -419,12 +419,15 @@ def cmd_remove(message):
     try:
         code = message.text.split(' ')[1]
         code = code.replace('@', ' ')
-        db.remove_user_from_package(message.chat.id, code)
+        db.remove_user_from_package(code, message.chat.id)
         bot.send_message(message.chat.id, 'Pacote removido.')
     except Exception:
         bot.send_message(message.chat.id, msgs.remove, parse_mode='HTML')
         # bot.send_document(message.chat.id, 'CgADAQADWQADuVvARjeZRuSF_fMXAg')
-        bot.send_document(message.chat.id, 'CgADAQADWgADGu_QRo7Gbbxg4ugLAg')
+        try:
+            bot.send_document(message.chat.id, 'CgADAQADWgADGu_QRo7Gbbxg4ugLAg')
+        except telebot.apihelper.ApiException:
+            pass
 
 
 @bot.message_handler(content_types=['document', 'audio', 'photo'])
@@ -551,7 +554,10 @@ def cmd_magic(message):
             # bot.send_document(message.chat.id, 'CgADAQADhgAD45bBRvd9d-3ACM-cAg')
             # bot.send_document(message.chat.id, 'CgADAQADTAAD9-zRRl9s8doDwrMmAg')
             # bot.send_document(message.chat.id, 'CgADAQADPgADBm7QRkzGU7UpR3JzAg')
-            bot.send_document(message.chat.id, 'CgADAQADWQADGu_QRlzGc4VIGIYaAg')
+            try:
+                bot.send_document(message.chat.id, 'CgADAQADWQADGu_QRlzGc4VIGIYaAg')
+            except telebot.apihelper.ApiException:
+                pass
         else:
             send_clean_msg(bot, message.chat.id, msgs.group)
     else:

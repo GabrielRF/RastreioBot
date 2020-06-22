@@ -47,7 +47,6 @@ def check_update(code, max_retries=3):
 async def async_check_update(code, max_retries=3):
     api_type = check_type(code)
     if api_type is trackingmore:
-        return status.TYPO
         return trackingmore.get(code, max_retries)
     elif api_type is correios:
         return await correios.async_get(code, max_retries)
