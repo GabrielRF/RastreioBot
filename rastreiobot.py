@@ -112,11 +112,11 @@ def list_packages(chatid, done, status):
                         aux = aux + '\n'
                         qtd = qtd + 1
                 else:
-                    if package_status_can_change(elem):
+                    if not package_status_can_change(elem):
                         aux = aux + elem['code']
                         try:
                             if elem[str(chatid)] != elem['code']:
-                                aux = aux + ' ' + elem[str(chatid)]
+                                aux = aux + ' <b>' + elem[str(chatid)] + '</b>'
                         except Exception:
                             pass
                         aux = aux + '\n'
@@ -512,6 +512,8 @@ def cmd_magic(message):
                 db.set_package_description(code, user, desc)
         else:
             stat = add_package(str(code), str(user))
+            share_button = types.InlineKeyboardMarkup()
+            share_button.row(types.InlineKeyboardButton("Compartilhar", url="https://rastreiobot.xyz/?codigo=" + code))
             if stat == status.OFFLINE:
                 bot.reply_to(message, 'Sistema fora do ar')
             elif stat == status.TYPO:
@@ -525,9 +527,10 @@ def cmd_magic(message):
                 if int(message.chat.id) > 0:
                     bot.reply_to(
                         message,
-                        'Pacote cadastrado.',
-                        reply_markup=markup_btn
+                        'Pacote cadastrado.\n\nCompartilhe usando o link abaixo:',
+                        reply_markup=share_button
                     )
+                    print('share')
                     if desc == code:
                         send_clean_msg(bot, user, msgs.desc)
                 else:
