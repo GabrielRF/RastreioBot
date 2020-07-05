@@ -67,6 +67,8 @@ premium = (
     '\nou busque por <code>@GabRF</code> no PicPay.'
     '\n\nCaso já tenha assinado, por favor, envie <code>/assinei seu_usuario_picpay</code>'
     '\n\nExemplo: <code>/assinei GabRF</code>'
+    '\n\nNão tem PicPay? Acesse pelo link abaixo e ganhe R$ 10!'
+    '\nhttp://www.picpay.com/convite?@5ESW'
 )
 
 patreon = (
