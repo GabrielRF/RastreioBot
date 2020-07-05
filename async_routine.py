@@ -26,7 +26,10 @@ PATREON = config['RASTREIOBOT']['patreon']
 INTERVAL = 0.03
 
 logger_info = logging.getLogger('InfoLogger')
-handler_info = logging.FileHandler(LOG_ALERTS_FILE)
+handler_info = logging.handlers.TimedRotatingFileHandler(
+    LOG_ALERTS_FILE, when='midnight', interval=1, backupCount=7, encoding='utf-8'
+)
+#handler_info = logging.FileHandler(LOG_ALERTS_FILE)
 logger_info.setLevel(logging.DEBUG)
 logger_info.addHandler(handler_info)
 
@@ -59,7 +62,7 @@ async def get_package(code):
 def check_system():
     try:
         URL = ('http://webservice.correios.com.br/')
-        response = requests.get(URL, timeout=3)
+        response = requests.get(URL, timeout=10)
     except:
         logger_info.info(str(datetime.now()) + '\tCorreios indisponível')
         return False
@@ -159,8 +162,6 @@ async def async_main():
     async for elem in cursor1:
         n += 1
         tasks.append(up_package(elem))
-        if n > 10000:
-            break
 
     await asyncio.gather(*tasks)
 
