@@ -111,6 +111,7 @@ def format_obj(code, response):
     return stats
 
 def get(code, retries):
+    print(str(code) + ' ' + str(retries))
     try:
         request_xml = '''
             <rastroObjeto>
@@ -133,10 +134,11 @@ def get(code, retries):
             'http://webservice.correios.com.br/service/rest/rastro/rastroMobile'
         )
         response = requests.post(
-            url, data=request_xml, headers=headers, timeout=3
+            url, data=request_xml, headers=headers, timeout=10
         ).text
     except Exception:
         if retries > 0:
+            print('-')
             return get(code, retries - 1)
         return status.OFFLINE
     if len(str(response)) < 10:
@@ -168,7 +170,7 @@ async def async_get(code, retries):
             'http://webservice.correios.com.br/service/rest/rastro/rastroMobile'
         )
         async with aiohttp.ClientSession() as session:
-            async with semaphore, session.post(url, data=request_xml, headers=headers, timeout=10) as response:
+            async with semaphore, session.post(url, data=request_xml, headers=headers, timeout=30) as response:
                 response = await response.text()
     except Exception as e:
         if retries > 0:
