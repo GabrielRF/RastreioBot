@@ -3,7 +3,7 @@ import logging.handlers
 import sys
 from datetime import datetime
 from time import time, sleep
-from misc import check_update
+from utils.misc import check_update
 
 import db
 import requests

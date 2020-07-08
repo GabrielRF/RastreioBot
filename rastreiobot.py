@@ -9,11 +9,11 @@ import requests
 import sentry_sdk
 import telebot
 
-import apicorreios as correios
-from misc import check_type, send_clean_msg, check_package, check_update
+import apis.apicorreios as correios
+from utils.misc import check_type, send_clean_msg, check_package, check_update
 from telebot import types
-import msgs
-import status
+import utils.msgs as msgs
+import utils.status as status
 import db
 
 config = configparser.ConfigParser()
@@ -371,7 +371,7 @@ def cmd_help(message):
         str(message.from_user.first_name)
     )
     chatid = message.chat.id
-    ads = open('ad.txt').read().splitlines()
+    ads = open('utils.ad.txt').read().splitlines()
     ad = random.choice(ads)
     ad = ad.replace(';', '\n')
     bot.send_message(
