@@ -63,9 +63,33 @@ Create a file `bot.conf` following `bot.conf_sample`.
 
 `url` Sentry URL
 
-__Run MongoDB!__
+### MongoDB
 
-For RaspberryPi: https://github.com/GabrielRF/Docker-MongoDB-RPi
+__RaspberryPi__
+```
+https://github.com/GabrielRF/Docker-MongoDB-RPi
+```
+__Mac__
+
+```
+brew install mongodb-community
+brew services start mongodb-community
+```
+
+### SQLite
+
+
+```
+touch data_base.db
+```
+
+create db structure
+```
+CREATE TABLE assinantes (
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+        chatid TEXT,
+        picpayid TEXT);
+```
 
 ## Run
 

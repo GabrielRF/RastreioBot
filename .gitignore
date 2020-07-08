@@ -6,3 +6,4 @@ __pycache__
 .idea
 rastreiobotenv/*
 *.log
+bot.log.*
