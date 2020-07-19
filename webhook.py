@@ -67,6 +67,8 @@ def secbox():
     if jsonData['event_type'] == 'new_subscription':
         if not select_user('picpayid', jsonData['event']['subscriber']['username']):
             adduser('', jsonData['event']['subscriber']['username'].lower())
+    if jsonData['event_type'] == 'subscription_cancelled':
+            deluser('picpayid', jsonData['event']['subscriber']['username'].lower())
     return "Hello"
 
 if __name__ == '__main__':
