@@ -3,8 +3,8 @@ import logging.handlers
 import sys
 from datetime import datetime
 from time import time, sleep
-from misc import check_update
-from misc import async_check_update
+from utils.misc import check_update
+from utils.misc import async_check_update
 
 import requests
 import telebot

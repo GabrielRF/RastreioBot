@@ -5,7 +5,7 @@
 [![Donate](https://img.shields.io/static/v1?label=Colabore&message=PicPay&color=brightgreen)](https://grf.xyz/picpay)
 [![Twitter Follow](https://img.shields.io/twitter/follow/espadrine.svg?style=social&label=Follow)](https://twitter.com/gabrf)
 
-![Rastreiobot](https://github.com/GabrielRF/RastreioBot/blob/master/rastreiobot.png?raw=true)
+![Rastreiobot](https://github.com/GabrielRF/RastreioBot/blob/master/imgs/rastreiobot.png?raw=true)
 
 * [About](#about)
 * [Setup](#setup)
@@ -63,9 +63,33 @@ Create a file `bot.conf` following `bot.conf_sample`.
 
 `url` Sentry URL
 
-__Run MongoDB!__
+### MongoDB
 
-For RaspberryPi: https://github.com/GabrielRF/Docker-MongoDB-RPi
+__RaspberryPi__
+```
+https://github.com/GabrielRF/Docker-MongoDB-RPi
+```
+__Mac__
+
+```
+brew install mongodb-community
+brew services start mongodb-community
+```
+
+### SQLite
+
+
+```
+touch data_base.db
+```
+
+create db structure
+```
+CREATE TABLE assinantes (
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+        chatid TEXT,
+        picpayid TEXT);
+```
 
 ## Run
 

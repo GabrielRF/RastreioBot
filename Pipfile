@@ -18,6 +18,7 @@ coverage = "==4.*"
 aiogram = "*"
 motor = "*"
 aiohttp = "*"
+flask = "*"
 
 [requires]
 python_version = "3.7"

@@ -1,12 +1,12 @@
 import configparser
 import sys
-import apicorreios as correios
+import apis.apicorreios as correios
 from datetime import datetime
 
 import trackingmore
 from pymongo import MongoClient
 
-import apigeartrack as geartrack
+import apis.apigeartrack as geartrack
 import db
 import status
 

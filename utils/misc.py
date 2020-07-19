@@ -5,9 +5,9 @@ from pymongo import MongoClient
 from telebot import types
 
 import db
-import apicorreios as correios
-import apitrackingmore as trackingmore
-import status
+import apis.apicorreios as correios
+import apis.apitrackingmore as trackingmore
+import utils.status as status
 
 #client = MongoClient()
 #db = client.rastreiobot
