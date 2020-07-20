@@ -294,13 +294,14 @@ def cmd_status(message):
     chatid = message.chat.id
     bot.send_message(
         chatid, str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n' +
+        'Quantidade de pacotes: ' + str(qtd+wait) + '\n\n'
         'Pacotes em andamento: ' + str(qtd) + '\n' +
         'Pacotes em espera: ' + str(wait) + '\n' +
         'Pacotes roubados: ' + str(extraviado) + '\n\n' +
         'Pacotes importados: ' + str(importado) + '\n' +
-        'Taxados em R$15: ' + str(round(100*despacho/importado, 2)) + '%\n' +
+        'Taxados em R$15: ' + str(round(100*despacho/importado, 2)) + '%\n\n' +
         #'Pacotes sem tributação: ' + str(round(100*sem_imposto/importado, 2)) + '%\n' +
-        'Pacotes tributados: ' + str(round(100*tributado/importado, 2)) + '%\n\n'
+        #'Pacotes tributados: ' + str(round(100*tributado/importado, 2)) + '%\n\n'
         '<code>Estatísticas de todos os pacotes em andamento ou entregues nos últimos 30 dias</code>',
         parse_mode='HTML'
     )
@@ -341,14 +342,15 @@ def cmd_statusall(message):
     chatid = message.chat.id
     bot.send_message(
         chatid, str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n' +
+        'Quantidade de pacotes: ' + str(qtd+wait) + '\n\n'
         'Pacotes em andamento: ' + str(qtd) + '\n' +
         'Pacotes em espera: ' + str(wait) + '\n' +
         'Pacotes roubados: ' + str(extraviado) + '\n\n' +
         'Pacotes importados: ' + str(importado) + '\n' +
         'TrackingMore: ' + str(trackingmore) + '\n' +
         'Taxados em R$15: ' + str(round(100*despacho/importado, 2)) + '%\n' +
-        'Pacotes sem tributação: ' + str(round(100*sem_imposto/importado, 2)) + '%\n' +
-        'Pacotes tributados: ' + str(round(100*tributado/importado, 2)) + '%\n\n' +
+        'Pacotes sem tributação: ' + str(round(100*sem_imposto/importado, 2)) + '%\n\n' +
+        #'Pacotes tributados: ' + str(round(100*tributado/importado, 2)) + '%\n\n' +
         'Mensagens recebidas hoje: ' + str(todaymsg) + '\n' +
         'Mensagens recebidas ontem: ' + str(yesterdaymsg) + '\n\n' +
         'Alertas enviados hoje: ' + str(today) + '\n' +
@@ -371,7 +373,7 @@ def cmd_help(message):
         str(message.from_user.first_name)
     )
     chatid = message.chat.id
-    ads = open('utils.ad.txt').read().splitlines()
+    ads = open('utils/ad.txt').read().splitlines()
     ad = random.choice(ads)
     ad = ad.replace(';', '\n')
     bot.send_message(

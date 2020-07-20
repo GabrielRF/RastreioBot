@@ -8,7 +8,7 @@ from datetime import date
 import aiohttp
 import requests
 
-import status
+from utils import status
 
 config = configparser.ConfigParser()
 config.read('bot.conf')
