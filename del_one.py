@@ -1,6 +1,6 @@
 import sys
 
-import db
+from rastreio import db
 
 
 if __name__ == '__main__':

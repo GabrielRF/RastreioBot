@@ -4,7 +4,7 @@ from datetime import datetime
 from time import time
 
 import telebot
-import db
+from rastreio import db
 
 config = configparser.ConfigParser()
 config.read('bot.conf')

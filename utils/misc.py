@@ -3,7 +3,7 @@ import sys
 
 from telebot import types
 
-import db
+from rastreio import db
 import apis.apicorreios as correios
 import apis.apitrackingmore as trackingmore
 import utils.status as status

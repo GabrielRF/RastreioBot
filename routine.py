@@ -5,7 +5,7 @@ from datetime import datetime
 from time import time, sleep
 from utils.misc import check_update
 
-import db
+from rastreio import db
 import requests
 import sentry_sdk
 import telebot
