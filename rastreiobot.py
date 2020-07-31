@@ -14,7 +14,7 @@ from utils.misc import check_type, send_clean_msg, check_package, check_update
 from telebot import types
 import utils.msgs as msgs
 import utils.status as status
-import db
+from rastreio import db
 
 config = configparser.ConfigParser()
 config.read('bot.conf')
