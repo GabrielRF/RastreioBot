@@ -9,12 +9,12 @@ ipython = "*"
 flake8 = "*"
 mock = "*"
 pytest-mock = "*"
+pytest = "==5.*"
 
 
 [packages]
 pymongo = "==3.*"
 pytelegrambotapi = "==3.*"
-pytest = "==5.*"
 requests = "==2.*"
 sentry-sdk = "==0.*"
 trackingmore = "==0.*"
@@ -23,6 +23,8 @@ aiogram = "*"
 motor = "*"
 aiohttp = "*"
 flask = "*"
+click = "*"
+rich = "*"
 
 [requires]
 python_version = "3.7"
