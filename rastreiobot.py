@@ -12,6 +12,7 @@ import telebot
 import apis.apicorreios as correios
 from utils.misc import check_type, send_clean_msg, check_package, check_update
 from telebot import types
+
 import utils.msgs as msgs
 import utils.status as status
 import db
@@ -26,6 +27,7 @@ LOG_ROUTINE_FILE = config['RASTREIOBOT']['routine_log']
 LOG_ALERTS_FILE = config['RASTREIOBOT']['alerts_log']
 PATREON = config['RASTREIOBOT']['patreon']
 BANNED = config['RASTREIOBOT']['banned']
+STRIPE = config['STRIPE']['TOKEN']
 
 logger_info = logging.getLogger('InfoLogger')
 logger_info.setLevel(logging.DEBUG)
@@ -182,6 +184,33 @@ def log_text(chatid, message_id, text):
         str(message_id) + ' \t' + str(text)
     )
 
+
+@bot.message_handler(commands=['doar'])
+def command_pay(message):
+    send_clean_msg(bot, message.chat.id, msgs.donate_warn)
+    bot.send_invoice(message.chat.id, title='RastreioBot',
+                     description='Para doar R$ 10, clique no botão abaixo.',
+                     provider_token=STRIPE, currency='BRL',
+                     prices=[types.LabeledPrice(label='Doar R$ 10', amount=1000)],
+                     start_parameter='doar10',
+                     invoice_payload='RastreioBot')
+    bot.send_invoice(message.chat.id, title='RastreioBot',
+                     description='Para doar R$ 15, clique no botão abaixo.',
+                     provider_token=STRIPE, currency='BRL',
+                     prices=[types.LabeledPrice(label='Doar R$ 15', amount=1500)],
+                     start_parameter='doar15',
+                     invoice_payload='RastreioBot')
+
+@bot.pre_checkout_query_handler(func=lambda query: True)
+def checkout(pre_checkout_query):
+    bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True,
+        error_message=msgs.donate_error)
+
+@bot.message_handler(content_types=['successful_payment'])
+def got_payment(message):
+    bot.send_message(message.chat.id, msgs.donate_ok)
+
+bot.skip_pending = True
 
 @bot.message_handler(commands=['gif'])
 def cmd_repetir(message):

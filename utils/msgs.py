@@ -50,10 +50,14 @@ howto = (
     '\U0001F680<b>Conheça meus outros projetos:</b>\n'
     'http://grf.xyz/\n\n'
     '\U0001F4B5 <b>Colabore!</b>\n'
+    'Clique em /doar ou envie pelo PicPay, usuario GabrielRF.\n'
     'PicPay: http://grf.xyz/picpay\n\n'
-    '\U0001F4B3 <b>Envie R$ 1 por mês e ajude o bot!</b>\n'
-    'http://grf.xyz/assine\n\n'
+    '\U0001F4B3 <b>Envie R$ 1 por mês, rastreie pacotes internacionais e ajude o bot!</b>\n'
+    'PicPay: http://grf.xyz/assine\n'
+    'Ou procure pelo usuário GabRF\n\n'
     '\U0001F517'
+    '<b>Não tem PicPay?</b> Acesse pelo link abaixo e ganhe R$ 10!'
+    '\nhttp://www.picpay.com/convite?@5ESW\n\n'
 )
 
 error_bot = 'Ops!\nHouve um problema com o bot.\nTente novamente mais tarde.'
@@ -103,4 +107,16 @@ conf_ok  = ('Muito obrigado pela assinatura!\nA configuração já está ok.')
 
 signed = ('Configuração concluída.\n\n'
     'Para alterações, dúvidas ou problemas, fale com @GabrielRF'
+)
+
+donate_warn = '<b>Atenção</b>\n\nA doação não tem efeito de assinatura para rastrear encomendas internacionais!\n\nPara assinar, acesse https://grf.xyz/assine ou procure por <code>GabRF</code> no PicPay.'
+
+donate_ok = (
+    'Muito obrigado pela colaboração!'
+)
+
+donate_error = (
+    'Por favor, tente novamente em alguns minutos.\n'
+    'Houve algum erro na transação.\n'
+    'Não houve cobrança em seu cartão.'
 )
