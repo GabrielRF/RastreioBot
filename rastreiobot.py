@@ -187,6 +187,11 @@ def log_text(chatid, message_id, text):
 
 @bot.message_handler(commands=['doar'])
 def command_pay(message):
+    log_text(message.chat.id, message.message_id, '--- DONATE --- ')
+    if str(message.from_user.id) in BANNED:
+         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+         bot.send_message(message.chat.id, msgs.banned)
+         return 0
     send_clean_msg(bot, message.chat.id, msgs.donate_warn)
     bot.send_invoice(message.chat.id, title='RastreioBot',
                      description='Para doar R$ 10, clique no botão abaixo.',
