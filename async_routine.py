@@ -121,10 +121,10 @@ async def up_package(elem):
                 #pacote chines com codigo br
                 message = (str(u'\U0001F4EE') + '<b>' + code + '</b> (' + elem['code_br']  +  ')\n')
             except:
-                message = (str(u'\U0001F4EE') + '<b>' + code + '</b>\n')
+                message = (str(u'\U0001F4EE') + '<a href="https://t.me/rastreiobot?start=' + code + '">' + code + '</a>\n')
             try:
                 if code not in elem[user]:
-                    message = message + elem[user] + '\n'
+                    message = message + '<b>' + elem[user] + '</b>\n'
             except:
                 pass
 
