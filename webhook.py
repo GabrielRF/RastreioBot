@@ -17,11 +17,11 @@ webhook_key = config['WEBHOOK']['KEY']
 
 app = flask.Flask(__name__)
 
-def adduser(chatid='', picpayid=''):
+def adduser(chatid='', picpayid='', sub_id=''):
     conn = sqlite3.connect(db)
     cursor = conn.cursor()
-    aux = ('''INSERT INTO {} (chatid, picpayid)
-        VALUES ('{}', '{}')''').format(table, chatid, picpayid)
+    aux = ('''INSERT INTO {} (chatid, picpayid, sub_id)
+        VALUES ('{}', '{}', '{}')''').format(table, chatid, picpayid, sub_id)
     cursor.execute(aux)
     conn.commit()
     conn.close()
@@ -66,11 +66,12 @@ def secbox():
         return "Error"
     if jsonData['event_type'] == 'new_subscription':
         if not select_user('picpayid', jsonData['event']['subscriber']['username']):
-            adduser('', jsonData['event']['subscriber']['username'].lower())
+            adduser('', jsonData['event']['subscriber']['username'].lower(), jsonData['event']['subscriber']['id'])
     if jsonData['event_type'] == 'subscription_cancelled':
-            deluser('picpayid', jsonData['event']['subscriber']['username'].lower())
+            deluser('sub_id', jsonData['event']['subscriber_id'])
     return "Hello"
 
 if __name__ == '__main__':
     app.run(host=webhook_host, port=webhook_port)
+
 
