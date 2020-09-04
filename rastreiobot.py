@@ -469,6 +469,7 @@ def cmd_remove(message):
 @bot.message_handler(content_types=['document', 'audio', 'photo'])
 def cmd_format(message):
     bot.reply_to(message, 'Formato inválido')
+    bot.delete_message(message.from_user.id, message.message_id)
     # bot.reply_to(message, ('<a href="tg://user?id={}">{}</a>').format(message.from_user.id, message.from_user.first_name), parse_mode='HTML')
     send_clean_msg(bot, message.from_user.id, msgs.invalid.format(message.from_user.id))
     log_text(message.chat.id, message.message_id, 'Formato inválido')
@@ -554,6 +555,7 @@ def cmd_magic(message):
                 bot.reply_to(message, 'Sistema fora do ar')
             elif stat == status.TYPO:
                 bot.reply_to(message, msgs.typo)
+                bot.delete_message(message.from_user.id, message.message_id)
             elif stat == status.NOT_FOUND:
                 bot.reply_to(message, msgs.not_found)
             elif stat == status.NOT_FOUND_TM:
@@ -602,6 +604,7 @@ def cmd_magic(message):
     else:
         if int(user) > 0:
             bot.reply_to(message, msgs.typo)
+            bot.delete_message(message.from_user.id, message.message_id)
         if int(user) > 0 and len(message.text) > 25:
             send_clean_msg(bot, message.from_user.id, msgs.invalid.format(message.from_user.id))
 

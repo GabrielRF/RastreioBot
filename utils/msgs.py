@@ -94,7 +94,7 @@ desc = (
 )
 
 invalid = (
-    '<b>Use a nuvem privada do Telegram!</b>\n\n'
+    '<b>Conheça a nuvem privada do Telegram!</b>\n\n'
     'O app disponibiliza a aba de "Mensagens salvas" onde tudo pode ser armazenado!\n\n'
     'Desde textos, fotos e gifs até documentos/arquivos (limitados a 1,5GB cada)!\n'
     'Para acessar esse chat, clique no link abaixo.\n'
