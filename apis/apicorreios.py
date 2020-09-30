@@ -25,7 +25,8 @@ def format_obj(code, response):
     tabela = result['objeto'][0]['evento']
     if len(tabela) < 1:
         return status.NOT_FOUND
-    stats.append(str(u'\U0001F4EE') + ' <b>' + code + '</b>')
+    # stats.append(str(u'\U0001F4EE') + ' <b>' + code + '</b>')
+    stats.append(str(u'\U0001F4EE') + '<a href="https://t.me/rastreiobot?start=' + code + '">' + code + '</a>')
     for evento in reversed(tabela):
         try:
             dia0 = int(tabela[len(tabela) - 1]['data'].split('/')[0])
