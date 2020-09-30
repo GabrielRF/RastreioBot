@@ -106,10 +106,13 @@ def formato_obj(json, carrier, code, retries):
             return status.NOT_FOUND_TM
     for evento in reversed(tabela):
         codigo_novo = None
-        try:
-            data = datetime.strptime(evento['Date'], '%Y-%m-%d %H:%M:%S').strftime("%d/%m/%Y %H:%M")
-        except ValueError:
-            data = datetime.strptime(evento['Date'], '%Y-%m-%d %H:%M').strftime("%d/%m/%Y %H:%M")
+        print(code)
+        print(evento['Date'])
+        # try:
+        #     data = datetime.strptime(evento['Date'], '%Y-%m-%d %H:%M:%S').strftime("%d/%m/%Y %H:%M")
+        # except ValueError:
+        #     data = datetime.strptime(evento['Date'], '%Y-%m-%d %H:%M').strftime("%d/%m/%Y %H:%M")
+        data = evento['Date']
         situacao = evento['StatusDescription']
         observacao = evento['checkpoint_status']
         try:
