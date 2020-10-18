@@ -14,5 +14,3 @@ from rastreiobot import package_status_can_change
 ))
 def test_package_status_can_change(package, expected_value):
     assert package_status_can_change(package) == expected_value
-
-

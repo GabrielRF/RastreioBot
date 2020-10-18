@@ -1,8 +1,8 @@
 import pytest
 
-import apicorreios
-import apitrackingmore
-from misc import check_type
+from apis import apicorreios
+from apis import apitrackingmore
+from utils.misc import check_type
 
 
 @pytest.mark.parametrize("code,carrier", (
