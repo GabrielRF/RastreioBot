@@ -327,6 +327,11 @@ def cmd_status(message):
     )
 
     pkg_status = count_packages()
+
+    tax_rate = 0
+    if pkg_status['importado']:
+        tax_rate = round(100*pkg_status['despacho']/pkg_status['importado'], 2)
+
     chatid = message.chat.id
     bot.send_message(
         chatid, str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n' +
@@ -335,8 +340,7 @@ def cmd_status(message):
         'Pacotes em espera: ' + str(pkg_status['wait']) + '\n' +
         'Pacotes roubados: ' + str(pkg_status['extraviado']) + '\n\n' +
         'Pacotes importados: ' + str(pkg_status['importado']) + '\n' +
-        'Taxados em R$15: ' + str(
-            round(100*pkg_status['despacho']/pkg_status['importado'], 2)) + '%\n\n' +
+        'Taxados em R$15: ' + str(tax_rate) + '%\n\n' +
         #'Pacotes sem tributação: ' + str(round(100*sem_imposto/importado, 2)) + '%\n' +
         #'Pacotes tributados: ' + str(round(100*tributado/importado, 2)) + '%\n\n'
         '<code>Estatísticas de todos os pacotes em andamento ou entregues nos últimos 30 dias</code>',

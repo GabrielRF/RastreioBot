@@ -1,6 +1,6 @@
 import pytest
 
-from rastreiobot import package_status_can_change
+from rastreiobot import package_status_can_change, count_packages
 
 
 @pytest.mark.parametrize("package,expected_value", (
@@ -14,3 +14,40 @@ from rastreiobot import package_status_can_change
 ))
 def test_package_status_can_change(package, expected_value):
     assert package_status_can_change(package) == expected_value
+
+
+@pytest.fixture
+def all_packages():
+    packages = [
+        {
+            'code': 'PN123456789BR',
+            'users': ['154120594'],
+            'stat': ['📮 <b>PN123456789BR</b>', 'Aguardando recebimento pela ECT.'],
+            'time': 1602997062.541877,
+            '154120594': 'Minha encomenda'
+        },
+        {
+            'code': 'PN123456791BR',
+            'users': ['154120594'],
+            'stat': ['📮 <b>PN123456791BR</b>', 'Objeto roubado.'],
+            'time': 1602997062.541877,
+            '154120594': 'Minha encomenda 2'
+        }
+    ]
+    return packages
+
+
+def test_count_packages(mocker, all_packages):
+    mocked = mocker.patch('db.all_packages')
+    mocked.return_value = all_packages
+
+    assert count_packages() == {
+        'qtd': 1,
+        'wait': 1,
+        'extraviado': 1,
+        'despacho': 0,
+        'sem_imposto': 0,
+        'importado': 0,
+        'tributado': 0,
+        'trackingmore': 0
+        }

@@ -19,6 +19,9 @@ aiogram = "*"
 motor = "*"
 aiohttp = "*"
 flask = "*"
+flake8 = "*"
+mock = "*"
+pytest-mock = "*"
 
 [requires]
 python_version = "3.7"
