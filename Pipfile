@@ -6,6 +6,10 @@ verify_ssl = true
 [dev-packages]
 ipdb = "*"
 ipython = "*"
+flake8 = "*"
+mock = "*"
+pytest-mock = "*"
+
 
 [packages]
 pymongo = "==3.*"
@@ -19,9 +23,6 @@ aiogram = "*"
 motor = "*"
 aiohttp = "*"
 flask = "*"
-flake8 = "*"
-mock = "*"
-pytest-mock = "*"
 
 [requires]
 python_version = "3.7"
