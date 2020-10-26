@@ -329,7 +329,7 @@ def cmd_status(message):
     pkg_status = count_packages()
 
     tax_rate = 0
-    if pkg_status['importado']:
+    if pkg_status['importado'] > 0:
         tax_rate = round(100*pkg_status['despacho']/pkg_status['importado'], 2)
 
     chatid = message.chat.id
@@ -380,6 +380,13 @@ def cmd_statusall(message):
     except Exception:
         yesterday = ''
     pkg_status = count_packages()
+
+    despacho_rate = 0
+    tributacao_rate = 0
+    if pkg_status['importado'] > 0:
+        despacho_rate = round(100*pkg_status['despacho']/pkg_status['importado'], 2)
+        tributacao_rate = round(100*pkg_status['sem_imposto']/pkg_status['importado'], 2)
+
     chatid = message.chat.id
     bot.send_message(
         chatid, str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n' +
@@ -389,10 +396,8 @@ def cmd_statusall(message):
         'Pacotes roubados: ' + str(pkg_status['extraviado']) + '\n\n' +
         'Pacotes importados: ' + str(pkg_status['importado']) + '\n' +
         'TrackingMore: ' + str(pkg_status['trackingmore']) + '\n' +
-        'Taxados em R$15: ' + str(
-            round(100*pkg_status['despacho']/pkg_status['importado'], 2)) + '%\n' +
-        'Pacotes sem tributação: ' + str(
-            round(100*pkg_status['sem_imposto']/pkg_status['importado'], 2)) + '%\n\n' +
+        'Taxados em R$15: ' + str(despacho_rate) + '%\n' +
+        'Pacotes sem tributação: ' + str(tributacao_rate) + '%\n\n' +
         #'Pacotes tributados: ' + str(round(100*tributado/importado, 2)) + '%\n\n' +
         'Mensagens recebidas hoje: ' + str(todaymsg) + '\n' +
         'Mensagens recebidas ontem: ' + str(yesterdaymsg) + '\n\n' +
