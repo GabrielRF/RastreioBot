@@ -33,4 +33,4 @@ urllib3==1.25.9
 wcwidth==0.2.5
 Werkzeug==1.0.1
 yarl==1.4.2
-zipp==3.1.0
+zipp==3.4.0
