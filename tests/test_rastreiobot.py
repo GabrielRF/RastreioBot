@@ -41,13 +41,8 @@ def test_count_packages(mocker, all_packages):
     mocked = mocker.patch('db.all_packages')
     mocked.return_value = all_packages
 
-    assert count_packages() == {
+    assert dict(count_packages()) == {
         'qtd': 1,
         'wait': 1,
         'extraviado': 1,
-        'despacho': 0,
-        'sem_imposto': 0,
-        'importado': 0,
-        'tributado': 0,
-        'trackingmore': 0
         }
