@@ -14,6 +14,6 @@ sys.path.insert(0, str(ROOT_DIR))
 # file based on "bot.conf_sample". This is a hack just for simple tests.
 config_file = ROOT_DIR / "bot.conf"
 if not config_file.exists():
-   sample_config_file = ROOT_DIR / "bot.conf_sample"
-   # Cast to str can be removed when running Rastrebiobot with Python 3.7
-   copyfile(str(sample_config_file), str(config_file))
+    sample_config_file = ROOT_DIR / "bot.conf_sample"
+    # Cast to str can be removed when running Rastrebiobot with Python 3.7
+    copyfile(str(sample_config_file), str(config_file))
