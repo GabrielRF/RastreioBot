@@ -6,6 +6,10 @@ verify_ssl = true
 [dev-packages]
 ipdb = "*"
 ipython = "*"
+flake8 = "*"
+mock = "*"
+pytest-mock = "*"
+
 
 [packages]
 pymongo = "==3.*"

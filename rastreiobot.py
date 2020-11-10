@@ -4,6 +4,7 @@ import random
 import webhook
 from datetime import datetime, timedelta
 from time import time
+from collections import defaultdict
 
 import requests
 import sentry_sdk
@@ -39,40 +40,37 @@ logger_info.addHandler(handler_info)
 bot = telebot.TeleBot(TOKEN)
 
 markup_btn = types.ReplyKeyboardMarkup(resize_keyboard=True)
-markup_btn.row('/Pacotes','/Resumo')
-markup_btn.row('/Info','/Concluidos')
+markup_btn.row('/Pacotes', '/Resumo')
+markup_btn.row('/Info', '/Concluidos')
 markup_clean = types.ReplyKeyboardRemove(selective=False)
 
+POSTBOX = str(u'\U0001F4EE')
 
-# Count packages
+
 def count_packages():
+    '''
+    Count total packages and packages per status
+    '''
     cursor = db.all_packages()
-    qtd = 0
-    wait = 0
-    extraviado = 0
-    despacho = 0
-    sem_imposto = 0
-    importado = 0
-    tributado = 0
-    trackingmore = 0
+    pkg_status = defaultdict(int)
     for elem in cursor:
         if len(elem['code']) > 13:
-            trackingmore = trackingmore + 1
+            pkg_status['trackingmore'] += 1
         if 'Aguardando recebimento pel' in str(elem):
-            wait = wait + 1
+            pkg_status['wait'] += 1
         else:
-            qtd = qtd + 1
+            pkg_status['qtd'] += 1
         if 'Aguardando pagamento do despacho postal' in str(elem):
-            despacho = despacho + 1
+            pkg_status['despacho'] += 1
         if 'Liberado sem tributação' in str(elem):
-            sem_imposto = sem_imposto + 1
+            pkg_status['sem_imposto'] += 1
         if 'Objeto recebido pelos Correios do Brasil' in str(elem):
-            importado = importado + 1
+            pkg_status['importado'] += 1
         if 'Fiscalização Aduaneira finalizada' in str(elem):
-            tributado = tributado + 1
+            pkg_status['tributado'] += 1
         if 'Objeto roubado' in str(elem):
-            extraviado = extraviado + 1
-    return qtd, wait, despacho, sem_imposto, importado, tributado, trackingmore, extraviado
+            pkg_status['extraviado'] += 1
+    return pkg_status
 
 
 def package_status_can_change(package):
@@ -86,8 +84,10 @@ def package_status_can_change(package):
     ])
 
 
-## List packages of a user
 def list_packages(chatid, done, status):
+    '''
+    List all packages of a user
+    '''
     aux = ''
     try:
         cursor = db.search_packages_per_user(chatid)
@@ -101,27 +101,27 @@ def list_packages(chatid, done, status):
                 if not done:
                     if package_status_can_change(elem):
                         if status:
-                            aux = aux + str(u'\U0001F4EE') + '<code>' + elem['code'] + '</code>'
+                            aux = f"{aux}{POSTBOX}<code>{elem['code']}</code>"
                         else:
-                            aux = aux + '/' + elem['code']
+                            aux = f"{aux}/{elem['code']}"
                         try:
                             if elem[str(chatid)] != elem['code']:
-                                aux = aux + ' <b>' + elem[str(chatid)] + '</b>'
+                                aux = f"{aux} <b>{elem[str(chatid)]}</b>"
                             if status:
-                                aux = aux + '\n' + elem['stat'][len(elem['stat'])-1] + '\n'
+                                aux = f"{aux}\n{elem['stat'][len(elem['stat'])-1]}\n"
                         except Exception:
                             pass
-                        aux = aux + '\n'
+                        aux = f"{aux}\n"
                         qtd = qtd + 1
                 else:
                     if not package_status_can_change(elem):
-                        aux = aux + elem['code']
+                        aux = f"{aux}{elem['code']}"
                         try:
                             if elem[str(chatid)] != elem['code']:
-                                aux = aux + ' <b>' + elem[str(chatid)] + '</b>'
+                                aux = f"{aux} <b>{elem[str(chatid)]}</b>"
                         except Exception:
                             pass
-                        aux = aux + '\n'
+                        aux = f"{aux}\n"
                         qtd = qtd + 1
     except Exception:
         bot.send_message('9083329', 'Erro MongoBD')
@@ -129,13 +129,10 @@ def list_packages(chatid, done, status):
     return aux, qtd
 
 
-# helper for check text in element
-def status_elem(elem):
-    return elem['stat'][len(elem['stat']) - 1].lower()
-
-
-# Insert package on DB
 def add_package(code, user):
+    '''
+    Insert package in DB
+    '''
     code = code.upper()
     print("add_package")
     stat = get_update(code)
@@ -143,12 +140,14 @@ def add_package(code, user):
         return stat
     else:
         stats = []
-        stats.append(str(u'\U0001F4EE') + ' <b>' + code + '</b>')
+        stats.append(f"{POSTBOX} <b>{code}</b>")
         if stat == status.NOT_FOUND:
             stats.append('Aguardando recebimento pela ECT.')
             stat = stats
         elif stat == status.NOT_FOUND_TM:
-            stats.append('Verificando com as possíveis transportadoras. Por favor, aguarde.')
+            stats.append(
+                'Verificando com as possíveis transportadoras.'
+                'Por favor, aguarde.')
             stat = stats
         db.add_package(code, user, stat)
         stat = status.OK
@@ -161,23 +160,26 @@ def check_system_correios():
         response = requests.get(url, timeout=3)
     except Exception:
         return False
-        print('check_system')
     if '200' in str(response):
         return True
     else:
         return False
 
 
-# Update package tracking state
 def get_update(code):
+    '''
+    Update package tracking status
+    '''
     print("get_update")
     retorno = check_update(code)
     print("check up: ", retorno)
     return retorno
 
 
-# Add to log
 def log_text(chatid, message_id, text):
+    '''
+    Add text to log
+    '''
     logger_info.info(
         str(datetime.now()) +
         ' ' + str(chatid) + ' \t' +
@@ -206,16 +208,23 @@ def command_pay(message):
                      start_parameter='doar15',
                      invoice_payload='RastreioBot')
 
+
 @bot.pre_checkout_query_handler(func=lambda query: True)
 def checkout(pre_checkout_query):
-    bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True,
-        error_message=msgs.donate_error)
+    bot.answer_pre_checkout_query(
+        pre_checkout_query.id,
+        ok=True,
+        error_message=msgs.donate_error
+    )
+
 
 @bot.message_handler(content_types=['successful_payment'])
 def got_payment(message):
     bot.send_message(message.chat.id, msgs.donate_ok)
 
+
 bot.skip_pending = True
+
 
 @bot.message_handler(commands=['gif'])
 def cmd_repetir(message):
@@ -240,9 +249,9 @@ def cmd_repetir(message):
 def cmd_pacotes(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
-         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned)
-         return 0
+        log_text(message.chat.id, message.message_id, f'--- BANIDO --- {message.text}')
+        bot.send_message(message.chat.id, msgs.banned)
+        return 0
     chatid = message.chat.id
     message, qtd = list_packages(chatid, False, False)
     if qtd == 0:
@@ -253,10 +262,10 @@ def cmd_pacotes(message):
         message = '<b>Clique para ver o histórico:</b>\n' + message
         msg_split = message.split('\n')
         for elem in range(0, len(msg_split)-1, 10):
-             s = '\n'
-             bot.send_message(chatid,
-                 s.join(msg_split[elem:elem+10]), parse_mode='HTML',
-                 reply_markup=markup_clean, disable_web_page_preview=True)
+            s = '\n'
+            bot.send_message(chatid,
+                s.join(msg_split[elem:elem+10]), parse_mode='HTML',
+                reply_markup=markup_clean, disable_web_page_preview=True)
 
         try:
             subscriber = webhook.select_user('chatid', chatid)[1]
@@ -324,20 +333,26 @@ def cmd_status(message):
         message.text + '\t' + str(message.from_user.first_name)
     )
 
-    qtd, wait, despacho, sem_imposto, importado, tributado, trackingmore, extraviado = count_packages()
+    pkg_status = count_packages()
+
+    tax_rate = 0
+    if pkg_status['importado'] > 0:
+        tax_rate = round(100*pkg_status['despacho']/pkg_status['importado'], 2)
+
     chatid = message.chat.id
+    total_packages = str(pkg_status['qtd']+pkg_status['wait'])
     bot.send_message(
-        chatid, str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n' +
-        'Quantidade de pacotes: ' + str(qtd+wait) + '\n\n'
-        'Pacotes em andamento: ' + str(qtd) + '\n' +
-        'Pacotes em espera: ' + str(wait) + '\n' +
-        'Pacotes roubados: ' + str(extraviado) + '\n\n' +
-        'Pacotes importados: ' + str(importado) + '\n' +
-        'Taxados em R$15: ' + str(round(100*despacho/importado, 2)) + '%\n\n' +
-        #'Pacotes sem tributação: ' + str(round(100*sem_imposto/importado, 2)) + '%\n' +
-        #'Pacotes tributados: ' + str(round(100*tributado/importado, 2)) + '%\n\n'
-        '<code>Estatísticas de todos os pacotes em andamento ou entregues nos últimos 30 dias</code>',
-        parse_mode='HTML'
+        chatid,
+        f"{POSTBOX} <b>@RastreioBot</b>\n\n"
+        f"Quantidade de pacotes: {total_packages}\n\n"
+        f"Pacotes em andamento: {str(pkg_status['qtd'])}\n"
+        f"Pacotes em espera: {str(pkg_status['wait'])}\n"
+        f"Pacotes roubados: {str(pkg_status['extraviado'])}\n\n"
+        f"Pacotes importados: {str(pkg_status['importado'])}\n"
+        f"Taxados em R$15: {str(tax_rate)}%\n\n"
+        "<code>Estatísticas de todos os pacotes em andamento ou entregues nos "
+        "últimos 30 dias</code>",
+        parse_mode="HTML"
     )
 
 
@@ -345,13 +360,17 @@ def cmd_status(message):
 def cmd_statusall(message):
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
-        log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+        log_text(
+            message.chat.id,
+            message.message_id,
+            f'--- BANIDO --- {message.text}'
+        )
         bot.send_message(message.chat.id, msgs.banned)
         return 0
     log_text(
         message.chat.id,
         message.message_id,
-        message.text + '\t' + str(message.from_user.first_name)
+        f'{message.text} \t {str(message.from_user.first_name)}'
     )
 
     str_yesterday = datetime.now() - timedelta(1)
@@ -363,7 +382,7 @@ def cmd_statusall(message):
         with open(LOG_INFO_FILE + '.' + str_yesterday) as f:
             yesterdaymsg = (sum(1 for _ in f))
     except Exception:
-            yesterdaymsg = ''
+        yesterdaymsg = ''
 
     with open(LOG_ALERTS_FILE) as f:
         today = (sum(1 for _ in f))
@@ -372,24 +391,34 @@ def cmd_statusall(message):
             yesterday = (sum(1 for _ in f))
     except Exception:
         yesterday = ''
-    qtd, wait, despacho, sem_imposto, importado, tributado, trackingmore, extraviado = count_packages()
+    pkg_status = count_packages()
+
+    despacho_rate = 0
+    tributacao_rate = 0
+    if pkg_status['importado'] > 0:
+        despacho_rate = round(
+            100*pkg_status['despacho']/pkg_status['importado'], 2)
+        tributacao_rate = round(
+            100*pkg_status['sem_imposto']/pkg_status['importado'], 2)
+
     chatid = message.chat.id
+    total_packages = str(pkg_status['qtd']+pkg_status['wait'])
     bot.send_message(
-        chatid, str(u'\U0001F4EE') + '<b>@RastreioBot</b>\n\n' +
-        'Quantidade de pacotes: ' + str(qtd+wait) + '\n\n'
-        'Pacotes em andamento: ' + str(qtd) + '\n' +
-        'Pacotes em espera: ' + str(wait) + '\n' +
-        'Pacotes roubados: ' + str(extraviado) + '\n\n' +
-        'Pacotes importados: ' + str(importado) + '\n' +
-        'TrackingMore: ' + str(trackingmore) + '\n' +
-        'Taxados em R$15: ' + str(round(100*despacho/importado, 2)) + '%\n' +
-        'Pacotes sem tributação: ' + str(round(100*sem_imposto/importado, 2)) + '%\n\n' +
-        #'Pacotes tributados: ' + str(round(100*tributado/importado, 2)) + '%\n\n' +
-        'Mensagens recebidas hoje: ' + str(todaymsg) + '\n' +
-        'Mensagens recebidas ontem: ' + str(yesterdaymsg) + '\n\n' +
-        'Alertas enviados hoje: ' + str(today) + '\n' +
-        'Alertas enviados ontem: ' + str(yesterday),
-        parse_mode='HTML'
+        chatid,
+        f"{POSTBOX}<b>@RastreioBot</b>\n\n"
+        f"Quantidade de pacotes: {total_packages}\n\n"
+        f"Pacotes em andamento: {str(pkg_status['qtd'])}\n"
+        f"Pacotes em espera: {str(pkg_status['wait'])}\n"
+        f"Pacotes roubados: {str(pkg_status['extraviado'])}\n\n"
+        f"Pacotes importados: {str(pkg_status['importado'])}\n"
+        f"TrackingMore: {str(pkg_status['trackingmore'])}\n"
+        f"Taxados em R$15: {str(despacho_rate)}%\n"
+        f"Pacotes sem tributação: {str(tributacao_rate)}%\n\n"
+        f"Mensagens recebidas hoje: {str(todaymsg)}\n"
+        f"Mensagens recebidas ontem: {str(yesterdaymsg)}\n\n"
+        f"Alertas enviados hoje: {str(today)}\n"
+        f"Alertas enviados ontem: {str(yesterday)}",
+        parse_mode="HTML"
     )
 
 
@@ -459,7 +488,6 @@ def cmd_remove(message):
         bot.send_message(message.chat.id, 'Pacote removido.')
     except Exception:
         bot.send_message(message.chat.id, msgs.remove, parse_mode='HTML')
-        # bot.send_document(message.chat.id, 'CgADAQADWQADuVvARjeZRuSF_fMXAg')
         try:
             bot.send_document(message.chat.id, 'CgADAQADWgADGu_QRo7Gbbxg4ugLAg')
         except telebot.apihelper.ApiException:
@@ -476,9 +504,11 @@ def cmd_format(message):
     print(message)
 
 
-# entry point for adding a tracking number
 @bot.message_handler(func=lambda m: True)
 def cmd_magic(message):
+    '''
+    Entry point for adding a tracking number
+    '''
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
