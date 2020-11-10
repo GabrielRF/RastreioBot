@@ -262,7 +262,7 @@ def cmd_pacotes(message):
             subscriber = webhook.select_user('chatid', chatid)[1]
         except TypeError:
             subscriber = ''
-        if qtd > 7 and chatid > 0 and str(chatid) not in PATREON and str(chatid) not in subscriber:
+        if qtd > 7 and chatid > 0 and str(chatid) not in subscriber:
             bot.send_message(chatid,
                 str(u'\U0001F4B5') + '<b>Colabore!</b>'
                 + '\nPicPay: http://grf.xyz/picpay',
