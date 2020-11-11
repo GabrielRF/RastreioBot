@@ -18,6 +18,19 @@ key = config['TRACKINGMORE']['key']
 trackingmore.set_api_key(key)
 
 
+def sort_carriers(carriers):
+    priorities = ["cainiao"]
+    priorities.reverse()
+
+    def get_index(carrier):
+        try:
+            return priorities.index(carrier["code"])
+        except ValueError:
+            return -1
+
+    return sorted(carriers, key=get_index, reverse=True)
+
+
 def get_or_create_tracking_item(carrier, code):
     print(carrier)
     try:
@@ -44,7 +57,8 @@ def get_carriers(code):
         except Exception as e:
             print(e)
             raise IndexError
-        carriers.sort(key=lambda carrier: carrier['code'])
+
+        carriers = sort_carriers(carriers)
         db.update_package(code, carrier=carriers)
     return carriers
 
