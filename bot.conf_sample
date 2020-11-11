@@ -1,13 +1,13 @@
 [RASTREIOBOT]
-TOKEN = 
-int_check = 
-int_del = 
-text_log = /var/log/RastreioBot/text.log
-alerts_log = /var/log/RastreioBot/alerts.log
-status_log = /var/log/RastreioBot/status.log
-routine_log = /var/log/RastreioBot/routine.log
-delete_log = /var/log/RastreioBot/delete.log
-banned = 
+TOKEN =
+int_del = 2592000
+text_log = text.log
+alerts_log = alerts.log
+status_log = status.log
+routine_log = routine.log
+delete_log = delete.log
+banned =
+patreon =
 
 [CORREIOS]
 usuario =
@@ -16,7 +16,7 @@ token =
 
 [TRACKINGMORE]
 key =
-log = /var/log/RastreioBot/trackingmore.log
+log = trackingmore.log
 
 [SENTRY]
 url =
@@ -28,5 +28,4 @@ table = assinantes
 [WEBHOOK]
 host = 0.0.0.0
 port = 80
-key = 
-                                                                        
+key =

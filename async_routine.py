@@ -20,7 +20,6 @@ config.read('bot.conf')
 
 
 TOKEN = config['RASTREIOBOT']['TOKEN']
-int_check = int(config['RASTREIOBOT']['int_check'])
 LOG_ALERTS_FILE = config['RASTREIOBOT']['alerts_log']
 PATREON = config['RASTREIOBOT']['patreon']
 INTERVAL = 0.03
