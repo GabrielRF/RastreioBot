@@ -18,6 +18,9 @@ token =
 key =
 log = trackingmore.log
 
+[STRIPE]
+token =
+
 [SENTRY]
 url =
 
