@@ -101,6 +101,7 @@ def get(code, retries=0):
                 return formato_obj(tracking_data, carrier, code, retries)
             elif tracking_data['status'] == 'delivered':
                 db.update_package(code, carrier=carrier)
+                return formato_obj(tracking_data, carrier, code, retries)
             elif tracking_data['status'] == 'pickup':
                 db.update_package(code, carrier=carrier)
                 return formato_obj(tracking_data, carrier, code, retries)

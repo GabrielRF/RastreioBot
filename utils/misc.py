@@ -14,7 +14,7 @@ CORREIOS_RE = re.compile(
 )
 ALI_RE = re.compile(
     r"^([A-Za-z]{2}\d{14}|(1Z)[0-9A-Z]{16}|[A-Za-z]{2}\d{12}[A-Za-z]{3}|"
-    r"\d{12}|\d{22}|[A-Za-z]{2}\d{18}|[A-Za-z]{1}\d{12}[A-Za-z]{3}|"
+    r"\d{12}|\d{22}|[A-Za-z]{2}\d{18}|[A-Za-z]{1}\d{12}[A-Za-z]{3}|[A-Za-z]{2}\d{11}|"
     r"[A-Za-z]{2}\d{13}|[A-Za-z]{4}\d{9}|\d{10}|[A-Za-z]{5}\d{10}[A-Za-z]{2})$"
 )
 

@@ -187,25 +187,32 @@ def log_text(chatid, message_id, text):
 
 
 @bot.message_handler(commands=['doar'])
-def command_pay(message):
+def command_sub(message):
     log_text(message.chat.id, message.message_id, '--- DONATE --- ')
     if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
          bot.send_message(message.chat.id, msgs.banned)
          return 0
     send_clean_msg(bot, message.chat.id, msgs.donate_warn)
-    bot.send_invoice(message.chat.id, title='RastreioBot',
-                     description='Para doar R$ 10, clique no botão abaixo.',
+    #bot.send_photo(message.chat.id, 'AQADTnTvSBcAA9J2AwAB', caption='PIX: pix@rastreiobox.xyz')
+    #bot.send_photo(message.chat.id, 'AgACAgEAAxkBAAFvCOFfuotdgSJTpJelCWxXEoRw6MTungACM6oxG2i22UWv08Gw0KYTLE5070gXAAMBAAMCAAN4AAPTdgMAAR4E', caption='PIX: pix@rastreiobox.xyz')
+    bot.send_photo(message.chat.id, 'AgACAgEAAxkBAAFvCWVfuo6kDztK_xxQVSza4gkfNPkAAYgAAjSqMRtottlFTZa3_00eUpfumRIwAAQBAAMCAAN5AAMkFwQAAR4E', caption='PIX: pix@rastreiobox.xyz')
+
+@bot.message_handler(commands=['pagar'])
+def command_pay(message):
+    send_clean_msg(bot, message.chat.id, msgs.payment)
+    bot.send_invoice(message.chat.id, title='RastreioBot - 6 meses',
+                     description='Seis meses (183 dias) de rastreio de pacotes internacionais',
                      provider_token=STRIPE, currency='BRL',
-                     prices=[types.LabeledPrice(label='Doar R$ 10', amount=1000)],
-                     start_parameter='doar10',
-                     invoice_payload='RastreioBot')
-    bot.send_invoice(message.chat.id, title='RastreioBot',
-                     description='Para doar R$ 15, clique no botão abaixo.',
+                     prices=[types.LabeledPrice(label='Doar R$ 12', amount=1200)],
+                     start_parameter='doar12',
+                     invoice_payload='RastreioBot6meses')
+    bot.send_invoice(message.chat.id, title='RastreioBot - 1 ano',
+                     description='Um ano (366 dias) de rastreio de pacotes internacionais',
                      provider_token=STRIPE, currency='BRL',
-                     prices=[types.LabeledPrice(label='Doar R$ 15', amount=1500)],
-                     start_parameter='doar15',
-                     invoice_payload='RastreioBot')
+                     prices=[types.LabeledPrice(label='Doar R$ 20', amount=2000)],
+                     start_parameter='doar21',
+                     invoice_payload='RastreioBot1ano')
 
 
 @bot.pre_checkout_query_handler(func=lambda query: True)
@@ -220,6 +227,20 @@ def checkout(pre_checkout_query):
 @bot.message_handler(content_types=['successful_payment'])
 def got_payment(message):
     bot.send_message(message.chat.id, msgs.donate_ok)
+    if message.successful_payment.invoice_payload == 'RastreioBot1ano':
+        days = -366
+    elif message.successful_payment.invoice_payload == 'RastreioBot6meses':
+        days = -183
+    data = subscriber = webhook.select_user('chatid', message.from_user.id)
+    if not data:
+        webhook.adduser(message.chat.id, message.chat.id, days)
+    elif data[1] and data[1] == data[2]:
+        webhook.updateuser('sub_id', int(data[3])+days, 'chatid',  message.from_user.id)
+    else:
+        webhook.updateuser('sub_id', days, 'chatid',  message.from_user.id)
+        webhook.updateuser('picpayid', message.from_user.id, 'chatid',  message.from_user.id)
+    bot.send_message(message.chat.id, msgs.donate_ok)
+    #msg = bot.send_message(message.chat.id, msgs.signed, parse_mode='HTML')
 
 
 bot.skip_pending = True
@@ -246,6 +267,7 @@ def cmd_repetir(message):
 
 @bot.message_handler(commands=['pacotes', 'Pacotes'])
 def cmd_pacotes(message):
+    subscriber = webhook.select_user('chatid', message.chat.id)
     bot.send_chat_action(message.chat.id, 'typing')
     if str(message.from_user.id) in BANNED:
         log_text(message.chat.id, message.message_id, f'--- BANIDO --- {message.text}')
@@ -258,12 +280,17 @@ def cmd_pacotes(message):
     elif qtd == -1:
         send_clean_msg(bot, chatid, msgs.error_bot)
     else:
+        print(subscriber)
+        if subscriber and int(subscriber[3]) < 0:
+            msg = '\n<code>Saldo de dias de uso: ' + str(int(subscriber[3])*-1) + '</code>'
+        else:
+            msg = ''
         message = '<b>Clique para ver o histórico:</b>\n' + message
         msg_split = message.split('\n')
         for elem in range(0, len(msg_split)-1, 10):
             s = '\n'
             bot.send_message(chatid,
-                s.join(msg_split[elem:elem+10]), parse_mode='HTML',
+                s.join(msg_split[elem:elem+10]) + msg, parse_mode='HTML',
                 reply_markup=markup_clean, disable_web_page_preview=True)
 
         try:

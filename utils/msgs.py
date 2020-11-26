@@ -50,9 +50,10 @@ howto = (
     '\U0001F680<b>Conheça meus outros projetos:</b>\n'
     'http://grf.xyz/\n\n'
     '\U0001F4B5 <b>Colabore!</b>\n'
-    'Clique em /doar ou envie pelo PicPay, usuario GabrielRF.\n'
+    'Clique em /doar, doe usando PIX ou pelo PicPay, usuario GabrielRF.\n'
+    'PIX: pix@rastreiobot.xyz\n'
     'PicPay: http://grf.xyz/picpay\n\n'
-    '\U0001F4B3 <b>Envie R$ 1 por mês, rastreie pacotes internacionais e ajude o bot!</b>\n'
+    '\U0001F4B3 <b>Envie R$ 2 por mês, rastreie pacotes internacionais e ajude o bot!</b>\n'
     'PicPay: http://grf.xyz/assine\n'
     'Ou procure pelo usuário GabRF\n\n'
     '\U0001F517'
@@ -65,13 +66,13 @@ error_bot = 'Ops!\nHouve um problema com o bot.\nTente novamente mais tarde.'
 premium = (
     'O @RastreioBot é grátis e a idéia é que permaneça assim.'
     '\nPorém, para rastrear pacotes internacionais é necessário pagamento.'
-    '\nPor isso, para rastrear este pacote é necessário fazer a assinatura do bot,'
-    '\nque pode ser cancelada a qualquer momento.'
-    '\n\n<a href="https://grf.xyz/assine">Clique aqui para assinar</a>'
-    '\nou busque por <code>@GabRF</code> no PicPay.'
-    '\n\nCaso já tenha assinado, por favor, envie <code>/assinei seu_usuario_picpay</code>'
-    '\n\nExemplo: <code>/assinei GabRF</code>'
-    '\n\nNão tem PicPay? Acesse pelo link abaixo e ganhe R$ 10!'
+    '\n\nOpções de pagamento:'
+    '\n\n1: <b>Pague pelo Telegram</b> com o comando /pagar'
+    '\n\n2: <a href="https://grf.xyz/assine">Assine pelo PicPay clicando aqui</a>'
+    '\nou buscando por <code>@GabRF</code> no PicPay.'
+    '\nCaso já tenha assinado, por favor, envie <code>/assinei seu_usuario_picpay</code>'
+    '\nExemplo: <code>/assinei GabRF</code>'
+    '\nNão tem PicPay? Acesse pelo link abaixo e ganhe R$ 10!'
     '\nhttp://www.picpay.com/convite?@5ESW'
 )
 
@@ -109,7 +110,17 @@ signed = ('Configuração concluída.\n\n'
     'Para alterações, dúvidas ou problemas, fale com @GabrielRF'
 )
 
-donate_warn = '<b>Atenção</b>\n\nA doação não tem efeito de assinatura para rastrear encomendas internacionais!\n\nPara assinar, acesse https://grf.xyz/assine ou procure por <code>GabRF</code> no PicPay.'
+payment = (
+    '\U0001F4EE <b>@RastreioBot</b>\n\n'
+    '<b>Condições do pagamento</b>'
+    '\n- O bot te enviará lembretes restando 15 e 7 dias para o fim do plano, além de uma mensagem no último dia.'
+    '\n- Para acrescentar mais dias, basta repetir a compra.'
+    '\n\n<b>Atenção</b>'
+    '\n- Pagamento não reembolsável'
+    '\n- Este método de pagamento substituirá o PicPay! Ou seja, cancele o plano no PicPay após o pagamento usando este método.'
+)
+
+donate_warn = '<b>Atenção</b>\n\nA doação não tem efeito para rastrear encomendas internacionais!\n\nPara rastrear pacotes fora dos Correios, envie /pagar ou acesse https://grf.xyz/assine (<code>GabRF</code> no PicPay).'
 
 donate_ok = (
     'Muito obrigado pela colaboração!'
@@ -119,4 +130,22 @@ donate_error = (
     'Por favor, tente novamente em alguns minutos.\n'
     'Houve algum erro na transação.\n'
     'Não houve cobrança em seu cartão.'
+)
+
+days_left_15 = (
+    '<b>RastreioBot</b>'
+    '\nRestam apenas 15 dias de rastreio de pacotes internacionais.'
+    '\nPara renovar, envie /pagar.'
+)
+
+days_left_7 = (
+    '<b>RastreioBot</b>'
+    '\nRestam apenas 7 dias de rastreio de pacotes internacionais.'
+    '\nPara renovar, envie /pagar.'
+)
+
+days_left_1 = (
+    '<b>RastreioBot</b>'
+    '\nRestam apenas 1 dia de rastreio de pacotes internacionais.'
+    '\nPara renovar, envie /pagar.'
 )
