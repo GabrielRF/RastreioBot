@@ -24,6 +24,7 @@ pymongo==3.10.1
 pyparsing==2.4.7
 pyTelegramBotAPI==3.7.2
 pytest==5.4.3
+pytest-mock==3.3.1
 pytz==2020.1
 requests==2.24.0
 sentry-sdk==0.16.0
