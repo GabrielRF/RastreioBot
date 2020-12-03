@@ -200,6 +200,7 @@ def command_sub(message):
 
 @bot.message_handler(commands=['pagar'])
 def command_pay(message):
+    log_text(message.chat.id, message.message_id, '--- PAYMENT --- ')
     send_clean_msg(bot, message.chat.id, msgs.payment)
     bot.send_invoice(message.chat.id, title='RastreioBot - 6 meses',
                      description='Seis meses (183 dias) de rastreio de pacotes internacionais',
@@ -281,10 +282,12 @@ def cmd_pacotes(message):
         send_clean_msg(bot, chatid, msgs.error_bot)
     else:
         print(subscriber)
-        if subscriber and int(subscriber[3]) < 0:
-            msg = '\n<code>Saldo de dias de uso: ' + str(int(subscriber[3])*-1) + '</code>'
-        else:
-            msg = ''
+        msg = ''
+        try:
+            if int(subscriber[3]) < 0:
+                msg = '\n<code>Saldo de dias de uso: ' + str(int(subscriber[3])*-1) + '</code>'
+        except (ValueError, TypeError) as e:
+            pass
         message = '<b>Clique para ver o histórico:</b>\n' + message
         msg_split = message.split('\n')
         for elem in range(0, len(msg_split)-1, 10):
@@ -577,7 +580,7 @@ def cmd_magic(message):
         except TypeError:
             subscriber = ''
         if code_type != correios and user not in PATREON and user not in subscriber:
-            bot.reply_to(message, msgs.premium, parse_mode='HTML')
+            bot.reply_to(message, msgs.premium, parse_mode='HTML', disable_web_page_preview=True)
             log_text(message.chat.id, message.message_id, 'Pacote chines. Usuario nao assinante.')
             return 0
         exists = check_package(code)
