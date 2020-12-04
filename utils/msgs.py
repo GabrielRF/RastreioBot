@@ -56,9 +56,6 @@ howto = (
     '\U0001F4B3 <b>Rastreie pacotes internacionais e ajude o bot!</b>\n'
     'Envie /pagar para pagar pelo Telegram\n'
     'Ou envie /assinei para pagar pelo PicPay \n\n'
-    '\U0001F517'
-    '<b>Não tem PicPay?</b> Acesse pelo link abaixo e ganhe R$ 10!'
-    '\nhttp://www.picpay.com/convite?@5ESW\n\n'
 )
 
 error_bot = 'Ops!\nHouve um problema com o bot.\nTente novamente mais tarde.'
@@ -72,8 +69,6 @@ premium = (
     '\nou buscando por <code>@GabRF</code> no PicPay.'
     '\nCaso já tenha assinado, por favor, envie <code>/assinei seu_usuario_picpay</code>'
     '\nExemplo: <code>/assinei GabRF</code>'
-    '\nNão tem PicPay? Acesse pelo link abaixo e ganhe R$ 10!'
-    '\nhttp://www.picpay.com/convite?@5ESW'
 )
 
 patreon = (
