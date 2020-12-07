@@ -1,9 +1,11 @@
+import asyncio
 import configparser
 import flask
 import json
 import sqlite3
 import requests
 from flask import abort, request
+from db import User
 
 config = configparser.ConfigParser()
 config.sections()
@@ -95,13 +97,19 @@ def meli_signup():
         "code": code,
         "redirect_uri": meli_client_redirect_url,
     }
-
     response = requests.post(url, json=data).json()
 
-    # TODO: salvar no banco access_token e refresh_token do usuário
-    # TODO: notificar usuário de conta linkada
     meli_access_token = response["access_token"]
     meli_refresh_token = response["refresh_token"]
+
+    user = User.update(
+        telegram_id,
+        upsert=True,
+        meli_access_token=meli_access_token,
+        meli_refresh_token=meli_refresh_token,
+    )
+
+    # TODO: notify user
 
 
 @app.route("/meli/notifications")
@@ -112,5 +120,3 @@ def meli_notifications():
 
 if __name__ == '__main__':
     app.run(host=webhook_host, port=webhook_port)
-
-
