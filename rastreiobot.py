@@ -45,7 +45,7 @@ markup_clean = types.ReplyKeyboardRemove(selective=False)
 
 meli_client_id = config['MERCADOLIVRE']['client_id']
 meli_client_secret_key = config['MERCADOLIVRE']['secret_key']
-meli_client_redirect_url = config['MERCADOLIVRE']['redirect_url']
+meli_redirect_url = config['MERCADOLIVRE']['redirect_url']
 
 POSTBOX = str(u'\U0001F4EE')
 
@@ -510,19 +510,14 @@ def cmd_format(message):
 @bot.message_handler(commands=['mercardolivre', 'mercado_livre', 'meli'])
 def cmd_cadastro_mercado_livre(message):
     url = (
-        "https://auth.mercadolibre.com.ar/authorization?"
+        "https://auth.mercadolivre.com.br/authorization?"
         "response_type=code&client_id={}&redirect_uri={}&state={}"
     ).format(
         meli_client_id,
-        meli_client_redirect_url,
+        meli_redirect_url,
         message.from_user.id
     )
-
-    resposta = (
-        "<descrição>\n"
-        f"{url}"
-    )
-    bot.reply_to(message, resposta)
+    bot.reply_to(message, url)
 
 
 @bot.message_handler(func=lambda m: True)

@@ -20,7 +20,8 @@ webhook_key = config['WEBHOOK']['KEY']
 
 meli_client_id = config['MERCADOLIVRE']['client_id']
 meli_client_secret_key = config['MERCADOLIVRE']['secret_key']
-meli_client_redirect_url = config['MERCADOLIVRE']['redirect_url']
+meli_redirect_url = config['MERCADOLIVRE']['redirect_url']
+meli_redirect_url_salt = config['MERCADOLIVRE']['redirect_url_salt']
 
 
 app = flask.Flask(__name__)
@@ -80,7 +81,7 @@ def secbox():
     return "Hello"
 
 
-@app.route("/meli/signup")
+@app.route(f"/meli/signup/{meli_redirect_url_salt}")
 def meli_signup():
     code = request.args.get("code")
     # Gambiarra para relacionar usuário do telegram a sua conta no meli
@@ -89,7 +90,7 @@ def meli_signup():
     if not telegram_id or not code:
         abort(400)
 
-    url = "https://api.mercadolivre.com/oauth/token"
+    url = "https://api.mercadolibre.com/oauth/token"
     data = {
         "grant_type": "authorization_code",
         "client_id": meli_client_id,
@@ -110,6 +111,7 @@ def meli_signup():
     )
 
     # TODO: notify user
+    return ""
 
 
 @app.route("/meli/notifications")

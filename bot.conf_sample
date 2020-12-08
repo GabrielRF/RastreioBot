@@ -37,3 +37,4 @@ key =
 client_id =
 secret_key =
 redirect_url =
+redirect_url_salt =
