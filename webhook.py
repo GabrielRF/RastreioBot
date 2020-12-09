@@ -1,8 +1,11 @@
+import asyncio
 import configparser
 import flask
 import json
 import sqlite3
-from flask import request
+import requests
+from flask import abort, request
+from db import User
 
 config = configparser.ConfigParser()
 config.sections()
@@ -14,6 +17,12 @@ table = config['SQLITE3']['table']
 webhook_host = config['WEBHOOK']['HOST']
 webhook_port = config['WEBHOOK']['PORT']
 webhook_key = config['WEBHOOK']['KEY']
+
+meli_client_id = config['MERCADOLIVRE']['client_id']
+meli_client_secret_key = config['MERCADOLIVRE']['secret_key']
+meli_redirect_url = config['MERCADOLIVRE']['redirect_url']
+meli_redirect_url_salt = config['MERCADOLIVRE']['redirect_url_salt']
+
 
 app = flask.Flask(__name__)
 
@@ -71,7 +80,45 @@ def secbox():
             deluser('sub_id', jsonData['event']['subscriber_id'])
     return "Hello"
 
+
+@app.route(f"/meli/signup/{meli_redirect_url_salt}")
+def meli_signup():
+    code = request.args.get("code")
+    # Gambiarra para relacionar usuário do telegram a sua conta no meli
+    telegram_id = request.args.get("state")
+
+    if not telegram_id or not code:
+        abort(400)
+
+    url = "https://api.mercadolibre.com/oauth/token"
+    data = {
+        "grant_type": "authorization_code",
+        "client_id": meli_client_id,
+        "client_secret": meli_client_secret_key,
+        "code": code,
+        "redirect_uri": meli_client_redirect_url,
+    }
+    response = requests.post(url, json=data).json()
+
+    meli_access_token = response["access_token"]
+    meli_refresh_token = response["refresh_token"]
+
+    user = User.update(
+        telegram_id,
+        upsert=True,
+        meli_access_token=meli_access_token,
+        meli_refresh_token=meli_refresh_token,
+    )
+
+    # TODO: notify user
+    return ""
+
+
+@app.route("/meli/notifications")
+def meli_notifications():
+    pass
+
+
+
 if __name__ == '__main__':
     app.run(host=webhook_host, port=webhook_port)
-
-

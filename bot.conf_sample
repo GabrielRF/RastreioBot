@@ -32,3 +32,9 @@ table = assinantes
 host = 0.0.0.0
 port = 80
 key =
+
+[MERCADOLIVRE]
+client_id =
+secret_key =
+redirect_url =
+redirect_url_salt =
