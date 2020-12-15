@@ -50,7 +50,7 @@ def run(dry_run):
             or time_diff > 2 * int_del
         ):
             if not dry_run:
-                db.delete_package(elem['code'], latest_status)
+                db.delete_package(elem['code'])
 
             logger.info("%s\t%s\t%r", datetime.now(), elem['code'], latest_status)
             total_deleted += 1
