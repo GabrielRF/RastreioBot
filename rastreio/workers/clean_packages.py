@@ -4,6 +4,8 @@ from datetime import datetime
 from time import time
 
 import telebot
+from rich.progress import track
+
 from rastreio import db
 
 config = configparser.ConfigParser()
@@ -21,13 +23,8 @@ handler = logging.handlers.TimedRotatingFileHandler(
 logger.addHandler(handler)
 
 
-def del_user(code, msg):
-    logger.info("%s\t%s\t%r", datetime.now(), code, msg)
-    db.delete_package(code)
-
-
-if __name__ == '__main__':
-    cursor1 = db.all_packages()
+def run(dry_run):
+    packages = db.all_packages()
     logger.info('--- DELETE running! ---')
 
     total_deleted = 0
@@ -42,7 +39,7 @@ if __name__ == '__main__':
         'Delivered',
     ]
 
-    for elem in cursor1:
+    for elem in track(list(packages), description="Processing..."):
         code = elem['code']
         time_diff = int(time() - float(elem['time']))
         latest_status = elem['stat'][-1]
@@ -52,7 +49,10 @@ if __name__ == '__main__':
             and time_diff > int_del
             or time_diff > 2 * int_del
         ):
-            del_user(elem['code'], latest_status)
+            if not dry_run:
+                db.delete_package(elem['code'])
+
+            logger.info("%s\t%s\t%r", datetime.now(), elem['code'], latest_status)
             total_deleted += 1
 
     logger.info("Total of packages deleted: %s", total_deleted)
