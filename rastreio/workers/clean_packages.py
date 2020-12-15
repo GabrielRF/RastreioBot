@@ -52,7 +52,7 @@ def run(dry_run):
             if not dry_run:
                 db.delete_package(elem['code'], latest_status)
 
-            logger.info("%s\t%r", elem['code'], latest_status)
+            logger.info("%s\t%s\t%r", datetime.now(), elem['code'], latest_status)
             total_deleted += 1
 
     logger.info("Total of packages deleted: %s", total_deleted)
