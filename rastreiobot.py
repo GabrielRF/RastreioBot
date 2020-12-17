@@ -491,15 +491,16 @@ def cmd_sign(message):
     )
     try:
         if not webhook.select_user('chatid', message.chat.id):
-           if webhook.select_user('picpayid', message.text.lower().split(' ')[1].lower().replace('@', '')):
-              webhook.updateuser('chatid', message.chat.id, 'picpayid', message.text.lower().split(' ')[1].replace('@', ''))
-              bot.send_message(message.chat.id, msgs.conf_ok, parse_mode='HTML')
-           else:
-              bot.send_message(message.chat.id, msgs.premium, parse_mode='HTML')
+            query = webhook.select_user('picpayid', message.text.lower().split(' ')[1].lower().replace('@', ''))
+            if query  and query[1] == '':
+               webhook.updateuser('chatid', message.chat.id, 'picpayid', message.text.lower().split(' ')[1].replace('@', ''))
+               bot.send_message(message.chat.id, msgs.conf_ok, parse_mode='HTML')
+            else:
+               bot.send_message(message.chat.id, msgs.premium, parse_mode='HTML')
         else:
            bot.send_message(message.chat.id, msgs.signed, parse_mode='HTML')
            #bot.send_message(message.chat.id, msgs.conf_ok, parse_mode='HTML')
-    except IndexError:
+    except (IndexError, AttributeError) as e:
         bot.send_message(message.chat.id, msgs.premium, parse_mode='HTML')
 
 @bot.message_handler(commands=['del', 'Del', 'remover', 'apagar'])
