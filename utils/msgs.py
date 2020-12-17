@@ -92,7 +92,7 @@ desc = (
 invalid = (
     '<b>Conheça a nuvem privada do Telegram!</b>\n\n'
     'O app disponibiliza a aba de "Mensagens salvas" onde tudo pode ser armazenado!\n\n'
-    'Desde textos, fotos e gifs até documentos/arquivos (limitados a 1,5GB cada)!\n'
+    'Desde textos, fotos e gifs até documentos/arquivos (limitados a 2GB cada)!\n'
     'Para acessar esse chat, clique no link abaixo.\n'
     'Esta é a forma mais fácil e segura de armazenar os seus dados.\n\n'
     '<a href="tg://user?id={}">Mensagens Salvas</a>\n\n'
