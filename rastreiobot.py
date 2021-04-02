@@ -198,67 +198,14 @@ def command_sub(message):
          bot.send_message(message.chat.id, msgs.banned)
          return 0
     send_clean_msg(bot, message.chat.id, msgs.donate_warn)
-    #bot.send_photo(message.chat.id, 'AQADTnTvSBcAA9J2AwAB', caption='PIX: pix@rastreiobox.xyz')
-    #bot.send_photo(message.chat.id, 'AgACAgEAAxkBAAFvCOFfuotdgSJTpJelCWxXEoRw6MTungACM6oxG2i22UWv08Gw0KYTLE5070gXAAMBAAMCAAN4AAPTdgMAAR4E', caption='PIX: pix@rastreiobox.xyz')
-    bot.send_photo(message.chat.id, 'AgACAgEAAxkBAAFvCWVfuo6kDztK_xxQVSza4gkfNPkAAYgAAjSqMRtottlFTZa3_00eUpfumRIwAAQBAAMCAAN5AAMkFwQAAR4E', caption='PIX: pix@rastreiobox.xyz')
-
-@bot.message_handler(commands=['pagar'])
-def command_pay(message):
-    log_text(message.chat.id, message.message_id, '--- PAYMENT --- ')
-    send_clean_msg(bot, message.chat.id, msgs.payment)
-    bot.send_invoice(message.chat.id, title='RastreioBot - 6 meses',
-                     description='Seis meses (183 dias) de rastreio de pacotes internacionais',
-                     provider_token=STRIPE, currency='BRL',
-                     prices=[types.LabeledPrice(label='Doar R$ 12', amount=1200)],
-                     start_parameter='doar12',
-                     invoice_payload='RastreioBot6meses')
-    bot.send_invoice(message.chat.id, title='RastreioBot - 1 ano',
-                     description='Um ano (366 dias) de rastreio de pacotes internacionais',
-                     provider_token=STRIPE, currency='BRL',
-                     prices=[types.LabeledPrice(label='Doar R$ 20', amount=2000)],
-                     start_parameter='doar21',
-                     invoice_payload='RastreioBot1ano')
-
-
-@bot.pre_checkout_query_handler(func=lambda query: True)
-def checkout(pre_checkout_query):
-    bot.answer_pre_checkout_query(
-        pre_checkout_query.id,
-        ok=True,
-        error_message=msgs.donate_error
-    )
-
-
-@bot.message_handler(content_types=['successful_payment'])
-def got_payment(message):
-    bot.send_message(message.chat.id, msgs.donate_ok)
-    if message.successful_payment.invoice_payload == 'RastreioBot1ano':
-        days = -366
-    elif message.successful_payment.invoice_payload == 'RastreioBot6meses':
-        days = -183
-    data = subscriber = webhook.select_user('chatid', message.from_user.id)
-    if not data:
-        webhook.adduser(message.chat.id, message.chat.id, days)
-    elif data[1] and data[1] == data[2]:
-        webhook.updateuser('sub_id', int(data[3])+days, 'chatid',  message.from_user.id)
-    else:
-        webhook.updateuser('sub_id', days, 'chatid',  message.from_user.id)
-        webhook.updateuser('picpayid', message.from_user.id, 'chatid',  message.from_user.id)
-    bot.send_message(message.chat.id, msgs.donate_ok)
-    #msg = bot.send_message(message.chat.id, msgs.signed, parse_mode='HTML')
-
+    bot.send_photo(message.chat.id, 'AgACAgEAAxkBAAFvCWVfuo6kDztK_xxQVSza4gkfNPkAAYgAAjSqMRtottlFTZa3_00eUpfumRIwAAQBAAMCAAN5AAMkFwQAAR4E', caption='PIX: pix@rastreiobot.xyz')
 
 bot.skip_pending = True
-
 
 @bot.message_handler(commands=['gif'])
 def cmd_repetir(message):
     bot.send_chat_action(message.chat.id, 'typing')
-    # bot.send_document(message.chat.id, 'CgADAQADhgAD45bBRvd9d-3ACM-cAg')
-    # bot.send_document(message.chat.id, 'CgADAQADTAAD9-zRRl9s8doDwrMmAg')
-    # bot.send_document(message.chat.id, 'CgADAQADPgADBm7QRkzGU7UpR3JzAg')
     bot.send_document(message.chat.id, 'CgADAQADWQADGu_QRlzGc4VIGIYaAg')
-    # bot.send_document(message.chat.id, 'CgADAQADWQADuVvARjeZRuSF_fMXAg')
     bot.send_document(message.chat.id, 'CgADAQADWgADGu_QRo7Gbbxg4ugLAg')
 
 @bot.message_handler(commands=['Repetir', 'Historico'])
@@ -477,31 +424,31 @@ def cmd_help(message):
         disable_web_page_preview=True, parse_mode='HTML'
     )
 
-@bot.message_handler(commands=['assinei', 'Assinei'])
-def cmd_sign(message):
-    bot.send_chat_action(message.chat.id, 'typing')
-    if str(message.from_user.id) in BANNED:
-         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
-         bot.send_message(message.chat.id, msgs.banned)
-         return 0
-    log_text(
-        message.chat.id,
-        message.message_id,
-        message.text + '\t' + str(message.from_user.first_name)
-    )
-    try:
-        if not webhook.select_user('chatid', message.chat.id):
-            query = webhook.select_user('picpayid', message.text.lower().split(' ')[1].lower().replace('@', ''))
-            if query  and query[1] == '':
-               webhook.updateuser('chatid', message.chat.id, 'picpayid', message.text.lower().split(' ')[1].replace('@', ''))
-               bot.send_message(message.chat.id, msgs.conf_ok, parse_mode='HTML')
-            else:
-               bot.send_message(message.chat.id, msgs.premium, parse_mode='HTML')
-        else:
-           bot.send_message(message.chat.id, msgs.signed, parse_mode='HTML')
-           #bot.send_message(message.chat.id, msgs.conf_ok, parse_mode='HTML')
-    except (IndexError, AttributeError) as e:
-        bot.send_message(message.chat.id, msgs.premium, parse_mode='HTML')
+#@bot.message_handler(commands=['assinei', 'Assinei'])
+#def cmd_sign(message):
+#    bot.send_chat_action(message.chat.id, 'typing')
+#    if str(message.from_user.id) in BANNED:
+#         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+#         bot.send_message(message.chat.id, msgs.banned)
+#         return 0
+#    log_text(
+#        message.chat.id,
+#        message.message_id,
+#        message.text + '\t' + str(message.from_user.first_name)
+#    )
+#    try:
+#        if not webhook.select_user('chatid', message.chat.id):
+#            query = webhook.select_user('picpayid', message.text.lower().split(' ')[1].lower().replace('@', ''))
+#            if query  and query[1] == '':
+#               webhook.updateuser('chatid', message.chat.id, 'picpayid', message.text.lower().split(' ')[1].replace('@', ''))
+#               bot.send_message(message.chat.id, msgs.conf_ok, parse_mode='HTML')
+#            else:
+#               bot.send_message(message.chat.id, msgs.premium, parse_mode='HTML')
+#        else:
+#           bot.send_message(message.chat.id, msgs.signed, parse_mode='HTML')
+#           #bot.send_message(message.chat.id, msgs.conf_ok, parse_mode='HTML')
+#    except (IndexError, AttributeError) as e:
+#        bot.send_message(message.chat.id, msgs.premium, parse_mode='HTML')
 
 @bot.message_handler(commands=['del', 'Del', 'remover', 'apagar'])
 def cmd_remove(message):
@@ -598,7 +545,7 @@ def cmd_magic(message):
         except TypeError:
             subscriber = ''
         if code_type != correios and user not in PATREON and user not in subscriber:
-            bot.reply_to(message, msgs.premium, parse_mode='HTML', disable_web_page_preview=True)
+            bot.reply_to(message, msgs.typo, parse_mode='HTML', disable_web_page_preview=True)
             log_text(message.chat.id, message.message_id, 'Pacote chines. Usuario nao assinante.')
             return 0
         exists = check_package(code)
