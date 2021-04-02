@@ -6,6 +6,7 @@ from time import time, sleep
 from utils.misc import check_update
 from utils.misc import async_check_update
 
+import random
 import requests
 import telebot
 
@@ -74,6 +75,7 @@ def check_system():
 
 async def up_package(elem):
     code = elem['code']
+    rand = random.randint(0,4)
 
     try:
         old_state = elem['stat'][len(elem['stat'])-1]
@@ -81,15 +83,15 @@ async def up_package(elem):
     except:
         old_state = ""
         len_old_state = 1
-    if 'objeto entregue ao' in old_state.lower():
+    if 'objeto entregue ao' in old_state.lower() and not rand:
         return
-    elif 'objeto apreendido por órgão de fiscalização' in old_state.lower():
+    elif 'objeto apreendido por órgão de fiscalização' in old_state.lower() and not rand:
         return
-    elif 'objeto devolvido' in old_state.lower():
+    elif 'objeto devolvido' in old_state.lower() and not rand:
         return
-    elif 'objeto roubado' in old_state.lower():
+    elif 'objeto roubado' in old_state.lower() and not rand:
         return
-    elif 'delivered' in old_state.lower():
+    elif 'delivered' in old_state.lower() and not rand:
         return
 
     stat = await get_package(code)
@@ -134,9 +136,8 @@ async def up_package(elem):
             if 'objeto entregue' in message.lower() and user not in PATREON:
                 message = (message + '\n'
                 + str(u'\U0001F4B3')
-                + ' <a href="http://grf.xyz/assine">Assine o bot</a> - '
-                + str(u'\U0001F4B5')
-                + ' <a href="http://grf.xyz/picpay">Colabore</a>')
+                + ' Me ajude a manter o projeto vivo!\nEnvie /doar e veja as opções '
+                + str(u'\U0001F4B5'))
             if len_old_state < len_new_state:
                 await bot.send_message(str(user), message, parse_mode='HTML',
                     disable_web_page_preview=True)
