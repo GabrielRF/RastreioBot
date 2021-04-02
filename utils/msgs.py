@@ -53,9 +53,8 @@ howto = (
     'Clique em /doar, doe usando PIX ou pelo PicPay, usuario GabrielRF.\n'
     'PIX: pix@rastreiobot.xyz\n'
     'PicPay: http://grf.xyz/picpay\n\n'
-    '\U0001F4B3 <b>Rastreie pacotes internacionais e ajude o bot!</b>\n'
-    'Envie /pagar para pagar pelo Telegram\n'
-    'Ou envie /assinei para pagar pelo PicPay \n\n'
+    'Para doações recorrentes, usuário GabRF no PicPay ou pelo link\n'
+    'http://grf.xyz/assine\n\n'
 )
 
 error_bot = 'Ops!\nHouve um problema com o bot.\nTente novamente mais tarde.'
@@ -115,7 +114,14 @@ payment = (
     '\n- Este método de pagamento substituirá o PicPay! Ou seja, cancele o plano no PicPay após o pagamento usando este método.'
 )
 
-donate_warn = '<b>Atenção</b>\n\nA doação não tem efeito para rastrear encomendas internacionais!\n\nPara rastrear pacotes fora dos Correios, envie /pagar ou acesse https://grf.xyz/assine (<code>GabRF</code> no PicPay).'
+donate_warn = (
+    '<b>Toda ajuda é bem vinda!</b>\n\n'
+    'Para doar mensalmente, acesse:\n'
+    'http://grf.xyz/assine (<code>GabRF</code> no PicPay)\n\n'
+    'Para doar uma vez, acesse:\n'
+    'http://grf.xyz/picpay (<code>GabrielRF</code> no PicPay)\n'
+    'Ou envie um PIX usando a chave de e-mail abaixo:'
+)
 
 donate_ok = (
     'Muito obrigado pela colaboração!'
