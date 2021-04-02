@@ -6,6 +6,14 @@ client = MongoClient()
 db = client.rastreiobot
 
 
+def metric_increase_package_counter():
+    return db.metrics.update_one(
+        {"metric": "total_packages"},
+        {"$inc": {"value": 1}},
+        upsert=True,
+    )
+
+
 def all_packages():
     return db.rastreiobot.find()
 
@@ -32,12 +40,14 @@ def package_has_user(code, user_id):
 
 def add_package(code, users, stat):
     users = users if isinstance(users, (list, tuple)) else [users]
-    return db.rastreiobot.insert_one({
+    package = db.rastreiobot.insert_one({
         "code": code.upper(),
         "users": users,
         "stat": stat,
         "time": time(),
     })
+    metric_increase_package_counter()
+    return package
 
 
 def add_user_to_package(code, user):
