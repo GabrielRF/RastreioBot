@@ -17,7 +17,7 @@ usuario = config['CORREIOS']['usuario']
 senha = config['CORREIOS']['senha']
 token = config['CORREIOS']['token']
 
-semaphore = asyncio.Semaphore(20)
+semaphore = asyncio.Semaphore(15)
 
 def format_obj(code, response):
     stats = []
@@ -134,6 +134,7 @@ def get(code, retries):
         }
         url = (
             'http://webservice.correios.com.br/service/rest/rastro/rastroMobile'
+            #'http://webservice.correios.com.br/service/rastro/Rastro.wsdl'
         )
         response = requests.post(
             url, data=request_xml, headers=headers, timeout=10

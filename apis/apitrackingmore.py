@@ -2,6 +2,7 @@ import configparser
 import sys
 import apis.apicorreios as correios
 from datetime import datetime
+import timeout_decorator
 
 import trackingmore
 from pymongo import MongoClient
@@ -31,6 +32,7 @@ def sort_carriers(carriers):
     return sorted(carriers, key=get_index, reverse=True)
 
 
+@timeout_decorator.timeout(5)
 def get_or_create_tracking_item(carrier, code):
     print(carrier)
     try:
@@ -45,6 +47,7 @@ def get_or_create_tracking_item(carrier, code):
 
     return tracking_data
 
+@timeout_decorator.timeout(5)
 def get_carriers(code):
     cursor = db.search_package(code)
     try:
@@ -62,6 +65,7 @@ def get_carriers(code):
         db.update_package(code, carrier=carriers)
     return carriers
 
+@timeout_decorator.timeout(5)
 def get(code, retries=0):
     try:
         carriers = get_carriers(code)
@@ -80,7 +84,6 @@ def get(code, retries=0):
             pass
         try:
             tracking_data = get_or_create_tracking_item(carrier['code'], code)
-            print(tracking_data)
         except trackingmore.trackingmore.TrackingMoreAPIException as e:
             if e.err_code == 4019 or e.err_code == 4021:
                 response_status = status.OFFLINE
@@ -91,7 +94,6 @@ def get(code, retries=0):
                 response_status = status.OFFLINE
             elif tracking_data['status'] == 'notfound':
                 response_status = status.NOT_FOUND_TM
-                print(tracking_data)
             #elif len(tracking_data) >= 10:
             elif tracking_data['status'] == 'transit':
                 db.update_package(code, carrier=carrier)
@@ -109,6 +111,7 @@ def get(code, retries=0):
     return response_status
 
 
+@timeout_decorator.timeout(5)
 def formato_obj(json, carrier, code, retries):
     stats = []
     stats.append(str(u'\U0001F4EE') + ' <b>' + json['tracking_number'] + '</b>')
@@ -121,8 +124,6 @@ def formato_obj(json, carrier, code, retries):
             return status.NOT_FOUND_TM
     for evento in reversed(tabela):
         codigo_novo = None
-        print(code)
-        print(evento['Date'])
         # try:
         #     data = datetime.strptime(evento['Date'], '%Y-%m-%d %H:%M:%S').strftime("%d/%m/%Y %H:%M")
         # except ValueError:

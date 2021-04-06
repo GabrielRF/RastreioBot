@@ -142,9 +142,9 @@ async def up_package(elem):
                 + str(u'\U0001F4B3')
                 + ' Me ajude a manter o projeto vivo!\nEnvie /doar e veja as opções '
                 + str(u'\U0001F4B5'))
-            if len_old_state < len_new_state:
-                await bot.send_message(str(user), message, parse_mode='HTML',
-                    disable_web_page_preview=True)
+            #if len_old_state < len_new_state:
+            #    await bot.send_message(str(user), message, parse_mode='HTML',
+            #        disable_web_page_preview=True)
         except Exception as e:
             logger_info.info(str(datetime.now())
                     + ' EXCEPT: ' + str(user) + ' ' + code + ' ' + str(e))
@@ -165,7 +165,7 @@ async def async_main():
     n = 0
     async for elem in cursor1:
         api_type = check_type(elem['code'])
-        if api_type is correios:
+        if api_type is trackingmore:
             n += 1
             tasks.append(up_package(elem))
 
