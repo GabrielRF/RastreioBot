@@ -2,7 +2,6 @@ import configparser
 import sys
 import apis.apicorreios as correios
 from datetime import datetime
-import timeout_decorator
 
 import trackingmore
 from pymongo import MongoClient
@@ -32,7 +31,6 @@ def sort_carriers(carriers):
     return sorted(carriers, key=get_index, reverse=True)
 
 
-@timeout_decorator.timeout(5)
 def get_or_create_tracking_item(carrier, code):
     print(carrier)
     try:
@@ -47,7 +45,6 @@ def get_or_create_tracking_item(carrier, code):
 
     return tracking_data
 
-@timeout_decorator.timeout(5)
 def get_carriers(code):
     cursor = db.search_package(code)
     try:
@@ -65,7 +62,6 @@ def get_carriers(code):
         db.update_package(code, carrier=carriers)
     return carriers
 
-@timeout_decorator.timeout(5)
 def get(code, retries=0):
     try:
         carriers = get_carriers(code)
@@ -111,7 +107,6 @@ def get(code, retries=0):
     return response_status
 
 
-@timeout_decorator.timeout(5)
 def formato_obj(json, carrier, code, retries):
     stats = []
     stats.append(str(u'\U0001F4EE') + ' <b>' + json['tracking_number'] + '</b>')

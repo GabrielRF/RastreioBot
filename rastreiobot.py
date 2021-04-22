@@ -475,7 +475,7 @@ def cmd_remove(message):
             pass
 
 
-@bot.message_handler(content_types=['document', 'audio', 'photo'])
+@bot.message_handler(content_types=['document', 'audio', 'photo', 'animation'])
 def cmd_format(message):
     bot.reply_to(message, 'Formato inválido')
     bot.delete_message(message.from_user.id, message.message_id)
