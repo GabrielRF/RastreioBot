@@ -39,8 +39,9 @@ logger_info.addHandler(handler_info)
 bot = telebot.TeleBot(TOKEN)
 
 markup_btn = types.ReplyKeyboardMarkup(resize_keyboard=True)
-markup_btn.row('/Pacotes', '/Resumo')
-markup_btn.row('/Info', '/Concluidos')
+markup_btn.row('/Pacotes', '/Info')
+markup_btn.row('/Resumo', '/Agrupados')
+markup_btn.row('/Info', '/Doar')
 markup_clean = types.ReplyKeyboardRemove(selective=False)
 
 meli_client_id = config['MERCADOLIVRE']['client_id']
@@ -86,6 +87,61 @@ def package_status_can_change(package):
         'objeto devolvido ao remet' not in current_status,
     ])
 
+def package_link(code, desc):
+    text = '<a href="https://t.me/RastreioBot?start={}">{}</a> '.format(code, desc)
+    return text
+
+def send_status_sorted(bot, chatid, case, status):
+    cases = {
+        1: '<b>Aguardando pagamento</b> 🔫',
+        2: '<b>Pagamento confirmado</b> 💸',
+        3: '<b>Aguardando recebimento pela ECT</b> 🕒',
+        4: '<b>Fiscalização aduaneira finalizada</b>',
+        5: '<b>Objeto em trânsito </b> 🚃',
+        6: '<b>Objeto saiu para entrega ao destinatário</b> 🚚',
+        7: '<b>Revisão de tributos</b> 🦁',
+        8: '<b>Objeto recusado</b> ❌',
+        9: '<b>Objeto exportado</b> 🛫',
+        10: '<b>Entrega não realizada</b> ⚠️',
+    }
+    if status:
+        send_clean_msg(bot, chatid, cases.get(case) + status)
+
+def get_packages_by_status(status, cursor, chatid):
+    text = ''
+    for package in cursor:
+        last_status = package['stat'][-1]
+        desc = package.get(str(chatid)) or package['code']
+        if status in last_status:
+            text = text + '\n' + package_link(package['code'], desc)
+    return text
+
+def list_by_status(chatid):
+    cursor = list(db.search_packages_per_user(chatid))
+    waiting_payment = get_packages_by_status('Aguardando pagamento', cursor, chatid)
+    payed = get_packages_by_status('Pagamento confirmado', cursor, chatid)
+    not_available = get_packages_by_status('Aguardando recebimento pela ECT', cursor, chatid)
+    no_payment = get_packages_by_status('Fiscalização aduaneira finalizada', cursor, chatid)
+    in_transit = get_packages_by_status('Objeto em trânsito', cursor, chatid)
+    delivery = get_packages_by_status('saiu para entrega', cursor, chatid)
+    tribute = get_packages_by_status('tributo', cursor, chatid)
+    refused = get_packages_by_status('recusou o objeto', cursor, chatid)
+    exported = get_packages_by_status('unidade de exportação', cursor, chatid)
+    not_delivered = get_packages_by_status('Entrega não realizada', cursor, chatid)
+    try:
+        send_status_sorted(bot, chatid, 1, waiting_payment) 
+        send_status_sorted(bot, chatid, 2, payed)
+        send_status_sorted(bot, chatid, 3, not_available)
+        send_status_sorted(bot, chatid, 4, no_payment)
+        send_status_sorted(bot, chatid, 5, in_transit)
+        send_status_sorted(bot, chatid, 6, delivery)
+        send_status_sorted(bot, chatid, 7, tribute)
+        send_status_sorted(bot, chatid, 8, refused)
+        send_status_sorted(bot, chatid, 9, exported)
+        send_status_sorted(bot, chatid, 10, not_delivered)
+    except Exception:
+        bot.send_message('9083329', 'Erro MongoBD')
+        qtd = -1
 
 def list_packages(chatid, done, status):
     '''
@@ -190,7 +246,7 @@ def log_text(chatid, message_id, text):
     )
 
 
-@bot.message_handler(commands=['doar'])
+@bot.message_handler(commands=['doar', 'Doar'])
 def command_sub(message):
     log_text(message.chat.id, message.message_id, '--- DONATE --- ')
     if str(message.from_user.id) in BANNED:
@@ -277,6 +333,17 @@ def cmd_resumo(message):
         if len(message) > 3000:
             message = 'Muitos pacotes cadastrados para utilizar tal função.\nPor favor, envie /Pacotes.'
     bot.send_message(chatid, message, parse_mode='HTML', reply_markup=markup_clean, disable_web_page_preview=True)
+
+
+@bot.message_handler(commands=['agrupados', 'Agrupados'])
+def cmd_resumo(message):
+    bot.send_chat_action(message.chat.id, 'typing')
+    if str(message.from_user.id) in BANNED:
+        log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
+        bot.send_message(message.chat.id, msgs.banned)
+        return 0
+    chatid = message.chat.id
+    list_by_status(chatid)
 
 
 @bot.message_handler(commands=['concluidos', 'Concluidos'])
@@ -587,10 +654,13 @@ def cmd_magic(message):
             elif stat == status.OK:
                 db.set_package_description(code, user, desc)
                 if int(message.chat.id) > 0:
+                    ads = open('utils/ad.txt').read().splitlines()
+                    ad = random.choice(ads)
+                    ad = ad.replace(';', '\n')
                     bot.reply_to(
                         message,
-                        'Pacote cadastrado.\n\nCompartilhe usando o link abaixo:',
-                        reply_markup=share_button
+                        'Pacote cadastrado.\n\n' + ad + '\n\nCompartilhe usando o link abaixo:',
+                        reply_markup=share_button, parse_mode='HTML', disable_web_page_preview=True
                     )
                     print('share')
                     if desc == code:
