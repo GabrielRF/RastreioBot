@@ -30,7 +30,7 @@ def check_type(code):
 
 def send_clean_msg(bot, id, txt):
     markup_clean = types.ReplyKeyboardRemove(selective=False)
-    bot.send_message(id, txt, parse_mode='HTML', reply_markup=markup_clean)
+    bot.send_message(id, txt, parse_mode='HTML', reply_markup=markup_clean, disable_web_page_preview=True)
 
 
 def check_package(code):

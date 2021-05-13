@@ -48,7 +48,7 @@ howto = (
     '\U0001F4D6<b>Bot open source:</b>\n'
     'https://github.com/GabrielRF/RastreioBot\n\n'
     '\U0001F680<b>Conheça meus outros projetos:</b>\n'
-    'http://grf.xyz/\n\n'
+    '<a href="https://gabrf.com?utm_source=telegram&utm_medium=telegrammessage&utm_campaign=rastreiobot">https://gabrf.com</a>\n\n'
     '\U0001F4B5 <b>Colabore!</b>\n'
     'Clique em /doar, doe usando PIX ou pelo PicPay, usuario GabrielRF.\n'
     'PIX: pix@rastreiobot.xyz\n'
@@ -116,7 +116,7 @@ payment = (
 
 donate_warn = (
     '<b>Toda ajuda é bem vinda!</b>\n\n'
-    'Para doar mensalmente, acesse:\n'
+    'Para doar R$ 1 ou mais mensalmente, acesse:\n'
     'http://grf.xyz/assine (<code>GabRF</code> no PicPay)\n\n'
     'Para doar uma vez, acesse:\n'
     'http://grf.xyz/picpay (<code>GabrielRF</code> no PicPay)\n'
@@ -149,4 +149,9 @@ days_left_1 = (
     '<b>RastreioBot</b>'
     '\nRestam apenas 1 dia de rastreio de pacotes internacionais.'
     '\nPara renovar, envie /pagar.'
+)
+
+too_many = (
+    '<b>RastreioBot</b>'
+    '\nMuitos pacotes para listar'
 )
