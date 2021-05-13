@@ -8,6 +8,7 @@ from utils.misc import async_check_update
 from utils.misc import check_type
 import apis.apicorreios as correios
 import apis.apitrackingmore as trackingmore
+from rastreio import db as db_ops
 
 import random
 import requests
@@ -79,7 +80,7 @@ def check_system():
 
 async def up_package(elem):
     code = elem['code']
-    rand = random.randint(0,4)
+    rand = random.randint(0,5)
 
     try:
         old_state = elem['stat'][len(elem['stat'])-1]
@@ -96,6 +97,10 @@ async def up_package(elem):
     elif 'objeto roubado' in old_state.lower() and not rand:
         return
     elif 'delivered' in old_state.lower() and not rand:
+        return
+    elif 'postado' in old_state.lower() and not rand:
+        return
+    elif 'ECT' in old_state.lower() and not rand:
         return
 
     stat = await get_package(code)
@@ -148,6 +153,12 @@ async def up_package(elem):
         except Exception as e:
             logger_info.info(str(datetime.now())
                     + ' EXCEPT: ' + str(user) + ' ' + code + ' ' + str(e))
+            if 'deactivated' in str(e):
+                db_ops.remove_user_from_package(code, str(user))
+            elif 'blocked' in str(e):
+                db_ops.remove_user_from_package(code, str(user))
+            elif 'kicked' in str(e):
+                db_ops.remove_user_from_package(code, str(user))
             continue
 
 async def async_main():
