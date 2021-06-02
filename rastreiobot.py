@@ -103,6 +103,7 @@ def send_status_sorted(bot, chatid, case, status):
         8: '<b>Objeto recusado</b> ❌',
         9: '<b>Objeto exportado</b> 🛫',
         10: '<b>Entrega não realizada</b> ⚠️',
+        11: '<b>Aguardando retirada</b> 🏢',
     }
     if status:
         send_clean_msg(bot, chatid, cases.get(case) + status)
@@ -128,6 +129,7 @@ def list_by_status(chatid):
     refused = get_packages_by_status('recusou o objeto', cursor, chatid)
     exported = get_packages_by_status('unidade de exportação', cursor, chatid)
     not_delivered = get_packages_by_status('Entrega não realizada', cursor, chatid)
+    pickup = get_packages_by_status('aguardando retirada', cursor, chatid)
     try:
         send_status_sorted(bot, chatid, 1, waiting_payment) 
         send_status_sorted(bot, chatid, 2, payed)
@@ -139,6 +141,7 @@ def list_by_status(chatid):
         send_status_sorted(bot, chatid, 8, refused)
         send_status_sorted(bot, chatid, 9, exported)
         send_status_sorted(bot, chatid, 10, not_delivered)
+        send_status_sorted(bot, chatid, 11, pickup)
     except Exception:
         bot.send_message('9083329', 'Erro MongoBD')
         qtd = -1

@@ -17,7 +17,7 @@ usuario = config['CORREIOS']['usuario']
 senha = config['CORREIOS']['senha']
 token = config['CORREIOS']['token']
 
-semaphore = asyncio.Semaphore(35)
+semaphore = asyncio.Semaphore(40)
 
 def format_obj(code, response):
     stats = []
