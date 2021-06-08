@@ -78,29 +78,37 @@ def check_system():
         return False
 
 
+def is_finished_package(old_state):
+    old_state = old_state.lower()
+    finished_states = [
+        'objeto entregue ao',
+        'objeto apreendido por órgão de fiscalização',
+        'objeto devolvido',
+        'objeto roubado',
+        'delivered',
+        'postado',
+        'ect',
+    ]
+
+    for state in finished_states
+        if state in old_state:
+            return True
+
+    return False
+
+
 async def up_package(elem):
     code = elem['code']
-    rand = random.randint(0,5)
+    should_retry_finished_package = random.randint(0,5)
 
     try:
-        old_state = elem['stat'][len(elem['stat'])-1]
+        old_state = elem['stat'][len(elem['stat'])-1].lower()
         len_old_state = len(elem['stat'])
     except:
         old_state = ""
         len_old_state = 1
-    if 'objeto entregue ao' in old_state.lower() and not rand:
-        return
-    elif 'objeto apreendido por órgão de fiscalização' in old_state.lower() and not rand:
-        return
-    elif 'objeto devolvido' in old_state.lower() and not rand:
-        return
-    elif 'objeto roubado' in old_state.lower() and not rand:
-        return
-    elif 'delivered' in old_state.lower() and not rand:
-        return
-    elif 'postado' in old_state.lower() and not rand:
-        return
-    elif 'ECT' in old_state.lower() and not rand:
+
+    if is_finished_package(old_state) and not should_retry_finished_package:
         return
 
     stat = await get_package(code)
