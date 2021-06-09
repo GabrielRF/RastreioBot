@@ -90,7 +90,7 @@ def is_finished_package(old_state):
         'ect',
     ]
 
-    for state in finished_states
+    for state in finished_states:
         if state in old_state:
             return True
 
