@@ -93,7 +93,9 @@ def format_obj(code, response):
                 mensagem = mensagem + ' ' + str(u'\U0001F4B8')
             elif 'aduaneira finalizada' in situacao.lower():
                 mensagem = (mensagem + '\n<i>Acesse o ambiente </i>' +
-                #'<a href="https://apps.correios.com.br/cas/login?service=https%3A%2F%2Fapps.correios.com.br%2Fportalimportador%2Fpages%2FpesquisarRemessaImportador%2FpesquisarRemessaImportador.jsf">Minhas Importações</a>')
+                '<a href="https://apps.correios.com.br/portalimportador">Minhas Importações</a>')
+            elif 'Sua ação é necessária' in situacao.lower():
+                mensagem = (mensagem + '\n<i>Acesse o ambiente </i>' +
                 '<a href="https://apps.correios.com.br/portalimportador">Minhas Importações</a>')
             elif 'aguardando pagamento' in situacao.lower():
                 mensagem = (mensagem + ' ' + str(u'\U0001F52B') +

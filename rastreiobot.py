@@ -70,7 +70,7 @@ def count_packages():
             pkg_status['sem_imposto'] += 1
         if 'Objeto recebido pelos Correios do Brasil' in str(elem):
             pkg_status['importado'] += 1
-        if 'Fiscalização Aduaneira finalizada' in str(elem):
+        if 'Aguardando pagamento' in str(elem):
             pkg_status['tributado'] += 1
         if 'Objeto roubado' in str(elem):
             pkg_status['extraviado'] += 1
@@ -104,6 +104,7 @@ def send_status_sorted(bot, chatid, case, status):
         9: '<b>Objeto exportado</b> 🛫',
         10: '<b>Entrega não realizada</b> ⚠️',
         11: '<b>Aguardando retirada</b> 🏢',
+        12: '<b>Sua ação é necessária</b> ⚠️',
     }
     if status:
         send_clean_msg(bot, chatid, cases.get(case) + status)
@@ -130,6 +131,7 @@ def list_by_status(chatid):
     exported = get_packages_by_status('unidade de exportação', cursor, chatid)
     not_delivered = get_packages_by_status('Entrega não realizada', cursor, chatid)
     pickup = get_packages_by_status('aguardando retirada', cursor, chatid)
+    waiting_action = get_packages_by_status('ação é necessária', cursor, chatid)
     try:
         send_status_sorted(bot, chatid, 1, waiting_payment) 
         send_status_sorted(bot, chatid, 2, payed)
@@ -142,6 +144,7 @@ def list_by_status(chatid):
         send_status_sorted(bot, chatid, 9, exported)
         send_status_sorted(bot, chatid, 10, not_delivered)
         send_status_sorted(bot, chatid, 11, pickup)
+        send_status_sorted(bot, chatid, 12, waiting_action)
     except Exception:
         bot.send_message('9083329', 'Erro MongoBD')
         qtd = -1
@@ -449,7 +452,7 @@ def cmd_statusall(message):
         despacho_rate = round(
             100*pkg_status['despacho']/pkg_status['importado'], 2)
         tributacao_rate = round(
-            100*pkg_status['sem_imposto']/pkg_status['importado'], 2)
+            100*pkg_status['tributado']/pkg_status['importado'], 2)
 
     chatid = message.chat.id
     total_packages = str(pkg_status['qtd']+pkg_status['wait'])
@@ -462,8 +465,8 @@ def cmd_statusall(message):
         f"Pacotes roubados: {str(pkg_status['extraviado'])}\n\n"
         f"Pacotes importados: {str(pkg_status['importado'])}\n"
         f"TrackingMore: {str(pkg_status['trackingmore'])}\n"
-        f"Taxados em R$15: {str(despacho_rate)}%\n"
-        f"Pacotes sem tributação: {str(tributacao_rate)}%\n\n"
+        f"Taxados somente em R$15: {str(despacho_rate)}%\n"
+        f"Pacotes tributados: {str(tributacao_rate)}%\n\n"
         f"Mensagens recebidas hoje: {str(todaymsg)}\n"
         f"Mensagens recebidas ontem: {str(yesterdaymsg)}\n\n"
         f"Alertas enviados hoje: {str(today)}\n"
