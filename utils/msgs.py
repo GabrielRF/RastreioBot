@@ -116,7 +116,7 @@ payment = (
 
 donate_warn = (
     '<b>Toda ajuda é bem vinda!</b>\n\n'
-    'Para doar R$ 1 ou mais mensalmente, acesse:\n'
+    'Para doar R$ 1 ou mais <b>mensalmente</b>, acesse:\n'
     'http://grf.xyz/assine (<code>GabRF</code> no PicPay)\n\n'
     'Para doar uma vez, acesse:\n'
     'http://grf.xyz/picpay (<code>GabrielRF</code> no PicPay)\n'
@@ -154,4 +154,9 @@ days_left_1 = (
 too_many = (
     '<b>RastreioBot</b>'
     '\nMuitos pacotes para listar'
+)
+
+not_admin = (
+    '<b>Por favor, não me coloque como administrador do grupo!</b>'
+    '\n\nBasta eu estar como membro para funcionar corretamente.'
 )

@@ -707,6 +707,8 @@ def cmd_magic(message):
             bot.delete_message(message.from_user.id, message.message_id)
         if int(user) > 0 and len(message.text) > 25:
             send_clean_msg(bot, message.from_user.id, msgs.invalid.format(message.from_user.id))
+        if int(user) < 0:
+            send_clean_msg(bot, message.chat.id, msgs.not_admin)
 
 
 # sentry_url = config['SENTRY']['url']
