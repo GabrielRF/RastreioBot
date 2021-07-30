@@ -38,10 +38,11 @@ logger_info.addHandler(handler_info)
 
 bot = telebot.TeleBot(TOKEN)
 
+#markup_btn = types.ReplyKeyboardRemove(selective=False)
 markup_btn = types.ReplyKeyboardMarkup(resize_keyboard=True)
-markup_btn.row('/Pacotes', '/Info')
+markup_btn.row('/Pacotes', '/Doar')
 markup_btn.row('/Resumo', '/Agrupados')
-markup_btn.row('/Info', '/Doar')
+markup_btn.row('/Info', '/Gif')
 markup_clean = types.ReplyKeyboardRemove(selective=False)
 
 meli_client_id = config['MERCADOLIVRE']['client_id']
@@ -105,6 +106,11 @@ def send_status_sorted(bot, chatid, case, status):
         10: '<b>Entrega não realizada</b> ⚠️',
         11: '<b>Aguardando retirada</b> 🏢',
         12: '<b>Sua ação é necessária</b> ⚠️',
+        13: '<b>Objeto postado</b> 📦',
+        14: '<b>Devolução</b> 🔙',
+        15: '<b>Aduana</b> 🏢',
+        16: '<b>Recebido no Brasil</b> 🇧🇷',
+        17: '<b>Carteiro não atendido</b> 🚪',
     }
     if status:
         send_clean_msg(bot, chatid, cases.get(case) + status)
@@ -132,6 +138,11 @@ def list_by_status(chatid):
     not_delivered = get_packages_by_status('Entrega não realizada', cursor, chatid)
     pickup = get_packages_by_status('aguardando retirada', cursor, chatid)
     waiting_action = get_packages_by_status('ação é necessária', cursor, chatid)
+    posted = get_packages_by_status('Objeto postado', cursor, chatid)
+    returned = get_packages_by_status('Devolução', cursor, chatid)
+    customs = get_packages_by_status('aduaneira', cursor, chatid)
+    received_br = get_packages_by_status('Correios do Brasil', cursor, chatid)
+    not_answered = get_packages_by_status('Carteiro não atendido', cursor, chatid)
     try:
         send_status_sorted(bot, chatid, 1, waiting_payment) 
         send_status_sorted(bot, chatid, 2, payed)
@@ -145,6 +156,11 @@ def list_by_status(chatid):
         send_status_sorted(bot, chatid, 10, not_delivered)
         send_status_sorted(bot, chatid, 11, pickup)
         send_status_sorted(bot, chatid, 12, waiting_action)
+        send_status_sorted(bot, chatid, 13, posted)
+        send_status_sorted(bot, chatid, 14, returned)
+        send_status_sorted(bot, chatid, 15, customs)
+        send_status_sorted(bot, chatid, 16, received_br)
+        send_status_sorted(bot, chatid, 17, not_answered)
     except Exception:
         bot.send_message('9083329', 'Erro MongoBD')
         qtd = -1
@@ -211,7 +227,7 @@ def add_package(code, user):
             stat = stats
         elif stat == status.NOT_FOUND_TM:
             stats.append(
-                'Verificando com as possíveis transportadoras.'
+                'Verificando com as possíveis transportadoras. '
                 'Por favor, aguarde.')
             stat = stats
         db.add_package(code, user, stat)
@@ -264,7 +280,7 @@ def command_sub(message):
 
 bot.skip_pending = True
 
-@bot.message_handler(commands=['gif'])
+@bot.message_handler(commands=['Gif', 'gif'])
 def cmd_repetir(message):
     bot.send_chat_action(message.chat.id, 'typing')
     bot.send_document(message.chat.id, 'CgADAQADWQADGu_QRlzGc4VIGIYaAg')
@@ -707,7 +723,7 @@ def cmd_magic(message):
             bot.delete_message(message.from_user.id, message.message_id)
         if int(user) > 0 and len(message.text) > 25:
             send_clean_msg(bot, message.from_user.id, msgs.invalid.format(message.from_user.id))
-        if int(user) < 0:
+        if bot.get_chat_member(message.chat.id, 102419067).status == 'administrator':
             send_clean_msg(bot, message.chat.id, msgs.not_admin)
 
 
