@@ -128,13 +128,13 @@ async def up_package(elem, semaphore):
         if stat == 0:
             return
 
-        cursor2 = await db.rastreiobot.find_one(
+        elem = await db.rastreiobot.find_one(
         {
             "code": code
         })
 
         try:
-            len_new_state = len(cursor2['stat'])
+            len_new_state = len(elem['stat'])
         except:
             len_new_state = 1
         if len_old_state == len_new_state:
@@ -163,7 +163,7 @@ async def up_package(elem, semaphore):
                 for k in reversed(range(1,len_diff+1)):
                     message = (
                         message + '\n'
-                        + cursor2['stat'][len(cursor2['stat'])-k] + '\n')
+                        + elem['stat'][len(elem['stat'])-k] + '\n')
                 if 'objeto entregue' in message.lower() and user not in PATREON:
                     message = (message + '\n'
                     + str(u'\U0001F4B3')
