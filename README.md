@@ -21,24 +21,12 @@ This is a [Telegram](http://telegram.org) Bot that tracks packages from the [Bra
 
 ## Setup
 
-First, create a virtual environment for your project (so it don't mixup with your other libraries versions):
+We use [Poetry](https://python-poetry.org/) to manage our dependencies. Check out its [Poetry guide](https://python-poetry.org/docs/#installation) to install it on your machine.
+
+To install the required packages, use the command below. It will install the runtime and also the development dependencies (e.g. Pytest).
 
 ```
-python3 -m venv rastreiobotenv
-```
-
-If you don't have it installed, check [here](https://docs.python.org/3/library/venv.html)
-
-and activate your environment:
-
-```
-. rastreiobotenv/bin/activate
-```
-
-After cloning/downloading the repository, install required packages:
-
-```
-pip install -r requirements.txt
+$ poetry install
 ```
 
 Create a file `bot.conf` following `bot.conf_sample`.
@@ -96,7 +84,7 @@ CREATE TABLE assinantes (
 To receive messages:
 
 ```
-python rastreiobot.py
+poetry run python rastreiobot.py
 ```
 
 To check for updates, I recommend a cronjob that runs every 15 min.
@@ -116,7 +104,7 @@ Type `crontab -e` and add to the end of the file:
 The tests are running on `pytest`, so, in order to run them, just do
 
 ```
-pytest
+poetry run pytest
 ```
 
 ## Contribute
