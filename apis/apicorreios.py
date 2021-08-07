@@ -4,6 +4,7 @@ import configparser
 import json
 import sys
 from datetime import date
+from rastreio import db
 
 import aiohttp
 import requests
@@ -16,6 +17,8 @@ config.read('bot.conf')
 usuario = config['CORREIOS']['usuario']
 senha = config['CORREIOS']['senha']
 token = config['CORREIOS']['token']
+finished_status = config['CORREIOS']['FSTATUS']
+finished_code = config['CORREIOS']['FCODE']
 
 def format_obj(code, response):
     stats = []
@@ -39,6 +42,7 @@ def format_obj(code, response):
         except Exception:
             delta = 0
             pass
+        #print(evento['tipo'], evento['status'])
         data = evento['data'] + ' ' + evento['hora']
         if delta.days == 1:
             data = data + ' (' + str(delta.days) + ' dia)'
@@ -110,6 +114,9 @@ def format_obj(code, response):
                 mensagem = (mensagem +
                 '\nhttps://www2.correios.com.br/sistemas/rastreamento/')
         stats.append(mensagem)
+        if str(evento['tipo']) in finished_status:
+            if str(evento['status']) in finished_code:
+                db.update_package(code, finished=True)
     return stats
 
 def get(code, retries):
@@ -139,6 +146,7 @@ def get(code, retries):
         response = requests.post(
             url, data=request_xml, headers=headers, timeout=3
         ).text
+        print(response)
     except Exception:
         if retries > 0:
             print('-')
@@ -146,7 +154,7 @@ def get(code, retries):
         return status.OFFLINE
     if len(str(response)) < 10:
         return status.OFFLINE
-    elif 'ERRO' in str(response):
+    elif 'Objeto não encontrado na base de dados dos Correios.' in str(response):
         return status.NOT_FOUND
     try:
         return format_obj(code, response)
@@ -191,12 +199,12 @@ async def async_get(code, retries):
         return status.OFFLINE
     elif len(str(response)) < 10:
         return status.OFFLINE
-    elif 'ERRO' in str(response):
+    elif 'Objeto não encontrado na base de dados dos Correios.' in str(response):
         return status.NOT_FOUND
     try:
         return format_obj(code, response)
-    except json.decoder.JSONDecodeError as e:
-        #print("Error", code, e, response)
+    except:# json.decoder.JSONDecodeError as e:
+        print("Error", code, response)
         return status.OFFLINE
 
 if __name__ == '__main__':

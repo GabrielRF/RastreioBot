@@ -119,6 +119,9 @@ async def up_package(elem, semaphore):
             old_state = ""
             len_old_state = 1
 
+        if elem.get('finished'):
+            return
+
         if is_finished_package(old_state) and not should_retry_finished_package:
             return
 
@@ -185,17 +188,13 @@ async def async_main():
     cursor1 = await db.rastreiobot.find({}, {'code': True}).to_list(length=None)
     start = time()
     if check_system():
-        #change_bot_name.set_name(0)
         pass
     else:
-        #change_bot_name.set_name(1)
         print("exit")
         return
 
     tasks = []
-    #semaphore = asyncio.BoundedSemaphore(50000)
-    #semaphore = asyncio.BoundedSemaphore(80)
-    semaphore = asyncio.BoundedSemaphore(200)
+    semaphore = asyncio.BoundedSemaphore(60)
     for elem in cursor1:
         api_type = check_type(elem['code'])
         if api_type is correios:

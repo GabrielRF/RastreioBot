@@ -13,6 +13,8 @@ patreon =
 usuario =
 senha =
 token =
+fstatus = BDE, BDI, BDR
+fcode = 01, 12, 23, 50, 51, 52, 43, 67, 68, 70, 71, 72, 73, 74, 75, 76, 80
 
 [TRACKINGMORE]
 key =

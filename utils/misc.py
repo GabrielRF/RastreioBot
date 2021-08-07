@@ -45,7 +45,7 @@ def check_update(code, max_retries=3):
     if api_type is trackingmore:
         return trackingmore.get(code, max_retries)
     elif api_type is correios:
-        return correios.get(code, max_retries)
+        return correios.get(code, 1)
     else:
         return status.TYPO
 
