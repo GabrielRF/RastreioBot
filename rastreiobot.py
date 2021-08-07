@@ -144,7 +144,7 @@ def list_by_status(chatid):
     received_br = get_packages_by_status('Correios do Brasil', cursor, chatid)
     not_answered = get_packages_by_status('Carteiro não atendido', cursor, chatid)
     try:
-        send_status_sorted(bot, chatid, 1, waiting_payment) 
+        send_status_sorted(bot, chatid, 1, waiting_payment)
         send_status_sorted(bot, chatid, 2, payed)
         send_status_sorted(bot, chatid, 3, not_available)
         send_status_sorted(bot, chatid, 4, no_payment)
@@ -731,4 +731,5 @@ def cmd_magic(message):
 # if sentry_url:
 #     sentry_sdk.init(sentry_url)
 
-bot.polling()
+if __name__ == "__main__":
+    bot.polling()
