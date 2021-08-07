@@ -1,5 +1,4 @@
 import configparser
-import change_bot_name
 import logging.handlers
 import sys
 from datetime import datetime
@@ -202,6 +201,9 @@ async def async_main():
     await asyncio.gather(*tasks)
 
 
-if __name__ == '__main__':
+def run():
     executor.start(dp, async_main())
 
+
+if __name__ == '__main__':
+    run()
