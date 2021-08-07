@@ -4,6 +4,7 @@ import logging.handlers
 import sys
 from datetime import datetime
 from time import time, sleep
+from utils import status
 from utils.misc import check_update
 from utils.misc import async_check_update
 from utils.misc import check_type
@@ -43,31 +44,28 @@ dp = Dispatcher(bot)
 client = motor.motor_asyncio.AsyncIOMotorClient()
 db = client.rastreiobot
 
+
 import resource
 def print_memory(message):
      memory = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
      print(f"{message} ({memory}kb)")
 
+
 async def get_package(code):
-    #print_memory(code)
     stat = await async_check_update(code)
-    if stat == 0:
-        stat = 'Sistema dos Correios fora do ar.'
-    elif stat == 1:
-        stat = None
-    elif stat == 3:
-        stat = None
-    else:
-        cursor = await db.rastreiobot.update_one (
-        { "code" : code.upper() },
-        {
-            "$set": {
-                "stat" : stat,
-                "time" : str(time())
-            }
-        })
-        stat = 10
-    return stat
+
+    if stat in [status.OFFLINE, status.NOT_FOUND, status.NOT_FOUND_TM]:
+        return None
+
+    await db.rastreiobot.update_one(
+    { "code" : code.upper() },
+    {
+        "$set": {
+            "stat" : stat,
+            "time" : str(time())
+        }
+    })
+    return status.OK
 
 
 def check_system():
@@ -125,7 +123,7 @@ async def up_package(elem, semaphore):
             return
 
         stat = await get_package(code)
-        if stat == 0:
+        if not stat:
             return
 
         elem = await db.rastreiobot.find_one(
