@@ -79,24 +79,18 @@ CREATE TABLE assinantes (
         picpayid TEXT);
 ```
 
-## Run
-
-To receive messages:
+## Commands available
 
 ```
-poetry run python rastreiobot.py
-```
+$ poetry run rastreio --help
+Usage: rastreio [OPTIONS] COMMAND [ARGS]...
 
-To check for updates, I recommend a cronjob that runs every 15 min.
+Options:
+  --help  Show this message and exit.
 
-Type `crontab -e` and add to the end of the file:
-
-```
-*/15 * * * * cd /usr/local/bin/RastreioBot; /usr/bin/python3 /usr/local/bin/RastreioBot/routine.py 0
-*/15 * * * * cd /usr/local/bin/RastreioBot; /usr/bin/python3 /usr/local/bin/RastreioBot/routine.py 1
-*/15 * * * * cd /usr/local/bin/RastreioBot; /usr/bin/python3 /usr/local/bin/RastreioBot/routine.py 2
-*/15 * * * * cd /usr/local/bin/RastreioBot; /usr/bin/python3 /usr/local/bin/RastreioBot/routine.py 3
-...
+Commands:
+  packages:clean   Clean old and duplicated packages
+  packages:update  Update active packages
 ```
 
 ## Running tests
