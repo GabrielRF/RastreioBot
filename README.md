@@ -1,6 +1,6 @@
 # [RastreioBot](http://telegram.me/RastreioBot)
 
-[![Build Status](https://travis-ci.org/GabrielRF/RastreioBot.svg?branch=master)](https://travis-ci.org/GabrielRF/RastreioBot)
+[![Build Status](https://github.com/GabrielRF/RastreioBot/actions/workflows/CI/badge.svg)](https://github.com/GabrielRF/RastreioBot/actions/workflows/ci.yml)
 [![Donate](https://img.shields.io/static/v1?label=Assine&message=PicPay&color=green)](https://grf.xyz/assine)
 [![Donate](https://img.shields.io/static/v1?label=Colabore&message=PicPay&color=brightgreen)](https://grf.xyz/picpay)
 [![Twitter Follow](https://img.shields.io/twitter/follow/espadrine.svg?style=social&label=Follow)](https://twitter.com/gabrf)
