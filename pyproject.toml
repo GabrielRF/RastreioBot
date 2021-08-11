@@ -8,7 +8,7 @@ authors = ["Gabriel R F <github@gabrf.com>"]
 rastreio = 'rastreio.__main__:cli'
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.8"
 aiogram = "^2.14.3"
 motor = "^2.5.0"
 click = "^8.0.1"
