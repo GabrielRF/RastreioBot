@@ -26,9 +26,10 @@ config.read('bot.conf')
 
 
 TOKEN = config['RASTREIOBOT']['TOKEN']
+RETRY_COUNT = int(config['RASTREIOBOT']['retry_count'])
+SEMAPHORE_SIZE = int(config['RASTREIOBOT']['semaphore_size'])
 LOG_ALERTS_FILE = config['RASTREIOBOT']['alerts_log']
 PATREON = config['RASTREIOBOT']['patreon']
-INTERVAL = 0.03
 
 logger_info = logging.getLogger('InfoLogger')
 handler_info = logging.handlers.TimedRotatingFileHandler(
@@ -112,7 +113,7 @@ async def up_package(elem, semaphore):
             "code": code
         })
 
-        should_retry_finished_package = random.randint(0,5)
+        should_retry_finished_package = random.randint(0,RETRY_COUNT)
 
         try:
             old_state = elem['stat'][len(elem['stat'])-1].lower()
@@ -194,7 +195,7 @@ async def async_main():
         return
 
     tasks = []
-    semaphore = asyncio.BoundedSemaphore(60)
+    semaphore = asyncio.BoundedSemaphore(SEMAPHORE_SIZE)
     for elem in cursor1:
         api_type = check_type(elem['code'])
         if api_type is correios:
