@@ -81,8 +81,8 @@ def check_system():
         return False
 
 
-def is_finished_package(old_state):
-    old_state = old_state.lower()
+def is_finished_package(elem):
+    old_state = elem['stat'][len(elem['stat'])-1].lower()
     finished_states = [
         'objeto entregue ao',
         'objeto apreendido por órgão de fiscalização',
@@ -96,6 +96,9 @@ def is_finished_package(old_state):
     for state in finished_states:
         if state in old_state:
             return True
+
+    if elem.get('finished'):
+        return True
 
     return False
 
@@ -118,10 +121,8 @@ async def up_package(elem, semaphore):
             old_state = ""
             len_old_state = 1
 
-        if elem.get('finished') and not should_retry_finished_package:
-            return
 
-        if is_finished_package(old_state) and not should_retry_finished_package:
+        if is_finished_package(elem) and not should_retry_finished_package:
             return
 
         stat = await get_package(code)
