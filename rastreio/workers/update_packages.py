@@ -118,7 +118,7 @@ async def up_package(elem, semaphore):
             old_state = ""
             len_old_state = 1
 
-        if elem.get('finished'):
+        if elem.get('finished') and not should_retry_finished_package:
             return
 
         if is_finished_package(old_state) and not should_retry_finished_package:
