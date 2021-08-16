@@ -1,5 +1,5 @@
 [RASTREIOBOT]
-TOKEN =
+TOKEN = 0:a
 int_del = 2592000
 text_log = text.log
 alerts_log = alerts.log

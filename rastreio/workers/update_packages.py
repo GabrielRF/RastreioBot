@@ -81,8 +81,11 @@ def check_system():
         return False
 
 
-def is_finished_package(elem):
-    old_state = elem['stat'][len(elem['stat'])-1].lower()
+def is_finished_package(package):
+    if package.get('finished'):
+        return True
+
+    old_state = package['stat'][-1].lower()
     finished_states = [
         'objeto entregue ao',
         'objeto apreendido por órgão de fiscalização',
@@ -96,9 +99,6 @@ def is_finished_package(elem):
     for state in finished_states:
         if state in old_state:
             return True
-
-    if elem.get('finished'):
-        return True
 
     return False
 
