@@ -1,0 +1,101 @@
+{
+  "versao": "3.0",
+  "quantidade": "1",
+  "pesquisa": "Lista de Objetos",
+  "resultado": "Todos os eventos",
+  "objeto": [
+    {
+      "numero": "AB019345678BR",
+      "sigla": "ON",
+      "nome": "ETIQUETA LOGICA SEDEX",
+      "categoria": "SEDEX",
+      "evento": [
+        {
+          "tipo": "RO",
+          "status": "01",
+          "data": "10/03/2020",
+          "hora": "14:17",
+          "criacao": "10032020141708",
+          "descricao": "Objeto em trânsito - por favor aguarde",
+          "unidade": {
+            "local": "AGF CRUZEIRO SAO PAULO",
+            "codigo": "70650981",
+            "cidade": "SAO PAULO",
+            "uf": "SP",
+            "sto": "00424239",
+            "tipounidade": "Agência dos Correios",
+            "endereco": {
+              "codigo": "335549",
+              "cep": "70650980",
+              "logradouro": "QUADRA SHCES",
+              "complemento": "BLOCO C LOJA 8",
+              "numero": "401",
+              "localidade": "SAO PAULO",
+              "uf": "SP",
+              "bairro": "CRUZEIRO NOVO",
+              "latitude": "-15",
+              "longitude": "-47"
+            }
+          },
+          "destino": [
+            {
+              "local": "CTE SAO PAULO",
+              "codigo": "71906970",
+              "cidade": "SAO PAULO",
+              "bairro": "ZONA INDUSTRIAL (GUARA)",
+              "uf": "SP",
+              "endereco": {
+                "codigo": "24157",
+                "cep": "71925971",
+                "logradouro": "TRECHO STRC",
+                "complemento": "CONJUNTO A LOTES 1 E 2",
+                "numero": "2",
+                "localidade": "SAO PAULO",
+                "uf": "SP",
+                "bairro": "ZONA INDUSTRIAL (GUARA)",
+                "latitude": "-15",
+                "longitude": "-47"
+              }
+            }
+          ],
+          "cepDestino": "51020260",
+          "prazoGuarda": "0",
+          "diasUteis": "0",
+          "dataPostagem": "10/03/2020"
+        },
+        {
+          "tipo": "PO",
+          "status": "01",
+          "data": "10/03/2020",
+          "hora": "14:01",
+          "criacao": "10032020140102",
+          "descricao": "Objeto postado",
+          "unidade": {
+            "local": "AGF CRUZEIRO SAO PAULO",
+            "codigo": "70650981",
+            "cidade": "SAO PAULO",
+            "uf": "SP",
+            "sto": "00424239",
+            "tipounidade": "Agência dos Correios",
+            "endereco": {
+              "codigo": "335549",
+              "cep": "70650980",
+              "logradouro": "QUADRA SHCES",
+              "complemento": "BLOCO C LOJA 8",
+              "numero": "401",
+              "localidade": "SAO PAULO",
+              "uf": "SP",
+              "bairro": "CRUZEIRO NOVO",
+              "latitude": "-15",
+              "longitude": "-47"
+            }
+          },
+          "cepDestino": "51020260",
+          "prazoGuarda": "0",
+          "diasUteis": "0",
+          "dataPostagem": "10/03/2020"
+        }
+      ]
+    }
+  ]
+}
