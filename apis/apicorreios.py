@@ -20,13 +20,13 @@ token = config['CORREIOS']['token']
 finished_status = config['CORREIOS']['FSTATUS']
 finished_code = config['CORREIOS']['FCODE']
 
-def format_obj(code, response):
-    stats = []
-    result = json.loads(response)
-    tabela = result['objeto'][0]['evento']
+
+def parse(code, tabela):
     if len(tabela) < 1:
         return status.NOT_FOUND
+
     # stats.append(str(u'\U0001F4EE') + ' <b>' + code + '</b>')
+    stats = []
     stats.append(str(u'\U0001F4EE') + '<a href="https://t.me/rastreiobot?start=' + code + '">' + code + '</a>')
     for evento in reversed(tabela):
         try:
@@ -117,9 +117,27 @@ def format_obj(code, response):
         if str(evento['tipo']) in finished_status:
             if str(evento['status']) in finished_code:
                 db.update_package(code, finished=True)
+
     return stats
 
-def get(code, retries):
+
+def parse_multiple_codes_output(response):
+    packages = {}
+    for package in response["objeto"]:
+        events = package["evento"]
+        code = package["numero"]
+        packages[code] = parse(code, events)
+
+    return packages
+
+
+def parse_single_code_output(response):
+    events = response["objeto"][0]["evento"]
+    code = response["objeto"][0]["numero"]
+    return parse(code, events)
+
+
+def get(code, retries=0):
     print(str(code) + ' ' + str(retries))
     try:
         request_xml = '''
@@ -157,12 +175,13 @@ def get(code, retries):
     elif 'Objeto não encontrado na base de dados dos Correios.' in str(response):
         return status.NOT_FOUND
     try:
-        return format_obj(code, response)
+        response = json.loads(response)
+        return parse_single_code_output(response)
     except json.decoder.JSONDecodeError as e:
         return status.NOT_FOUND
         #return 3
 
-async def async_get(code, retries):
+async def async_get(codes, retries=0):
     try:
         request_xml = '''
             <rastroObjeto>
@@ -174,7 +193,7 @@ async def async_get(code, retries):
                 <lingua>101</lingua>
                 <token>{}</token>
             </rastroObjeto>
-        '''.format(usuario, senha, code, token)
+        '''.format(usuario, senha, "".join(codes), token)
         headers = {
             'Content-Type': 'application/xml',
             'Accept': 'application/json',
@@ -186,13 +205,13 @@ async def async_get(code, retries):
         )
         async with aiohttp.ClientSession() as session:
             async with session.post(url, data=request_xml, headers=headers, timeout=3) as response:
-                print(response.status, code)
+                print(response.status, codes)
                 status_code = response.status
                 response = await response.text()
     except Exception as e:
         if retries > 0:
             await asyncio.sleep(2)
-            return await async_get(code, retries - 1)
+            return await async_get(codes, retries - 1)
         return status.OFFLINE
     if status_code != 200:
         #return await async_get(code, retries - 1)
@@ -202,7 +221,11 @@ async def async_get(code, retries):
     elif 'Objeto não encontrado na base de dados dos Correios.' in str(response):
         return status.NOT_FOUND
     try:
-        return format_obj(code, response)
+        response = json.loads(response)
+        if isinstance(codes, list):
+            return parse_multiple_codes_output(response)
+        else:
+            return parse_single_code_output(response)
     except:# json.decoder.JSONDecodeError as e:
         print("Error", code, response)
         return status.OFFLINE
