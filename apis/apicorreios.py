@@ -19,11 +19,12 @@ senha = config['CORREIOS']['senha']
 token = config['CORREIOS']['token']
 finished_status = config['CORREIOS']['FSTATUS']
 finished_code = config['CORREIOS']['FCODE']
+batch_size = int(config['RASTREIOBOT']['batch_size'])
 
 
 def parse(code, tabela):
     if len(tabela) < 1:
-        return status.NOT_FOUND
+        return []
 
     # stats.append(str(u'\U0001F4EE') + ' <b>' + code + '</b>')
     stats = []
@@ -124,7 +125,7 @@ def parse(code, tabela):
 def parse_multiple_codes_output(response):
     packages = {}
     for package in response["objeto"]:
-        events = package["evento"]
+        events = package.get("evento", [])
         code = package["numero"]
         packages[code] = parse(code, events)
 
@@ -132,7 +133,7 @@ def parse_multiple_codes_output(response):
 
 
 def parse_single_code_output(response):
-    events = response["objeto"][0]["evento"]
+    events = response["objeto"][0].get("evento", [])
     code = response["objeto"][0]["numero"]
     return parse(code, events)
 
@@ -181,52 +182,53 @@ def get(code, retries=0):
         return status.NOT_FOUND
         #return 3
 
-async def async_get(codes, retries=0):
-    try:
-        request_xml = '''
-            <rastroObjeto>
-                <usuario>{}</usuario>
-                <senha>{}</senha>
-                <tipo>L</tipo>
-                <resultado>T</resultado>
-                <objetos>{}</objetos>
-                <lingua>101</lingua>
-                <token>{}</token>
-            </rastroObjeto>
-        '''.format(usuario, senha, "".join(codes), token)
-        headers = {
-            'Content-Type': 'application/xml',
-            'Accept': 'application/json',
-            'User-Agent': 'Dalvik/1.6.0 (' +
-            'Linux; U; Android 4.2.1; LG-P875h Build/JZO34L)'
-        }
-        url = (
-            'http://webservice.correios.com.br/service/rest/rastro/rastroMobile'
-        )
-        async with aiohttp.ClientSession() as session:
-            async with session.post(url, data=request_xml, headers=headers, timeout=3) as response:
-                print(response.status, codes)
+async def async_get(codes, retries=3):
+    request_xml = '''
+        <rastroObjeto>
+            <usuario>{}</usuario>
+            <senha>{}</senha>
+            <tipo>L</tipo>
+            <resultado>T</resultado>
+            <objetos>{}</objetos>
+            <lingua>101</lingua>
+            <token>{}</token>
+        </rastroObjeto>
+    '''.format(usuario, senha, "".join(codes), token)
+    headers = {
+        'Content-Type': 'application/xml',
+        'Accept': 'application/json',
+        'User-Agent': 'Dalvik/1.6.0 (' +
+        'Linux; U; Android 4.2.1; LG-P875h Build/JZO34L)'
+    }
+    url = (
+        'http://webservice.correios.com.br/service/rest/rastro/rastroMobile'
+    )
+    async with aiohttp.ClientSession() as session:
+        timeout = int(batch_size * 0.5) // (retries or 1)
+        try:
+            async with session.post(url, data=request_xml, headers=headers, timeout=timeout) as response:
                 status_code = response.status
                 response = await response.text()
-    except Exception as e:
-        if retries > 0:
-            await asyncio.sleep(2)
-            return await async_get(codes, retries - 1)
-        return status.OFFLINE
+        except asyncio.exceptions.TimeoutError:
+            if retries > 0:
+                await asyncio.sleep(batch_size // retries)
+                return await async_get(codes, retries - 1)
+            else:
+                print(f"Correios timeout")
+                return 99
+
     if status_code != 200:
         #return await async_get(code, retries - 1)
+        #logger.warning(f"Correios status code {status_code}")
+
         return status.OFFLINE
-    elif len(str(response)) < 10:
-        return status.OFFLINE
-    elif 'Objeto não encontrado na base de dados dos Correios.' in str(response):
-        return status.NOT_FOUND
     try:
         response = json.loads(response)
         if isinstance(codes, list):
             return parse_multiple_codes_output(response)
         else:
             return parse_single_code_output(response)
-    except:# json.decoder.JSONDecodeError as e:
+    except Exception as e:
         print("Error", code, response)
         return status.OFFLINE
 
