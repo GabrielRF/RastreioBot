@@ -148,7 +148,6 @@ async def check_and_update(code, number_of_updates, after, progress):
     for user in users:
         message = build_message(package, user, code, after)
 
-        user = "-1001573721656"
         await send_update_to_user(code, user, message, progress, retry=3)
         progress.print(f"{code}: update sent to user. user={user}")
 
