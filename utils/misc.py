@@ -20,6 +20,10 @@ ALI_RE = re.compile(
 
 
 def check_type(code):
+    # HACK - GAMBIARRA
+    if isinstance(code, list):
+        code = code[0]
+
     if CORREIOS_RE.search(str(code)):
         return correios
     elif ALI_RE.search(str(code)):
