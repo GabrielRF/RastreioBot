@@ -75,7 +75,7 @@ def should_update(package):
     # update its status with the correct one. To catch thoses errors,
     # RastreioBot tries to update a % of the finalized packages.
     should_retry = random.randint(0, RETRY_COUNT)
-    return should_retry or not is_finished(package)
+    return not should_retry or not is_finished(package)
 
 
 def build_message(package, user, code, stats):
@@ -184,7 +184,6 @@ async def update_package_group(packages, semaphore, progress):
         packages_without_update = len(packages) - len(tasks)
         progress.advance(packages_without_update)
 
-        progress.print(f"Checking and updating {len(tasks)} packages")
         await asyncio.gather(*tasks)
 
 
