@@ -26,9 +26,9 @@ def test_is_finished(package, expected_return):
 
 
 @pytest.mark.parametrize("randint, is_finished, expected_return", (
-    (0, True, False),
+    (0, True, True),
     (0, False, True),
-    (1, True, True),
+    (1, True, False),
     (1, False, True),
 ))
 @patch("rastreio.workers.update_packages.random.randint")
