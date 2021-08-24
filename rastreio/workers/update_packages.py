@@ -120,7 +120,7 @@ async def send_update_to_user(code, user, message, progress, retry=3):
         )
         return False
 
-    logger.info(f"Update sent to user. code={code}, user={user}")
+    logger.info(f"{datetime.now()} Update sent to user. code={code}, user={user}")
     return True
 
 
