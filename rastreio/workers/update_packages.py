@@ -116,7 +116,7 @@ async def send_update_to_user(code, user, message, progress, retry=3):
             return False
     except Exception as e:
         progress.print(
-            f"{code}: exception while sending update to user. user={user}, exception={e.__class__}"
+            f"{code}: exception while sending update to user. user={user}, exception={e}"
         )
         return False
 
