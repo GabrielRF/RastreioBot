@@ -118,6 +118,8 @@ def parse(code, tabela):
         if str(evento['tipo']) in finished_status:
             if str(evento['status']) in finished_code:
                 db.update_package(code, finished=True)
+        if 'Favor desconsiderar a informação anterior' in situacao:
+            db.update_package(code, finished=False)
 
     return stats
 
