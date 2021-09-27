@@ -4,6 +4,7 @@ import sys
 from datetime import datetime
 from time import time, sleep
 from utils import status
+from utils import anuncieaqui
 from utils.misc import check_update
 from utils.misc import async_check_update
 from utils.misc import check_type
@@ -86,20 +87,22 @@ def build_message(package, user, code, stats):
 
     message += f"\n{stats[-1]}\n"
 
-    if "objeto entregue" in message.lower() and user not in PATREON:
-        message += (
-            "\n\U0001F4B3 Me ajude a manter o projeto vivo!\n"
-            "Envie /doar e veja as opções \U0001F4B5"
-        )
-
     return message
 
 
 async def send_update_to_user(code, user, message, progress, retry=3):
     try:
-        await bot.send_message(
-            user, message, parse_mode="HTML", disable_web_page_preview=True
-        )
+        #await bot.send_message(
+        #    user, message, parse_mode="HTML", disable_web_page_preview=True
+        #)
+        try:
+            await anuncieaqui.async_send_message(
+                TOKEN, user, message
+            )
+        except:
+            await bot.send_message(
+                user, message, parse_mode="HTML", disable_web_page_preview=True
+            )
     except (BotBlocked, BotKicked, UserDeactivated) as e:
         progress.print(
             f"{code}: exception while sending update to user. user={user}, exception={e.__class__}"
