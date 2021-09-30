@@ -663,7 +663,7 @@ def cmd_magic(message):
         else:
             stat = add_package(str(code), str(user))
             share_button = types.InlineKeyboardMarkup()
-            share_button.row(types.InlineKeyboardButton("Compartilhar", url="https://rastreiobot.xyz/?codigo=" + code))
+            share_button.row(types.InlineKeyboardButton("Compartilhar", url="https://t.me/share/url?url=https://rastreiobot.xyz/?codigo=" + code))
             if stat == status.OFFLINE:
                 bot.reply_to(message, 'Sistema fora do ar')
             elif stat == status.TYPO:
