@@ -92,9 +92,6 @@ def build_message(package, user, code, stats):
 
 async def send_update_to_user(code, user, message, progress, retry=3):
     try:
-        #await bot.send_message(
-        #    user, message, parse_mode="HTML", disable_web_page_preview=True
-        #)
         try:
             await anuncieaqui.async_send_message(
                 TOKEN, user, message
