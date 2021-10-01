@@ -114,13 +114,9 @@ payment = (
     '\n- Este método de pagamento substituirá o PicPay! Ou seja, cancele o plano no PicPay após o pagamento usando este método.'
 )
 
-donate_warn = (
-    '<b>Toda ajuda é bem vinda!</b>\n\n'
-    'Para doar R$ 1 ou mais <b>mensalmente</b>, acesse:\n'
-    'http://grf.xyz/assine (<code>GabRF</code> no PicPay)\n\n'
-    'Para doar uma vez, acesse:\n'
-    'http://grf.xyz/picpay (<code>GabrielRF</code> no PicPay)\n'
-    'Ou envie um PIX usando a chave de e-mail abaixo:'
+donate_caption = (
+    '<b>Envie um PIX</b> usando o QRCode ou para a chave de e-mail:\n'
+    '<code>pix@rastreiobot.xyz</code>'
 )
 
 donate_ok = (

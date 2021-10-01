@@ -40,7 +40,7 @@ bot = telebot.TeleBot(TOKEN)
 
 #markup_btn = types.ReplyKeyboardRemove(selective=False)
 markup_btn = types.ReplyKeyboardMarkup(resize_keyboard=True)
-markup_btn.row('/Pacotes', '/Doar')
+markup_btn.row('/Pacotes')
 markup_btn.row('/Resumo', '/Agrupados')
 markup_btn.row('/Info', '/Gif')
 markup_clean = types.ReplyKeyboardRemove(selective=False)
@@ -111,6 +111,7 @@ def send_status_sorted(bot, chatid, case, status):
         15: '<b>Aduana</b> 🏢',
         16: '<b>Recebido no Brasil</b> 🇧🇷',
         17: '<b>Carteiro não atendido</b> 🚪',
+        18: '<b>Objeto não chegou à unidade</b>',
     }
     if status:
         send_clean_msg(bot, chatid, cases.get(case) + status)
@@ -136,13 +137,14 @@ def list_by_status(chatid):
     refused = get_packages_by_status('recusou o objeto', cursor, chatid)
     exported = get_packages_by_status('unidade de exportação', cursor, chatid)
     not_delivered = get_packages_by_status('Entrega não realizada', cursor, chatid)
-    pickup = get_packages_by_status('aguardando retirada', cursor, chatid)
+    pickup = get_packages_by_status('retirada', cursor, chatid)
     waiting_action = get_packages_by_status('ação é necessária', cursor, chatid)
     posted = get_packages_by_status('Objeto postado', cursor, chatid)
     returned = get_packages_by_status('Devolução', cursor, chatid)
     customs = get_packages_by_status('aduaneira', cursor, chatid)
     received_br = get_packages_by_status('Correios do Brasil', cursor, chatid)
     not_answered = get_packages_by_status('Carteiro não atendido', cursor, chatid)
+    not_arrived = get_packages_by_status('Objeto ainda não chegou à unidade', cursor, chatid)
     try:
         send_status_sorted(bot, chatid, 1, waiting_payment)
         send_status_sorted(bot, chatid, 2, payed)
@@ -161,6 +163,7 @@ def list_by_status(chatid):
         send_status_sorted(bot, chatid, 15, customs)
         send_status_sorted(bot, chatid, 16, received_br)
         send_status_sorted(bot, chatid, 17, not_answered)
+        send_status_sorted(bot, chatid, 18, not_arrived)
     except Exception:
         bot.send_message('9083329', 'Erro MongoBD')
         qtd = -1
@@ -268,15 +271,14 @@ def log_text(chatid, message_id, text):
     )
 
 
-@bot.message_handler(commands=['doar', 'Doar'])
+@bot.message_handler(commands=['doar', 'Doar', 'Pix', 'pix', 'PIX'])
 def command_sub(message):
     log_text(message.chat.id, message.message_id, '--- DONATE --- ')
     if str(message.from_user.id) in BANNED:
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
          bot.send_message(message.chat.id, msgs.banned)
          return 0
-    send_clean_msg(bot, message.chat.id, msgs.donate_warn)
-    bot.send_photo(message.chat.id, 'AgACAgEAAxkBAAFvCWVfuo6kDztK_xxQVSza4gkfNPkAAYgAAjSqMRtottlFTZa3_00eUpfumRIwAAQBAAMCAAN5AAMkFwQAAR4E', caption='PIX: pix@rastreiobot.xyz')
+    bot.send_photo(message.chat.id, 'AgACAgEAAxkBAAFvCWVfuo6kDztK_xxQVSza4gkfNPkAAYgAAjSqMRtottlFTZa3_00eUpfumRIwAAQBAAMCAAN5AAMkFwQAAR4E', caption=msgs.donate_caption, parse_mode='HTML')
 
 bot.skip_pending = True
 
