@@ -278,7 +278,6 @@ def command_sub(message):
          log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
          bot.send_message(message.chat.id, msgs.banned)
          return 0
-    #send_clean_msg(bot, message.chat.id, msgs.donate_warn)
     bot.send_photo(message.chat.id, 'AgACAgEAAxkBAAFvCWVfuo6kDztK_xxQVSza4gkfNPkAAYgAAjSqMRtottlFTZa3_00eUpfumRIwAAQBAAMCAAN5AAMkFwQAAR4E', caption=msgs.donate_caption, parse_mode='HTML')
 
 bot.skip_pending = True
