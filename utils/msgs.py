@@ -51,7 +51,7 @@ howto = (
     '<a href="https://gabrf.com?utm_source=telegram&utm_medium=telegrammessage&utm_campaign=rastreiobot">https://gabrf.com</a>\n\n'
     '\U0001F4B5 <b>Colabore!</b>\n'
     'Clique em /doar para ver o QRCode ou envie um PIX.\n'
-    'Chave PIX: pix@rastreiobot.xyz\n'
+    'Chave PIX: pix@rastreiobot.xyz\n\n'
 )
 
 error_bot = 'Ops!\nHouve um problema com o bot.\nTente novamente mais tarde.'
