@@ -114,11 +114,6 @@ payment = (
     '\n- Este método de pagamento substituirá o PicPay! Ou seja, cancele o plano no PicPay após o pagamento usando este método.'
 )
 
-donate_warn = (
-    '<b>PIX!</b>\n\n'
-    'Envie um PIX usando a chave de e-mail abaixo:'
-)
-
 donate_caption = (
     '<b>Envie um PIX</b> usando o QRCode ou para a chave de e-mail:\n'
     '<code>pix@rastreiobot.xyz</code>'
