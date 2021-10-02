@@ -22,6 +22,15 @@ finished_code = config['CORREIOS']['FCODE']
 batch_size = int(config['RASTREIOBOT']['batch_size'])
 
 
+def set_is_finished(code, tabela):
+    evento = tabela[-1]
+    if str(evento['tipo']) in finished_status:
+        if str(evento['status']) in finished_code:
+            db.update_package(code, finished=True)
+    if 'Favor desconsiderar a informação anterior' in evento['descricao']:
+        db.update_package(code, finished=False)
+
+
 def parse(code, tabela):
     if len(tabela) < 1:
         return []
@@ -115,11 +124,7 @@ def parse(code, tabela):
                 mensagem = (mensagem +
                 '\nhttps://www2.correios.com.br/sistemas/rastreamento/')
         stats.append(mensagem)
-        if str(evento['tipo']) in finished_status:
-            if str(evento['status']) in finished_code:
-                db.update_package(code, finished=True)
-        if 'Favor desconsiderar a informação anterior' in situacao:
-            db.update_package(code, finished=False)
+
 
     return stats
 
@@ -130,6 +135,7 @@ def parse_multiple_codes_output(response):
         events = package.get("evento", [])
         code = package["numero"]
         packages[code] = parse(code, events)
+        set_is_finished(code, events)
 
     return packages
 
@@ -137,6 +143,7 @@ def parse_multiple_codes_output(response):
 def parse_single_code_output(response):
     events = response["objeto"][0].get("evento", [])
     code = response["objeto"][0]["numero"]
+    set_is_finished(code, events)
     return parse(code, events)
 
 
@@ -231,7 +238,7 @@ async def async_get(codes, retries=3):
         else:
             return parse_single_code_output(response)
     except Exception as e:
-        print("Error", code, response)
+        print("Error", codes, response)
         return status.OFFLINE
 
 if __name__ == '__main__':
