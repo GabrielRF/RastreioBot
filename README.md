@@ -89,8 +89,9 @@ Options:
   --help  Show this message and exit.
 
 Commands:
-  packages:clean   Clean old and duplicated packages
-  packages:update  Update active packages
+  packages:clean                         Clean old and duplicated packages
+  packages:update                        Update active packages
+  packages:delete --code <package-code>  Delete an active package
 ```
 
 ## Running tests
