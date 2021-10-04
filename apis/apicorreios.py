@@ -23,7 +23,10 @@ batch_size = int(config['RASTREIOBOT']['batch_size'])
 
 
 def set_is_finished(code, tabela):
-    evento = tabela[-1]
+    try:
+        evento = tabela[-1]
+    except IndexError:
+        return 0
     if str(evento['tipo']) in finished_status:
         if str(evento['status']) in finished_code:
             db.update_package(code, finished=True)
