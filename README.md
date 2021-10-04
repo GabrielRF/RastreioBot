@@ -91,7 +91,7 @@ Options:
 Commands:
   packages:clean                         Clean old and duplicated packages
   packages:update                        Update active packages
-  packages:delete --code <package-code>  Delete an active package
+  packages:delete --code <package-code>  Delete a package
 ```
 
 ## Running tests
