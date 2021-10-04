@@ -28,7 +28,7 @@ def update_packages():
 
 
 @cli.command(name="packages:delete")
-@click.option("--code", help="Package code to be deleted")
+@click.argument("code", type=str, required=True)
 def delete_package(code):
     """Delete a package"""
     click.secho("Deleting active package with code {}...".format(code), fg="red")
