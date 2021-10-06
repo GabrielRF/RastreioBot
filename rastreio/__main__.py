@@ -27,5 +27,15 @@ def update_packages():
     update_packages.run()
 
 
+@cli.command(name="packages:delete")
+@click.argument("code", type=str, required=True)
+def delete_package(code):
+    """Delete a package"""
+    click.secho("Deleting active package with code {}...".format(code), fg="red")
+
+    from rastreio import db
+    db.delete_package(code)
+
+
 if __name__ == "__main__":
     cli(prog_name="rastreio")
