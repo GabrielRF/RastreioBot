@@ -5,7 +5,7 @@
 [![Donate](https://img.shields.io/static/v1?label=Colabore&message=PicPay&color=brightgreen)](https://grf.xyz/picpay)
 [![Twitter Follow](https://img.shields.io/twitter/follow/espadrine.svg?style=social&label=Follow)](https://twitter.com/gabrf)
 
-![Rastreiobot](https://github.com/GabrielRF/RastreioBot/blob/master/imgs/rastreiobot.png?raw=true)
+![Rastreiobot](./imgs/logo.jpg?raw=true)
 
 * [About](#about)
 * [Setup](#setup)
