@@ -92,6 +92,7 @@ Commands:
   packages:clean                  Clean old and duplicated packages
   packages:update                 Update active packages
   packages:delete <package-code>  Delete a package
+  bot:run [--maintenance]          Set bot to maintenance mode
 ```
 
 ## Running tests
