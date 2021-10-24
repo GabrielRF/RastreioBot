@@ -22,6 +22,20 @@ finished_status = config['CORREIOS']['FSTATUS']
 finished_code = config['CORREIOS']['FCODE']
 batch_size = int(config['RASTREIOBOT']['batch_size'])
 
+def parse_data(delta_dias, delta_dias_uteis):
+    if delta_dias == 1:
+        data = ' (' + str(delta_dias) + ' dia'
+    elif delta_dias > 1:
+        data = ' (' + str(delta_dias) + ' dias'
+        
+    if delta_dias_uteis == 1:
+        data = data + ' – ' + str(delta_dias_uteis) + ' dia útil)'
+    elif delta_dias_uteis > 1:
+        data = data + ' – ' + str(delta_dias_uteis) + ' dias úteis)'
+    elif delta_dias > 0:
+        data = data + ')'
+
+    return data
 
 def parse(code, tabela):
     if len(tabela) < 1:
@@ -47,17 +61,10 @@ def parse(code, tabela):
             delta_utils = 0
             pass
         #print(evento['tipo'], evento['status'])
+        
         data = evento['data'] + ' ' + evento['hora']
-        if delta.days == 1:
-            data = data + ' (' + str(delta.days) + ' dia'
-        elif delta.days > 1:
-            data = data + ' (' + str(delta.days) + ' dias'
-        if delta_utils == 1:
-            data = data + ' – ' + str(delta_utils) + ' dia útil)'
-        elif delta_utils > 1:
-            data = data + ' – ' + str(delta_utils) + ' dias úteis)'
-        else
-            data = data + ')'
+        data += parse_data(delta.days, delta_utils)
+
         try:
             local = evento['unidade']['local']
         except Exception:
