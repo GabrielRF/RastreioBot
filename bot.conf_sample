@@ -11,6 +11,7 @@ batch_size = 50
 delete_log = delete.log
 banned =
 patreon =
+admin_id = 9083329
 
 [CORREIOS]
 usuario =
