@@ -80,8 +80,6 @@ def test_build_message_final_stat():
     assert message == (
         "\U0001F4EE <a href='https://t.me/rastreiobot?start=AB012345678CD'>AB012345678CD</a>\n"
         "\nobjeto entregue\n"
-        "\n\U0001F4B3 Me ajude a manter o projeto vivo!\n"
-        "Envie /doar e veja as opções \U0001F4B5"
     )
 
 
