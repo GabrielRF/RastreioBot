@@ -8,7 +8,7 @@ config.read("bot.conf")
 
 api_key = config["LOGGI"]["api_key"]
 email = config["LOGGI"]["email"]
-final_codes = {int(x) for x in config["LOGGI"]["final_codes"].split(", ")}
+final_codes = {int(x) for x in config["LOGGI"]["final_codes"].split(",").strip()}
 
 
 def process_response(response, tracking_code):
