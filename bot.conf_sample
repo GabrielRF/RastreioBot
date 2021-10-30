@@ -48,4 +48,4 @@ redirect_url_salt =
 [LOGGI]
 email =
 api_key =
-final_codes = 2, 3, 9, 11, 13, 15, 16, 17, 18, 19, 20, 23, 31
+final_codes = 0, 2, 9, 15
