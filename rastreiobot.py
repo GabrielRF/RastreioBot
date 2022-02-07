@@ -630,11 +630,6 @@ def cmd_cadastro_mercado_livre(message):
     )
     bot.reply_to(message, url)
 
-@bot.message_handler(commands=['teste'])
-def teste(message):
-    pacotes = db.search_packages_per_user(message.chat.id)
-    for pacote in pacotes:
-        print(pacote)
 
 @bot.message_handler(func=lambda m: True)
 def cmd_magic(message):
