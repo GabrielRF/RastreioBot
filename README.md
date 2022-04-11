@@ -1,11 +1,9 @@
+<img align="right" alt="RastreioBot Logo" width="30%" height="auto" src="https://github.com/GabrielRF/RastreioBot/blob/master/imgs/rastreiobot.png?raw=true">
+
 # [RastreioBot](http://telegram.me/RastreioBot)
 
 [![Build Status](https://github.com/GabrielRF/RastreioBot/actions/workflows/ci.yml/badge.svg)](https://github.com/GabrielRF/RastreioBot/actions/workflows/ci.yml)
-[![Donate](https://img.shields.io/static/v1?label=Assine&message=PicPay&color=green)](https://grf.xyz/assine)
-[![Donate](https://img.shields.io/static/v1?label=Colabore&message=PicPay&color=brightgreen)](https://grf.xyz/picpay)
 [![Twitter Follow](https://img.shields.io/twitter/follow/espadrine.svg?style=social&label=Follow)](https://twitter.com/gabrf)
-
-![Rastreiobot](https://github.com/GabrielRF/RastreioBot/blob/master/imgs/rastreiobot.png?raw=true)
 
 * [About](#about)
 * [Setup](#setup)
