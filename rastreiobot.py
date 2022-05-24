@@ -143,7 +143,7 @@ def list_by_status(chatid):
     returned = get_packages_by_status('Devolução', cursor, chatid)
     customs = get_packages_by_status('aduaneira', cursor, chatid)
     received_br = get_packages_by_status('Correios do Brasil', cursor, chatid)
-    not_answered = get_packages_by_status('Carteiro não atendido', cursor, chatid)
+    not_answered = get_packages_by_status('arteiro não atendido', cursor, chatid)
     not_arrived = get_packages_by_status('Objeto ainda não chegou à unidade', cursor, chatid)
     try:
         send_status_sorted(bot, chatid, 1, waiting_payment)
@@ -556,6 +556,7 @@ def cmd_remove(message):
     try:
         code = message.text.split(' ')[1]
         code = code.replace('@', ' ')
+        code = code.upper()
         db.remove_user_from_package(code, message.chat.id)
         bot.send_message(message.chat.id, 'Pacote removido.')
     except Exception:
