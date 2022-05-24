@@ -1,0 +1,22 @@
+name: Deploy
+on:
+  push:
+    branches:
+      -master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy using ssh
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 22
+        script: |
+          cd /usr/local/bin/RastreioBot/
+          git pull origin master
+          systemctl restart tg_rastreiobot
+          systemctl restart tg_routine
