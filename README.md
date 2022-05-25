@@ -3,6 +3,7 @@
 # [RastreioBot](http://telegram.me/RastreioBot)
 
 [![Build Status](https://github.com/GabrielRF/RastreioBot/actions/workflows/ci.yml/badge.svg)](https://github.com/GabrielRF/RastreioBot/actions/workflows/ci.yml)
+[![Deploy](https://github.com/GabrielRF/RastreioBot/actions/workflows/deploy.yml/badge.svg)](https://github.com/GabrielRF/RastreioBot/actions/workflows/deploy.yml)
 [![Twitter Follow](https://img.shields.io/twitter/follow/espadrine.svg?style=social&label=Follow)](https://twitter.com/gabrf)
 
 * [About](#about)
