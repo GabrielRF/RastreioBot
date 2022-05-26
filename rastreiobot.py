@@ -334,7 +334,7 @@ def cmd_pacotes(message):
         if qtd > 7 and chatid > 0 and str(chatid) not in subscriber:
             bot.send_message(chatid,
                 str(u'\U0001F4B5') + '<b>Colabore!</b>'
-                + '\nPicPay: http://grf.xyz/picpay',
+                + '\nChave PIX: pix@rastreiobot.xyz',
                 parse_mode='HTML', reply_markup=markup_clean,
                 disable_web_page_preview=True)
 
