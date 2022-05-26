@@ -50,11 +50,7 @@ howto = (
     '\U0001F680<b>Conheça meus outros projetos:</b>\n'
     '<a href="https://gabrf.com?utm_source=telegram&utm_medium=telegrammessage&utm_campaign=rastreiobot">https://gabrf.com</a>\n\n'
     '\U0001F4B5 <b>Colabore!</b>\n'
-    'Clique em /doar, doe usando PIX ou pelo PicPay, usuario GabrielRF.\n'
-    'PIX: pix@rastreiobot.xyz\n'
-    'PicPay: http://grf.xyz/picpay\n\n'
-    'Para doações recorrentes, usuário GabRF no PicPay ou pelo link\n'
-    'http://grf.xyz/assine\n\n'
+    'Chave PIX: pix@rastreiobot.xyz\n'
 )
 
 error_bot = 'Ops!\nHouve um problema com o bot.\nTente novamente mais tarde.'
