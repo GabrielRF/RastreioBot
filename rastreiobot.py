@@ -199,7 +199,7 @@ def list_packages(chatid, done, status):
                         qtd = qtd + 1
                 else:
                     if not package_status_can_change(elem):
-                        aux = f"{aux}{elem['code']}"
+                        aux = f"{aux}/{elem['code']}"
                         try:
                             if elem[str(chatid)] != elem['code']:
                                 aux = f"{aux} <b>{elem[str(chatid)]}</b>"
