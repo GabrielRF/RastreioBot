@@ -608,8 +608,10 @@ def cmd_magic(message):
         .replace('/', '')
         .replace('📮', '')
         .strip()
-        .split()
     )
+    if '/start ' in message.text:
+        message_text = message_text.replace('_', ' ')
+    message_text = message_text.split()
 
     code = code_type = None
     for word in message_text:
