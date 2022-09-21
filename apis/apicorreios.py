@@ -40,7 +40,8 @@ def parse(code, tabela):
 
     # stats.append(str(u'\U0001F4EE') + ' <b>' + code + '</b>')
     stats = []
-    stats.append(str(u'\U0001F4EE') + '<a href="https://t.me/rastreiobot?start=' + code + '">' + code + '</a>')
+    stats.append(str(u'\U0001F4EE') +
+                 '<a href="https://t.me/rastreiobot?start=' + code + '">' + code + '</a>')
     for evento in reversed(tabela):
         try:
             dia0 = int(tabela[len(tabela) - 1]['data'].split('/')[0])
@@ -88,36 +89,38 @@ def parse(code, tabela):
                 mensagem + '\nSituação: <b>' +
                 situacao.strip() + '</b>'
             )
-            if 'objeto entregue ao' in situacao.lower():
+            situacao_lower = situacao.lower()
+
+            if 'objeto entregue ao' in situacao_lower:
                 mensagem = mensagem + ' ' + str(u'\U0001F381')
-            elif 'encaminhado' in situacao.lower():
+            elif 'encaminhado' in situacao_lower:
                 mensagem = mensagem + ' ' + str(u'\U00002197')
-            elif 'postado' in situacao.lower():
+            elif 'postado' in situacao_lower:
                 mensagem = mensagem + ' ' + str(u'\U0001F4E6')
-            elif 'saiu para entrega' in situacao.lower():
+            elif 'saiu para entrega' in situacao_lower:
                 mensagem = mensagem + ' ' + str(u'\U0001F69A')
-            elif 'recebido pelos correios' in situacao.lower():
+            elif 'recebido pelos correios' in situacao_lower:
                 mensagem = mensagem + ' ' + str(u'\U0001F4E5')
-            elif 'aguardando retirada' in situacao.lower():
+            elif 'aguardando retirada' in situacao_lower:
                 mensagem = mensagem + ' ' + str(u'\U0001F3E2')
-            elif 'objeto apreendido' in situacao.lower():
+            elif 'objeto apreendido' in situacao_lower:
                 mensagem = mensagem + ' ' + str(u'\U0001F46E')
-            elif 'aguardando confirmação de pagamento' in situacao.lower():
+            elif 'aguardando confirmação de pagamento' in situacao_lower:
                 mensagem = mensagem + ' ' + str(u'\U0001F554')
-            elif 'objeto pago' in situacao.lower():
+            elif 'objeto pago' in situacao_lower:
                 mensagem = mensagem + ' ' + str(u'\U0001F4B8')
-            elif 'aduaneira finalizada' in situacao.lower():
+            elif 'aduaneira finalizada' in situacao_lower:
                 mensagem = (mensagem + '\n<i>Acesse o ambiente </i>' +
-                '<a href="https://apps.correios.com.br/portalimportador">Minhas Importações</a>')
-            elif 'Sua ação é necessária' in situacao.lower():
+                            '<a href="https://apps.correios.com.br/portalimportador">Minhas Importações</a>')
+            elif 'Sua ação é necessária' in situacao_lower:
                 mensagem = (mensagem + '\n<i>Acesse o ambiente </i>' +
-                '<a href="https://apps.correios.com.br/portalimportador">Minhas Importações</a>')
-            elif 'aguardando pagamento' in situacao.lower():
+                            '<a href="https://apps.correios.com.br/portalimportador">Minhas Importações</a>')
+            elif 'aguardando pagamento' in situacao_lower:
                 mensagem = (mensagem + ' ' + str(u'\U0001F52B') +
-                '\n<i>Links para efetuar pagamentos aos Correios:</i>' +
-                '\n<a href="https://www2.correios.com.br/sistemas/rastreamento/">Rastreamento</a>' +
-                '\n<a href="https://apps.correios.com.br/portalimportador/">Portal Importador</a>')
-            elif 'liberado sem' in situacao.lower():
+                            '\n<i>Links para efetuar pagamentos aos Correios:</i>' +
+                            '\n<a href="https://www2.correios.com.br/sistemas/rastreamento/">Rastreamento</a>' +
+                            '\n<a href="https://apps.correios.com.br/portalimportador/">Portal Importador</a>')
+            elif 'liberado sem' in situacao_lower:
                 mensagem = mensagem + ' ' + str(u'\U0001F389')
         if observacao:
             mensagem = mensagem + '\nObservação: ' + observacao.strip().title()
@@ -125,9 +128,8 @@ def parse(code, tabela):
                 mensagem = mensagem + ' ' + str(u'\U0001F389')
             elif 'pagamento' in observacao.lower():
                 mensagem = (mensagem +
-                '\nhttps://www2.correios.com.br/sistemas/rastreamento/')
+                            '\nhttps://www2.correios.com.br/sistemas/rastreamento/')
         stats.append(mensagem)
-
 
     return stats
 
@@ -172,7 +174,7 @@ def get(code, retries=0):
         }
         url = (
             'http://webservice.correios.com.br/service/rest/rastro/rastroMobile'
-            #'http://webservice.correios.com.br/service/rastro/Rastro.wsdl'
+            # 'http://webservice.correios.com.br/service/rastro/Rastro.wsdl'
         )
         response = requests.post(
             url, data=request_xml, headers=headers, timeout=3
@@ -192,7 +194,8 @@ def get(code, retries=0):
         return parse_single_code_output(response)
     except json.decoder.JSONDecodeError as e:
         return status.NOT_FOUND
-        #return 3
+        # return 3
+
 
 async def async_get(codes, retries=3):
     request_xml = '''
@@ -230,7 +233,7 @@ async def async_get(codes, retries=3):
                 return 99
 
     if status_code != 200:
-        #return await async_get(code, retries - 1)
+        # return await async_get(code, retries - 1)
         #logger.warning(f"Correios status code {status_code}")
 
         return status.OFFLINE
