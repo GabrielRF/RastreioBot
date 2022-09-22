@@ -124,11 +124,11 @@ def parse(code, tabela):
                 mensagem = mensagem + ' ' + str(u'\U0001F389')
         if observacao:
             mensagem = mensagem + '\nObservação: ' + observacao.strip().title()
-            obersavacao_lower = observacao.lower()
+            observacao_lower = observacao.lower()
 
-            if 'liberado sem' in obersavacao_lower:
+            if 'liberado sem' in observacao_lower:
                 mensagem = mensagem + ' ' + str(u'\U0001F389')
-            elif 'pagamento' in obersavacao_lower:
+            elif 'pagamento' in observacao_lower:
                 mensagem = (mensagem +
                             '\nhttps://www2.correios.com.br/sistemas/rastreamento/')
         stats.append(mensagem)
