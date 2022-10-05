@@ -4,6 +4,7 @@ import configparser
 import json
 import sys
 from datetime import date
+from workadays.workdays import networkdays
 from rastreio import db
 
 import aiohttp
@@ -21,6 +22,20 @@ finished_status = config['CORREIOS']['FSTATUS']
 finished_code = config['CORREIOS']['FCODE']
 batch_size = int(config['RASTREIOBOT']['batch_size'])
 
+def parse_data(delta_dias, delta_dias_uteis):
+    if delta_dias == 1:
+        data = ' (' + str(delta_dias) + ' dia'
+    elif delta_dias > 1:
+        data = ' (' + str(delta_dias) + ' dias'
+        
+    if delta_dias_uteis == 1:
+        data = data + ' – ' + str(delta_dias_uteis) + ' dia útil)'
+    elif delta_dias_uteis > 1:
+        data = data + ' – ' + str(delta_dias_uteis) + ' dias úteis)'
+    elif delta_dias > 0:
+        data = data + ')'
+
+    return data
 
 def set_is_finished(code, tabela):
     try:
@@ -53,15 +68,16 @@ def parse(code, tabela):
             ano1 = int(evento['data'].split('/')[2])
             data1 = date(ano1, mes1, dia1)
             delta = data1 - data0
+            delta_utils = networkdays(data0, data1)
         except Exception:
             delta = 0
+            delta_utils = 0
             pass
         #print(evento['tipo'], evento['status'])
+        
         data = evento['data'] + ' ' + evento['hora']
-        if delta.days == 1:
-            data = data + ' (' + str(delta.days) + ' dia)'
-        elif delta.days > 1:
-            data = data + ' (' + str(delta.days) + ' dias)'
+        data += parse_data(delta.days, delta_utils)
+
         try:
             local = evento['unidade']['local']
         except Exception:
