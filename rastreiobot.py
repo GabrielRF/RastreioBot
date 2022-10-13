@@ -16,7 +16,8 @@ from telebot import types
 
 import utils.msgs as msgs
 import utils.status as status
-from rastreio import db
+from rastreio.db import PackagesRepository
+
 
 config = configparser.ConfigParser()
 config.read('bot.conf')
@@ -56,7 +57,7 @@ def count_packages():
     '''
     Count total packages and packages per status
     '''
-    cursor = db.all_packages()
+    cursor = PackagesRepository.all_packages()
     pkg_status = defaultdict(int)
     for elem in cursor:
         if len(elem['code']) > 13:

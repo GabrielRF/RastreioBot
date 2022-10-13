@@ -58,7 +58,7 @@ def test_parse_multiple_codes_output(mocked_parse):
     ])
 
 
-@patch("apis.apicorreios.db.update_package")
+@patch("apis.apicorreios.db.PackagesRepository.update_package")
 def test_parse_package_in_transit(mocked_update_package):
     with open("tests/data/correios-package-in-transit.json") as file:
         returned_package = json.load(file)

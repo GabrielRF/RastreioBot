@@ -38,7 +38,7 @@ def all_packages():
 
 
 def test_count_packages(mocker, all_packages):
-    mocked = mocker.patch('rastreio.db.all_packages')
+    mocked = mocker.patch('rastreio.db.PackagesRepository.all_packages')
     mocked.return_value = all_packages
 
     assert dict(count_packages()) == {
