@@ -7,6 +7,7 @@ from datetime import datetime
 from pymongo import ASCENDING, MongoClient
 from rastreio import db
 
+import aiohttp
 import requests
 
 from utils import status
@@ -51,14 +52,44 @@ def get_package_events(code):
         "app-check-token":
             db.token.find_one({'token': 'app-check-token'})['value'],
     }
-    data_token = {
-        "requestToken": token
-    }
     response = requests.get(
         f'https://proxyapp.correios.com.br/v1/sro-rastro/{code}',
         headers = header
     )
     return format_object(response)
+
+async def async_get(code, retries=3):
+    code = code[0]
+    if should_update_token():
+        if not get_request_token():
+            return status.OFFLINE
+    header = {
+        "content-type": "application/json",
+        "user-agent": "Dart/2.18 (dart:io)",
+        "app-check-token":
+            db.token.find_one({'token': 'app-check-token'})['value'],
+    }
+    url = f'https://proxyapp.correios.com.br/v1/sro-rastro/{code}'
+    async with aiohttp.ClientSession() as session:
+        try:
+            async with session.post(url, headers=header, timeout=3) as response:
+                status_code = response.status
+                response = await response.text()
+        except asyncio.exceptions.TimeoutError:
+            if retries > 0:
+                await asyncio.sleep(5)
+                return await async_get(code, retries - 1)
+            else:
+                print(f"Correios timeout")
+                return 99
+    if status_code != 200:
+        return status.OFFLINE
+    try:
+        response = json.loads(response)
+        return format_object(response)
+    except Exception as e:
+        print("Error", codes, response)
+        return status.OFFLINE
 
 def add_emojis(text):
     casos = {
