@@ -32,7 +32,7 @@ def get_request_token(token=token):
         headers=headers, json=data_access
     )
 
-    if 200 <= req.status_code < 300:
+    if 200 <= req.status_code > 300:
         TOKEN_CORREIOS = req.json()['token']
     else:
         TOKEN_CORREIOS = False
@@ -72,7 +72,7 @@ async def async_get(code, retries=3):
     url = f'https://proxyapp.correios.com.br/v1/sro-rastro/{code}'
     async with aiohttp.ClientSession() as session:
         try:
-            async with session.post(url, headers=header, timeout=3) as response:
+            async with session.get(url, headers=header, timeout=3) as response:
                 status_code = response.status
                 response = await response.text()
         except asyncio.exceptions.TimeoutError:
@@ -88,7 +88,7 @@ async def async_get(code, retries=3):
         response = json.loads(response)
         return format_object(response)
     except Exception as e:
-        print("Error", codes, response)
+        print("Error", code, response)
         return status.OFFLINE
 
 def add_emojis(text):
