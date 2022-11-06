@@ -7,6 +7,9 @@ from utils import status
 import aiohttp
 
 
+MAX_REQUEST_RETRIES = 3
+
+
 def add_emojis(text):
     casos = {
         'Objeto saiu para entrega ao destinatário': '🚚',
@@ -124,7 +127,7 @@ class Correios:
 
         return self.app_token
 
-    async def request(self, url: str, session: aiohttp.ClientSession) -> dict:
+    async def request(self, url: str, session: aiohttp.ClientSession, retries=MAX_REQUEST_RETRIES) -> dict:
         app_token = await self.get_app_token(session)
         headers = {
             "content-type": "application/json",
@@ -132,9 +135,16 @@ class Correios:
             "app-check-token": app_token,
         }
 
-        response = await session.get(url, headers=headers)
-        if not response.ok:
-            raise CorreiosException(f"API request failed. status_code={response.status}, url={url}")
+        try:
+            response = await session.get(url, headers=headers)
+            response.raise_for_status()
+        except (aiohttp.ClientResponseError, aiohttp.ClientConnectorError) as e:
+            if retries > 0:
+                seconds = (MAX_REQUEST_RETRIES - retries + 1) * 2
+                await asyncio.sleep(seconds)
+                return await self.request(url, session, retries - 1)
+            else:
+                raise CorreiosException(f"API request failed. url={url}")
 
         data = await response.json()
         return data
@@ -153,7 +163,7 @@ class Correios:
     async def get(self, code: str) -> dict:
         async with aiohttp.ClientSession() as session:
             code, updates = await self._request_get_code(code, session)
-            return {codes: updates}
+            return {code: updates}
 
     async def get_multiple_packages(self, codes):
         async with aiohttp.ClientSession() as session:
