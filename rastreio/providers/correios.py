@@ -7,7 +7,7 @@ from utils import status
 import aiohttp
 
 
-MAX_REQUEST_RETRIES = 3
+MAX_REQUEST_RETRIES = 5
 
 
 def add_emojis(text):
@@ -111,15 +111,14 @@ class Correios:
                 "requestToken": self.token
             }
 
-            response = await session.post(
-                url="https://proxyapp.correios.com.br/v1/app-validation",
-                headers=headers,
-                json=body,
-            )
-
-            if not response.ok:
-                text = await response.text()
-                raise CorreiosException(f"Failed to retrieve app_check_token. status={response.status}, text={text}")
+            try:
+                response = await session.post(
+                    url="https://proxyapp.correios.com.br/v1/app-validation",
+                    headers=headers,
+                    json=body,
+                )
+            except (aiohttp.ClientResponseError, aiohttp.ClientConnectorError) as e:
+                raise CorreiosException(f"Failed to retrieve app_check_token. exception={e}")
 
             data = await response.json()
             self.app_token = data["token"]
@@ -140,7 +139,7 @@ class Correios:
             response.raise_for_status()
         except (aiohttp.ClientResponseError, aiohttp.ClientConnectorError) as e:
             if retries > 0:
-                seconds = (MAX_REQUEST_RETRIES - retries + 1) * 2
+                seconds = (MAX_REQUEST_RETRIES - retries + 1) * 5
                 await asyncio.sleep(seconds)
                 return await self.request(url, session, retries - 1)
             else:
@@ -182,5 +181,5 @@ if __name__ == "__main__":
     import sys
     from pprint import pprint
     correios = Correios("YW5kcm9pZDtici5jb20uY29ycmVpb3MucHJlYXRlbmRpbWVudG87RjMyRTI5OTc2NzA5MzU5ODU5RTBCOTdGNkY4QTQ4M0I5Qjk1MzU3OA")
-    data = asyncio.run(correios.get_multiple_codes(sys.argv[1:]))
+    data = asyncio.run(correios.get(sys.argv[1]))
     pprint(data)

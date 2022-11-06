@@ -1,17 +1,16 @@
+import asyncio
 import configparser
 import logging.handlers
 import random
+from rastreio.providers.correios import Correios
 import webhook
 from datetime import datetime, timedelta
-from time import time
 from collections import defaultdict
 
 import requests
-import sentry_sdk
 import telebot
 
-import apis.apicorreios as correios
-from utils.misc import check_type, send_clean_msg, check_package, check_update
+from utils.misc import check_type, send_clean_msg, check_package
 from telebot import types
 
 import utils.msgs as msgs
@@ -22,6 +21,7 @@ config = configparser.ConfigParser()
 config.read('bot.conf')
 
 TOKEN = config['RASTREIOBOT']['TOKEN']
+CORREIOS_TOKEN = config["CORREIOS"]["token"]
 LOG_INFO_FILE = config['RASTREIOBOT']['text_log']
 LOG_ROUTINE_FILE = config['RASTREIOBOT']['routine_log']
 LOG_ALERTS_FILE = config['RASTREIOBOT']['alerts_log']
@@ -255,7 +255,8 @@ def get_update(code):
     Update package tracking status
     '''
     print("get_update")
-    retorno = check_update(code)
+    correios = Correios(CORREIOS_TOKEN)
+    retorno = asyncio.run(correios.get(code))
     print("check up: ", retorno)
     return retorno
 
@@ -638,7 +639,7 @@ def cmd_magic(message):
             subscriber = webhook.select_user('chatid', user)[1]
         except TypeError:
             subscriber = ''
-        if code_type != correios and user not in PATREON and user not in subscriber:
+        if code_type != Correios and user not in PATREON and user not in subscriber:
             bot.reply_to(message, msgs.typo, parse_mode='HTML', disable_web_page_preview=True)
             log_text(message.chat.id, message.message_id, 'Pacote chines. Usuario nao assinante.')
             return 0
