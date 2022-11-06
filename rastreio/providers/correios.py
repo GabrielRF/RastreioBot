@@ -2,6 +2,7 @@ import asyncio
 from datetime import datetime
 from datetime import timedelta
 from typing import Optional, Union
+from utils import status
 
 import aiohttp
 
@@ -26,6 +27,23 @@ def add_emojis(text):
     return text
 
 
+def get_local(unidade):
+    nome = unidade.get('nome')
+    if nome: return nome.title()
+
+    bairro = unidade['endereco'].get('bairro', '')
+    complemento = unidade['endereco'].get('complemento', '')
+    logradouro = unidade['endereco'].get('logradouro', '')
+    numero = unidade['endereco'].get('numero', '')
+
+    cidade = unidade.get('cidade', '')
+    uf = unidade.get('uf', '')
+
+    #local = f'{cidade.title()} {uf.upper()}'
+    local = f'{bairro} {complemento} {logradouro} {numero} {cidade.title()} {uf.upper()}'
+    return local.strip()
+
+
 def format_object(data):
     if 'SRO-020' in str(data['objetos'][0]):
         return status.NOT_FOUND
@@ -44,28 +62,12 @@ def format_object(data):
         date = date.strftime('%d/%m/%Y %H:%M')
         if date_delta.days > 0:
             date = f'{date} ({date_delta.days} dias)'
-        try:
-            local = f'{evento["unidade"]["nome"].title()}'
-        except KeyError:
-            local = (f'{evento["unidade"]["tipo"]} '+
-            f'{evento["unidade"]["endereco"]["cidade"].title()} '+
-            f'{evento["unidade"]["endereco"]["uf"]}'
-        )
+        local = get_local(evento["unidade"])
         situacao = evento['descricao']
         try:
-            observacao = (
-                f'{evento["unidadeDestino"]["endereco"]["cidade"].title()} '+
-                f'{evento["unidadeDestino"]["endereco"]["uf"]}'
-            )
+            observacao = get_local(evento["unidadeDestino"])
         except KeyError:
-            observacao = False
-        # if 'Objeto aguardando retirada no endereço indicado' in situacao:
-        #     observacao = (
-        #         f'{evento["unidade"]["endereco"]["bairro"]}'+
-        #         f'{evento["unidade"]["endereco"]["complemento"]}'+
-        #         f'{evento["unidade"]["endereco"]["logradouro"]}'+
-        #         f'{evento["unidade"]["endereco"]["numero"]}'
-        #     )
+            observacao = ''
         situacao = add_emojis(situacao)
         message = f'Data: {date}\nLocal: {local}'
         if situacao: message = f'{message}\nSituação: {situacao}'
@@ -140,13 +142,20 @@ class Correios:
     async def _request_get_code(self, code: str, session: aiohttp.ClientSession) -> dict:
         url = f"https://proxyapp.correios.com.br/v1/sro-rastro/{code}"
         data = await self.request(url, session)
-        return format_object(data)
+        try:
+            return code, format_object(data)
+        except:
+            from pprint import pprint
+            pprint(data)
+            pprint(code)
+            raise
 
     async def get(self, code: str) -> dict:
         async with aiohttp.ClientSession() as session:
-            return await self._request_get_code(code, session)
+            code, updates = await self._request_get_code(code, session)
+            return {codes: updates}
 
-    async def get_multiple_codes(self, codes: list[str]) -> list[dict]:
+    async def get_multiple_packages(self, codes):
         async with aiohttp.ClientSession() as session:
             tasks = [
                 self._request_get_code(code, session)
@@ -154,7 +163,10 @@ class Correios:
             ]
             data = await asyncio.gather(*tasks)
 
-        return data
+        return {
+            code: updates
+            for code, updates in data
+        }
 
 if __name__ == "__main__":
     import sys

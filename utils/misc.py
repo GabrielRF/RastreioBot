@@ -4,7 +4,8 @@ import sys
 from telebot import types
 
 from rastreio import db
-import apis.apicorreios as correios
+from rastreio.providers.correios import Correios
+# import apis.apicorreios as correios
 import apis.apitrackingmore as trackingmore
 import utils.status as status
 
@@ -25,7 +26,7 @@ def check_type(code):
         code = code[0]
 
     if CORREIOS_RE.search(str(code)):
-        return correios
+        return Correios
     elif ALI_RE.search(str(code)):
         return trackingmore
     else:
