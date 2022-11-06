@@ -8,10 +8,11 @@ from utils import anuncieaqui
 from utils.misc import check_update
 from utils.misc import async_check_update
 from utils.misc import check_type
-import apis.apicorreios as correios
+# import apis.apicorreios as correios
 import apis.apitrackingmore as trackingmore
 from rastreio import db as db_ops
 from rastreio.progressbar import ProgressBar
+from rastreio.providers.correios import Correios
 
 import random
 import requests
@@ -29,6 +30,7 @@ config.read("bot.conf")
 
 
 TOKEN = config["RASTREIOBOT"]["TOKEN"]
+CORREIOS_TOKEN = config["CORREIOS"]["token"]
 RETRY_COUNT = int(config["RASTREIOBOT"]["retry_count"])
 SEMAPHORE_SIZE = int(config["RASTREIOBOT"]["semaphore_size"])
 LOG_ALERTS_FILE = config["RASTREIOBOT"]["alerts_log"]
@@ -157,10 +159,10 @@ async def check_and_update(code, number_of_updates, after, progress):
     progress.advance()
 
 
-async def update_package_group(packages, semaphore, progress):
+async def update_package_group(packages, correios, semaphore, progress):
     async with semaphore:
         codes = [package["code"] for package in packages]
-        updates = await async_check_update(codes, 1)
+        updates = await correios.get_multiple_packages(codes)
         if updates in [status.OFFLINE, status.NOT_FOUND, status.NOT_FOUND_TM]:
             progress.print(f"No updates returned by Correios. updates={updates!r}")
             progress.advance(len(packages))
@@ -220,7 +222,8 @@ async def main():
 
     with ProgressBar("Packages", total=len(packages)) as progress:
         semaphore = asyncio.BoundedSemaphore(SEMAPHORE_SIZE)
-        tasks = [update_package_group(batch, semaphore, progress) for batch in batches]
+        correios = Correios(CORREIOS_TOKEN)
+        tasks = [update_package_group(batch, correios, semaphore, progress) for batch in batches]
         await asyncio.gather(*tasks)
 
 
