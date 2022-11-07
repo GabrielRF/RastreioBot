@@ -152,9 +152,6 @@ class Correios:
         try:
             return code, format_object(data)
         except:
-            from pprint import pprint
-            pprint(data)
-            pprint(code)
             raise
 
     async def get(self, code: str) -> dict:
