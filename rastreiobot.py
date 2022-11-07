@@ -1,17 +1,16 @@
+import asyncio
 import configparser
 import logging.handlers
 import random
+from rastreio.providers.correios import Correios
 import webhook
 from datetime import datetime, timedelta
-from time import time
 from collections import defaultdict
 
 import requests
-import sentry_sdk
 import telebot
 
-import apis.apicorreios as correios
-from utils.misc import check_type, send_clean_msg, check_package, check_update
+from utils.misc import check_type, send_clean_msg, check_package
 from telebot import types
 
 import utils.msgs as msgs
@@ -22,6 +21,7 @@ config = configparser.ConfigParser()
 config.read('bot.conf')
 
 TOKEN = config['RASTREIOBOT']['TOKEN']
+CORREIOS_TOKEN = config["CORREIOS"]["token"]
 LOG_INFO_FILE = config['RASTREIOBOT']['text_log']
 LOG_ROUTINE_FILE = config['RASTREIOBOT']['routine_log']
 LOG_ALERTS_FILE = config['RASTREIOBOT']['alerts_log']
@@ -165,7 +165,7 @@ def list_by_status(chatid):
         send_status_sorted(bot, chatid, 17, not_answered)
         send_status_sorted(bot, chatid, 18, not_arrived)
     except Exception:
-        bot.send_message('9083329', 'Erro MongoBD')
+        bot.send_message('9083329', 'Erro MongoBD.')
         qtd = -1
 
 def list_packages(chatid, done, status):
@@ -207,8 +207,10 @@ def list_packages(chatid, done, status):
                             pass
                         aux = f"{aux}\n"
                         qtd = qtd + 1
-    except Exception:
+    except Exception as e:
         bot.send_message('9083329', 'Erro MongoBD')
+        print(e)
+        raise
         qtd = -1
     return aux, qtd
 
@@ -255,9 +257,10 @@ def get_update(code):
     Update package tracking status
     '''
     print("get_update")
-    retorno = check_update(code)
-    print("check up: ", retorno)
-    return retorno
+    correios = Correios(CORREIOS_TOKEN)
+    retorno = asyncio.run(correios.get(code))
+    print("check up: ", retorno[code])
+    return retorno[code]
 
 
 def log_text(chatid, message_id, text):
@@ -625,6 +628,7 @@ def cmd_magic(message):
             break
 
     message_text = ' '.join(message_text)
+    print(code)
 
     try:
         desc = message_text.split('Data:')[0].replace('  ','')
@@ -638,7 +642,7 @@ def cmd_magic(message):
             subscriber = webhook.select_user('chatid', user)[1]
         except TypeError:
             subscriber = ''
-        if code_type != correios and user not in PATREON and user not in subscriber:
+        if code_type != Correios and user not in PATREON and user not in subscriber:
             bot.reply_to(message, msgs.typo, parse_mode='HTML', disable_web_page_preview=True)
             log_text(message.chat.id, message.message_id, 'Pacote chines. Usuario nao assinante.')
             return 0
@@ -728,8 +732,11 @@ def cmd_magic(message):
             bot.delete_message(message.from_user.id, message.message_id)
         if int(user) > 0 and len(message.text) > 25:
             send_clean_msg(bot, message.from_user.id, msgs.invalid.format(message.from_user.id))
-        if bot.get_chat_member(message.chat.id, 102419067).status == 'administrator':
-            send_clean_msg(bot, message.chat.id, msgs.not_admin)
+        try:
+            if bot.get_chat_member(message.chat.id, 102419067).status == 'administrator':
+                send_clean_msg(bot, message.chat.id, msgs.not_admin)
+        except:
+            pass
 
 
 # sentry_url = config['SENTRY']['url']

@@ -8,10 +8,11 @@ from utils import anuncieaqui
 from utils.misc import check_update
 from utils.misc import async_check_update
 from utils.misc import check_type
-import apis.apicorreios as correios
+# import apis.apicorreios as correios
 import apis.apitrackingmore as trackingmore
 from rastreio import db as db_ops
 from rastreio.progressbar import ProgressBar
+from rastreio.providers.correios import Correios
 
 import random
 import requests
@@ -29,6 +30,7 @@ config.read("bot.conf")
 
 
 TOKEN = config["RASTREIOBOT"]["TOKEN"]
+CORREIOS_TOKEN = config["CORREIOS"]["token"]
 RETRY_COUNT = int(config["RASTREIOBOT"]["retry_count"])
 SEMAPHORE_SIZE = int(config["RASTREIOBOT"]["semaphore_size"])
 LOG_ALERTS_FILE = config["RASTREIOBOT"]["alerts_log"]
@@ -157,31 +159,34 @@ async def check_and_update(code, number_of_updates, after, progress):
     progress.advance()
 
 
-async def update_package_group(packages, semaphore, progress):
+async def update_package_group(packages, correios, semaphore, progress):
     async with semaphore:
         codes = [package["code"] for package in packages]
-        updates = await async_check_update(codes, 1)
-        if updates in [status.OFFLINE, status.NOT_FOUND, status.NOT_FOUND_TM]:
-            progress.print(f"No updates returned by Correios. updates={updates!r}")
-            progress.advance(len(packages))
-            return None
+        updates = await correios.get_multiple_packages(codes)
+        #for code, update in updates.items():
+        #    if updates in [status.OFFLINE, status.NOT_FOUND, status.NOT_FOUND_TM]:
+        #        progress.print(f"No updates returned by Correios. code={code}")
+        #        progress.advance(1)
+        #        return None
 
-        if not isinstance(updates, dict):
-            # When async_check_update fails, it returns integers as status codes. So we
-            # need to confirm the updates are actually dictionaries before using it.
-            progress.advance(len(packages))
-            progress.print(f"No updates returned by Correios. updates={updates!r}")
-            return None
+        #if not isinstance(updates, dict):
+        #    # When async_check_update fails, it returns integers as status codes. So we
+        #    # need to confirm the updates are actually dictionaries before using it.
+        #    progress.advance(len(packages))
+        #    progress.print(f"No updates returned by Correios.. updates={updates!r}")
+        #    return None
 
         tasks = []
         for package in packages:
             code = package["code"]
-            number_of_updates = package["number_of_updates"]
             after = updates[code]
 
-            if not after:
+            if not isinstance(after, list):
+                progress.print(f"No updates returned by Correios. code={code}")
+                progress.advance(1)
                 continue
 
+            number_of_updates = package["number_of_updates"]
             tasks.append(check_and_update(code, number_of_updates, after, progress))
 
         packages_without_update = len(packages) - len(tasks)
@@ -213,14 +218,15 @@ async def main():
     print(f"Total packages: {len(packages)}")
 
     packages = list(filter(lambda p: should_update(p), packages))
-    packages = list(filter(lambda p: check_type(p["code"]) is correios, packages))
+    packages = list(filter(lambda p: check_type(p["code"]) is Correios, packages))
 
     batches = group_packages(packages, BATCH_SIZE)
     print(f"Number of batches: {len(batches)}, batch_size={BATCH_SIZE}")
 
     with ProgressBar("Packages", total=len(packages)) as progress:
         semaphore = asyncio.BoundedSemaphore(SEMAPHORE_SIZE)
-        tasks = [update_package_group(batch, semaphore, progress) for batch in batches]
+        correios = Correios(CORREIOS_TOKEN)
+        tasks = [update_package_group(batch, correios, semaphore, progress) for batch in batches]
         await asyncio.gather(*tasks)
 
 
