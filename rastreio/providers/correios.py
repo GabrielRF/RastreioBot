@@ -38,11 +38,9 @@ def get_local(unidade):
     complemento = unidade['endereco'].get('complemento', '')
     logradouro = unidade['endereco'].get('logradouro', '')
     numero = unidade['endereco'].get('numero', '')
+    cidade = unidade['endereco'].get('cidade', '')
+    uf = unidade['endereco'].get('uf', '')
 
-    cidade = unidade.get('cidade', '')
-    uf = unidade.get('uf', '')
-
-    #local = f'{cidade.title()} {uf.upper()}'
     local = f'{bairro} {complemento} {logradouro} {numero} {cidade.title()} {uf.upper()}'
     return local.strip()
 
@@ -73,7 +71,7 @@ def format_object(data):
             observacao = ''
         situacao = add_emojis(situacao)
         message = f'Data: {date}\nLocal: {local}'
-        if situacao: message = f'{message}\nSituação: {situacao}'
+        if situacao: message = f'{message}\nSituação: <b>{situacao}</b>'
         if observacao: message = f'{message}\nObservação: {observacao}'
         stats.append(message)
     return stats

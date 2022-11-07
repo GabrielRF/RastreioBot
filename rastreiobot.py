@@ -165,7 +165,7 @@ def list_by_status(chatid):
         send_status_sorted(bot, chatid, 17, not_answered)
         send_status_sorted(bot, chatid, 18, not_arrived)
     except Exception:
-        bot.send_message('9083329', 'Erro MongoBD')
+        bot.send_message('9083329', 'Erro MongoBD.')
         qtd = -1
 
 def list_packages(chatid, done, status):
@@ -207,8 +207,10 @@ def list_packages(chatid, done, status):
                             pass
                         aux = f"{aux}\n"
                         qtd = qtd + 1
-    except Exception:
+    except Exception as e:
         bot.send_message('9083329', 'Erro MongoBD')
+        print(e)
+        raise
         qtd = -1
     return aux, qtd
 
@@ -257,8 +259,8 @@ def get_update(code):
     print("get_update")
     correios = Correios(CORREIOS_TOKEN)
     retorno = asyncio.run(correios.get(code))
-    print("check up: ", retorno)
-    return retorno
+    print("check up: ", retorno[code])
+    return retorno[code]
 
 
 def log_text(chatid, message_id, text):
@@ -626,6 +628,7 @@ def cmd_magic(message):
             break
 
     message_text = ' '.join(message_text)
+    print(code)
 
     try:
         desc = message_text.split('Data:')[0].replace('  ','')
@@ -729,8 +732,11 @@ def cmd_magic(message):
             bot.delete_message(message.from_user.id, message.message_id)
         if int(user) > 0 and len(message.text) > 25:
             send_clean_msg(bot, message.from_user.id, msgs.invalid.format(message.from_user.id))
-        if bot.get_chat_member(message.chat.id, 102419067).status == 'administrator':
-            send_clean_msg(bot, message.chat.id, msgs.not_admin)
+        try:
+            if bot.get_chat_member(message.chat.id, 102419067).status == 'administrator':
+                send_clean_msg(bot, message.chat.id, msgs.not_admin)
+        except:
+            pass
 
 
 # sentry_url = config['SENTRY']['url']
