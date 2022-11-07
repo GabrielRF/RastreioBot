@@ -651,12 +651,18 @@ def cmd_magic(message):
             if not db.package_has_user(code, user):
                 db.add_user_to_package(code, user)
             stats = db.package_status(code)
+            try:
+                desc = db.get_package_desc(code, user)
+            except:
+                pass
             message = ''
             system = check_system_correios()
             for stat in stats:
                 message = message + '\n\n' + stat
             if not system:
                 message = (message + msgs.error_sys)
+            if code != desc:
+                message = message.replace(f'📮', f'📮 <b>{desc}</b>\n')
             if int(user) > 0:
                 bot.send_message(
                     user,
