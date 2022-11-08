@@ -34,6 +34,7 @@ def get_local(unidade):
     nome = unidade.get('nome')
     if nome: return nome.title()
 
+    tipo = unidade.get('tipo', '')
     bairro = unidade['endereco'].get('bairro', '')
     complemento = unidade['endereco'].get('complemento', '')
     logradouro = unidade['endereco'].get('logradouro', '')
@@ -41,7 +42,7 @@ def get_local(unidade):
     cidade = unidade['endereco'].get('cidade', '')
     uf = unidade['endereco'].get('uf', '')
 
-    local = f'{bairro} {complemento} {logradouro} {numero} {cidade.title()} {uf.upper()}'
+    local = f'{tipo} {bairro} {complemento} {logradouro} {numero} {cidade.title()} {uf.upper()}'
     return local.strip()
 
 
