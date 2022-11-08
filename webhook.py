@@ -5,7 +5,7 @@ import json
 import sqlite3
 import requests
 from flask import abort, request
-from rastreio.db import User
+from domain.user import User
 
 config = configparser.ConfigParser()
 config.sections()
