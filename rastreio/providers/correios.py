@@ -10,10 +10,24 @@ import aiohttp
 MAX_REQUEST_RETRIES = 5
 
 
+def fix_situacao(text):
+    casos = {
+        'Aguardando pagamento': 'Aguardando pagamento💳\n<a href="https://www.correios.com.br">Acesse o site dos Correios para fazer o pagamento</a>',
+        'Objeto em trânsito - por favor aguarde': 'Objeto em trânsito',
+    }
+    if casos.get(text):
+        return casos.get(text)
+    else:
+        return text
+
+
 def add_emojis(text):
     casos = {
         'Objeto saiu para entrega ao destinatário': '🚚',
         'Objeto entregue ao destinatário': '🎁',
+        'Objeto em trânsito': '🚛',
+        'Objeto disponível em locker': '🗃',
+        'Objeto recebido na unidade de exportação no país de origem': '🛫',
         'Objeto recebido pelos Correios do Brasil': '📥',
         'Objeto aguardando retirada no endereço indicado': '🏢',
         'Objeto encaminhado para fiscalização aduaneira de exportação': '↗️',
@@ -23,7 +37,6 @@ def add_emojis(text):
         'Pagamento confirmado': '💸',
         'Objeto apreendido por órgão de fiscalização': '👮',
         'Objeto dispensado do pagamento de impostos': '🎉',
-        'Aguardando pagamento': '💳\n<a href="https://www.correios.com.br">Acesse o site dos Correios para fazer o pagamento</a>',
     }
     if casos.get(text):
         return f'{text} {casos.get(text)}'
@@ -70,6 +83,7 @@ def format_object(data):
             observacao = get_local(evento["unidadeDestino"])
         except KeyError:
             observacao = ''
+        situacao = fix_situacao(situacao)
         situacao = add_emojis(situacao)
         message = f'<i>Data</i>: {date}\n<i>Local</i>: {local}'
         if situacao: message = f'{message}\n<i>Situação</i>: <b>{situacao}</b>'
