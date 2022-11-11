@@ -31,6 +31,10 @@ def package_status(code):
     return db.rastreiobot.find_one({"code": code})["stat"]
 
 
+def get_package_desc(code, user):
+    return db.rastreiobot.find_one({"code": str(code)})[str(user)]
+
+
 def package_has_user(code, user_id):
     return db.rastreiobot.find_one({
         "code": code.upper(),
