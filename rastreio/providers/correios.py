@@ -43,7 +43,7 @@ def get_local(unidade):
     uf = unidade['endereco'].get('uf', '')
 
     local = f'{tipo} {bairro} {complemento} {logradouro} {numero} {cidade.title()} {uf.upper()}'
-    return local.strip()
+    return local.strip().title()
 
 
 def format_object(data):
@@ -71,9 +71,9 @@ def format_object(data):
         except KeyError:
             observacao = ''
         situacao = add_emojis(situacao)
-        message = f'Data: {date}\nLocal: {local}'
-        if situacao: message = f'{message}\nSituação: <b>{situacao}</b>'
-        if observacao: message = f'{message}\nObservação: {observacao}'
+        message = f'<i>Data</i>: {date}\n<i>Local</i>: {local}'
+        if situacao: message = f'{message}\n<i>Situação</i>: <b>{situacao}</b>'
+        if observacao: message = f'{message}\n<i>Destino</i>: {observacao}'
         stats.append(message)
     return stats
 
