@@ -22,7 +22,7 @@ rich = "^10.6.0"
 
 [tool.poetry.dev-dependencies]
 ipdb = "^0.13.9"
-ipython = "^7.31.1"
+ipython = "^8.10.0"
 flake8 = "^3.9.2"
 pytest = "^6.2.4"
 pytest-mock = "^3.6.1"
