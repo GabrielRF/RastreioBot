@@ -154,6 +154,10 @@ def format_object(data):
         message = f'Data: {data}\nLocal: {local}'
         if situacao: message = f'{message}\nSituação: {situacao}'
         if observacao: message = f'{message}\nObservação: {observacao}'
+        try:
+            message = f"{message}\n{evento['comentario']}"
+        except KeyError:
+            pass
         stats.append(message)
     return stats
 

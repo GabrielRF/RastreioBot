@@ -37,6 +37,9 @@ def add_emojis(text):
         'Pagamento confirmado': '💸',
         'Objeto apreendido por órgão de fiscalização': '👮',
         'Objeto dispensado do pagamento de impostos': '🎉',
+        'A entrada do objeto no Brasil não foi autorizada pelos órgãos fiscalizadores': '❌',
+        'Objeto está em rota de entrega': '🚚',
+        'Objeto será entregue em instantes': '🏎',
     }
     if casos.get(text):
         return f'{text} {casos.get(text)}'
@@ -60,6 +63,8 @@ def get_local(unidade):
 
 
 def format_object(data):
+    if 'SRO-031' in str(data):
+        return status.NOT_FOUND
     if 'SRO-020' in str(data['objetos'][0]):
         return status.NOT_FOUND
     stats = []
@@ -88,6 +93,12 @@ def format_object(data):
         message = f'<i>Data</i>: {date}\n<i>Local</i>: {local}'
         if situacao: message = f'{message}\n<i>Situação</i>: <b>{situacao}</b>'
         if observacao: message = f'{message}\n<i>Destino</i>: {observacao}'
+        try:
+            link = evento["comentario"]
+            if 'http' in link:
+                message = f'{message}\n<a href="{link}">Clique aqui para rastrear a entrega📍</a>'
+        except:
+            pass
         stats.append(message)
     return stats
 
@@ -150,7 +161,9 @@ class Correios:
         try:
             response = await session.get(url, headers=headers)
             response.raise_for_status()
-        except (aiohttp.ClientResponseError, aiohttp.ClientConnectorError) as e:
+        except aiohttp.client_exceptions.ClientResponseError:
+            return 'SRO-031'
+        except:# (aiohttp.ClientResponseError, aiohttp.ClientConnectorError) as e:
             if retries > 0:
                 seconds = (MAX_REQUEST_RETRIES - retries + 1) * 5
                 await asyncio.sleep(seconds)
@@ -164,6 +177,7 @@ class Correios:
     async def _request_get_code(self, code: str, session: aiohttp.ClientSession) -> dict:
         url = f"https://proxyapp.correios.com.br/v1/sro-rastro/{code}"
         data = await self.request(url, session)
+        # print(data)
         try:
             return code, format_object(data)
         except:
