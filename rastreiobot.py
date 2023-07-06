@@ -607,19 +607,12 @@ def on_pin(message):
         except:
             pass
 
-AVISO = (
-    '📮 <b>@RastreioBot em manutenção</b>'
-    '\n\nPor uma mudança nos Correios, o @RastreioBot não consegue mais fazer consultas.'
-    '\n\n<a href="https://twitter.com/RastreioBot/status/1673751465062481920">🔗 Leia mais aqui</a>.'
-    )
-
 @bot.message_handler(func=lambda m: True)
 def cmd_magic(message):
     '''
     Entry point for adding a tracking number
     '''
     bot.send_chat_action(message.chat.id, 'typing')
-    bot.send_message(message.chat.id, AVISO, parse_mode='HTML', disable_web_page_preview=True)
     if str(message.from_user.id) in BANNED:
         log_text(message.chat.id, message.message_id, '--- BANIDO --- ' + message.text)
         bot.send_message(message.chat.id, msgs.banned)

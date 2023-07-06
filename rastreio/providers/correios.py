@@ -1,4 +1,5 @@
 import asyncio
+import hashlib
 from datetime import datetime
 from datetime import timedelta
 from typing import Optional, Union
@@ -126,18 +127,21 @@ class Correios:
 
     async def get_app_token(self, session: aiohttp.ClientSession) -> str:
         if self.should_update_app_token():
+            date = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+            sign = hashlib.md5(f'requestToken{self.token}data{date}'.encode()).hexdigest()
             headers = {
                 "content-type": "application/json",
                 "user-agent": "Dart/2.18 (dart:io)",
             }
 
             body = {
-                "requestToken": self.token
+                "requestToken": self.token,
+                "data":f"{date}","sign":f"{sign}"
             }
 
             try:
                 response = await session.post(
-                    url="https://proxyapp.correios.com.br/v1/app-validation",
+                    url="https://proxyapp.correios.com.br/v2/app-validation",
                     headers=headers,
                     json=body,
                 )
