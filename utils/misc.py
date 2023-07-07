@@ -27,8 +27,8 @@ def check_type(code):
 
     if CORREIOS_RE.search(str(code)):
         return Correios
-    elif ALI_RE.search(str(code)):
-        return trackingmore
+    # elif ALI_RE.search(str(code)):
+    #     return trackingmore
     else:
         return None
 

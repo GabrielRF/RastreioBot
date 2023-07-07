@@ -47,7 +47,7 @@ def run(dry_run):
         if (
             any(status in latest_status for status in final_status)
             and time_diff > int_del
-            or time_diff > 2 * int_del
+            or time_diff > 4 * int_del
         ):
             if not dry_run:
                 db.delete_package(elem['code'])

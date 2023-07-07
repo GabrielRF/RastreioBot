@@ -112,6 +112,7 @@ def send_status_sorted(bot, chatid, case, status):
         16: '<b>Recebido no Brasil</b> 🇧🇷',
         17: '<b>Carteiro não atendido</b> 🚪',
         18: '<b>Objeto não chegou à unidade</b>',
+        19: '<b>Recebido na unidade de distribuição</b>',
     }
     if status:
         send_clean_msg(bot, chatid, cases.get(case) + status)
@@ -145,6 +146,7 @@ def list_by_status(chatid):
     received_br = get_packages_by_status('Correios do Brasil', cursor, chatid)
     not_answered = get_packages_by_status('arteiro não atendido', cursor, chatid)
     not_arrived = get_packages_by_status('Objeto ainda não chegou à unidade', cursor, chatid)
+    dist_unit = get_packages_by_status('Objeto recebido na unidade de distribuição', cursor, chatid)
     try:
         send_status_sorted(bot, chatid, 1, waiting_payment)
         send_status_sorted(bot, chatid, 2, payed)
@@ -164,6 +166,7 @@ def list_by_status(chatid):
         send_status_sorted(bot, chatid, 16, received_br)
         send_status_sorted(bot, chatid, 17, not_answered)
         send_status_sorted(bot, chatid, 18, not_arrived)
+        send_status_sorted(bot, chatid, 19, dist_unit)
     except Exception:
         bot.send_message('9083329', 'Erro MongoBD.')
         qtd = -1
@@ -221,7 +224,10 @@ def add_package(code, user):
     '''
     code = code.upper()
     print("add_package")
-    stat = get_update(code)
+    try:
+        stat = get_update(code)
+    except:
+        stat = status.NOT_FOUND
     if stat in [status.OFFLINE, status.TYPO]:
         return stat
     else:
@@ -592,6 +598,14 @@ def cmd_cadastro_mercado_livre(message):
     )
     bot.reply_to(message, url)
 
+
+@bot.message_handler(content_types=['pinned_message'])
+def on_pin(message):
+    if message.chat.id > 0:
+        try:
+            bot.delete_message(message.from_user.id, message.message_id)
+        except:
+            pass
 
 @bot.message_handler(func=lambda m: True)
 def cmd_magic(message):
