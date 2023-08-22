@@ -8,7 +8,7 @@ from utils import status
 import aiohttp
 
 
-MAX_REQUEST_RETRIES = 5
+MAX_REQUEST_RETRIES = 3
 
 
 def fix_situacao(text):
@@ -145,7 +145,7 @@ class Correios:
                     headers=headers,
                     json=body,
                 )
-            except (aiohttp.ClientResponseError, aiohttp.ClientConnectorError) as e:
+            except Exception as e:#(aiohttp.ClientResponseError, aiohttp.ClientConnectorError) as e:
                 raise CorreiosException(f"Failed to retrieve app_check_token. exception={e}")
 
             data = await response.json()
@@ -208,6 +208,7 @@ class Correios:
 if __name__ == "__main__":
     import sys
     from pprint import pprint
-    correios = Correios("YW5kcm9pZDtici5jb20uY29ycmVpb3MucHJlYXRlbmRpbWVudG87RjMyRTI5OTc2NzA5MzU5ODU5RTBCOTdGNkY4QTQ4M0I5Qjk1MzU3OA")
+    #correios = Correios("YW5kcm9pZDtici5jb20uY29ycmVpb3MucHJlYXRlbmRpbWVudG87RjMyRTI5OTc2NzA5MzU5ODU5RTBCOTdGNkY4QTQ4M0I5Qjk1MzU3OA")
+    correios = Correios("YW5kcm9pZDtici5jb20uY29ycmVpb3MucHJlYXRlbmRpbWVudG87RjMyRTI5OTc2NzA5MzU5ODU5RTBCOTdGNkY4QTQ4M0I5Qjk1MzU3ODs1LjEuMTQ=")
     data = asyncio.run(correios.get(sys.argv[1]))
     pprint(data)

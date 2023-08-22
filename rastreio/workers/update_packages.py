@@ -142,7 +142,7 @@ async def check_and_update(code, number_of_updates, after, progress):
         {"code": code},
         {"$set": {"stat": after}},
     )
-    progress.print(f"{code}: update stored on database")
+    # progress.print(f"{code}: update stored on database")
 
     package = await db.rastreiobot.find_one(
         {"code": code},
@@ -182,7 +182,7 @@ async def update_package_group(packages, correios, semaphore, progress):
             after = updates[code]
 
             if not isinstance(after, list):
-                progress.print(f"No updates returned by Correios. code={code}")
+                # progress.print(f"No updates returned by Correios. code={code}")
                 progress.advance(1)
                 continue
 
