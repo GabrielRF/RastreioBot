@@ -61,7 +61,7 @@ def count_packages():
     for elem in cursor:
         if len(elem['code']) > 13:
             pkg_status['trackingmore'] += 1
-        if 'Aguardando recebimento pel' in str(elem):
+        if 'Aguardando recebimento pel' in str(elem) or 'Aguardando atualizações' in str(elem):
             pkg_status['wait'] += 1
         else:
             pkg_status['qtd'] += 1
@@ -96,7 +96,7 @@ def send_status_sorted(bot, chatid, case, status):
     cases = {
         1: '<b>Aguardando pagamento</b> 🔫',
         2: '<b>Pagamento confirmado</b> 💸',
-        3: '<b>Aguardando recebimento pela ECT</b> 🕒',
+        3: '<b>Aguardando atualizações</b> 🕒',
         4: '<b>Fiscalização aduaneira finalizada</b>',
         5: '<b>Objeto em trânsito </b> 🚃',
         6: '<b>Objeto saiu para entrega ao destinatário</b> 🚚',
@@ -130,7 +130,7 @@ def list_by_status(chatid):
     cursor = list(db.search_packages_per_user(chatid))
     waiting_payment = get_packages_by_status('Aguardando pagamento', cursor, chatid)
     payed = get_packages_by_status('Pagamento confirmado', cursor, chatid)
-    not_available = get_packages_by_status('Aguardando recebimento pela ECT', cursor, chatid)
+    not_available = get_packages_by_status('Aguardando atualizações', cursor, chatid)
     no_payment = get_packages_by_status('Fiscalização aduaneira finalizada', cursor, chatid)
     in_transit = get_packages_by_status('Objeto em trânsito', cursor, chatid)
     delivery = get_packages_by_status('saiu para entrega', cursor, chatid)
@@ -224,17 +224,14 @@ def add_package(code, user):
     '''
     code = code.upper()
     print("add_package")
-    try:
-        stat = get_update(code)
-    except:
-        stat = status.NOT_FOUND
+    stat = status.NOT_FOUND
     if stat in [status.OFFLINE, status.TYPO]:
         return stat
     else:
         stats = []
         stats.append(f"{POSTBOX} <b>{code}</b>")
         if stat == status.NOT_FOUND:
-            stats.append('Aguardando recebimento pela ECT.')
+            stats.append('Aguardando atualizações')
             stat = stats
         elif stat == status.NOT_FOUND_TM:
             stats.append(

@@ -38,6 +38,7 @@ if __name__ == '__main__':
         'Objetvo devolvido',
         'Objetvo roubado',
         'Aguardando recebimento pelo ECT.',
+        'Aguardando atualizações',
         'Objeto não localizado no fluxo postal.',
         'Delivered',
     ]
