@@ -6,6 +6,7 @@ from rastreio.providers.correios import Correios
 import webhook
 from datetime import datetime, timedelta
 from collections import defaultdict
+import re
 
 import requests
 import telebot
@@ -566,11 +567,52 @@ def cmd_remove(message):
         db.remove_user_from_package(code, message.chat.id)
         bot.send_message(message.chat.id, 'Pacote removido.')
     except Exception:
-        bot.send_message(message.chat.id, msgs.remove, parse_mode='HTML')
         try:
-            bot.send_document(message.chat.id, 'CgADAQADWgADGu_QRo7Gbbxg4ugLAg')
-        except telebot.apihelper.ApiException:
+            shipments, qtd = list_packages(message.chat.id, False, False)
+            inline_keyboard = types.InlineKeyboardMarkup()
+            shipments_buttons = []
+            if len(shipments) > 0:
+                msg_split = shipments.split('\n')
+                print(msg_split)
+                for elem in range(0, len(msg_split) - 1):
+                    package = (msg_split[elem][1:14])
+                    shipments_buttons.append(types.InlineKeyboardButton(text=package, callback_data=package))
+                inline_keyboard.add(*shipments_buttons)
+                inline_keyboard.add(types.InlineKeyboardButton(text='Cancelar', callback_data='cancel_del'))
+                bot.send_message(message.chat.id, "Escolha o pacote a ser excluído",
+                                 disable_web_page_preview=False, reply_markup=inline_keyboard)
+            else:
+                bot.send_message(message.chat.id, "Não há pacotes cadastrados.",
+                                 disable_web_page_preview=False, reply_markup=inline_keyboard)
+        except Exception:
             pass
+
+@bot.callback_query_handler(lambda query: re.search(r'\w{2}\d{9}\w{2}',query.data))
+def del_package(call):  # <- passes a CallbackQuery type object to your function
+    log_text(
+        call.message.chat.id,
+        call.message.message_id,
+        call.message.text + '\t' + str(call.from_user.first_name)
+    )
+    try:
+        code = call.data
+        db.remove_user_from_package(code, call.message.chat.id)
+        bot.edit_message_text("Pacote removido.", call.message.chat.id, call.message.message_id, reply_markup=None)
+    except Exception:
+        pass
+
+@bot.callback_query_handler(lambda query: query.data == "cancel_del")
+def cancel_delete(call):  # <- passes a CallbackQuery type object to your function
+    log_text(
+        call.message.chat.id,
+        call.message.message_id,
+        call.message.text + '\t' + str(call.from_user.first_name)
+    )
+    try:
+        bot.edit_message_text("Operação cancelada.", call.message.chat.id, call.message.message_id, reply_markup=None)
+    except Exception:
+        pass
+
 
 
 @bot.message_handler(content_types=['document', 'audio', 'photo', 'animation'])
