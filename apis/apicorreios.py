@@ -9,6 +9,7 @@ from rastreio import db
 
 import aiohttp
 import requests
+import hashlib # Para calcular o sign
 
 from utils import status
 
@@ -19,31 +20,51 @@ token = config['CORREIOS']['token']
 client = MongoClient()
 db = client.rastreiobot
 
+#Função para calcular o sign
+def generate_sign(token):
+    data = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+    sign = hashlib.md5(f'requestToken{token}data{data}'.encode()).hexdigest()
+    return data, sign
+
 def get_request_token(token=token):
     headers = {
         "content-type": "application/json",
         "user-agent": "Dart/2.18 (dart:io)",
     }
-    data_access = {
-        "requestToken": token
-    }
-    req = requests.post(
-        url="https://proxyapp.correios.com.br/v1/app-validation",
-        headers=headers, json=data_access
-    )
 
-    if 200 <= req.status_code > 300:
-        TOKEN_CORREIOS = req.json()['token']
-    else:
-        TOKEN_CORREIOS = False
-    db.token.update_one(
-        {"token": "app-check-token"},
-        {"$set": {
-            "value": TOKEN_CORREIOS,
-            "last_update": datetime.now()
-        } }
-    )
-    return TOKEN_CORREIOS
+    for i in range(5):  # tentativa de obter o token = 5x
+        data, sign = generate_sign(token)
+
+        data_access = {
+            "requestToken": token,
+            "data": data,
+            "sign": sign
+        }
+
+        response = requests.post(
+            url="https://proxyapp.correios.com.br/v1/app-validation",
+            headers=headers, json=data_access
+        )
+
+        if 200 <= response.status_code < 300:
+            token_correios = response.json().get('token', None)
+            if token_correios is not None:
+                # Caso tenha um token, adiciona ao database
+                db.token.update_one(
+                    {"token": "app-check-token"},
+                    {"$set": {
+                        "value": token_correios,
+                        "last_update": datetime.now()
+                    } }
+                )
+                return token_correios
+
+        # Caso falhe, de um sleep e retorne a tentativa
+        time.sleep(1)
+
+    # Caso nao obtenha o token ao fim de 5 tentativas, retornar um erro
+    raise ValueError("Não foi possível obter um token válido nos Correios após 5 tentativas")
+
 
 def get_package_events(code):
     header = {
